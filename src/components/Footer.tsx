@@ -1,6 +1,7 @@
 import React from 'react';
 import { Mail, Phone, MapPin, Facebook, Twitter, Instagram, Linkedin } from 'lucide-react';
 
+   
 const Footer = () => {
   const socialLinks = [
     { icon: Facebook, href: '#', label: 'Facebook' },
@@ -40,7 +41,7 @@ const Footer = () => {
               </div>
             </div>
             <p className="text-neutral-300 mb-6 leading-relaxed">
-              L'avenir de l'investissement organique en Afrique. Autonomisons ensemble 365 000 femmes entrepreneures.
+             Pour un investissement dans L’économie organique avec le Leadership féminin
             </p>
             <div className="flex space-x-4">
               {socialLinks.map((social, index) => (
@@ -83,29 +84,23 @@ const Footer = () => {
               </div>
               <div className="flex items-center space-x-3">
                 <Phone className="w-5 h-5 text-accent-400 flex-shrink-0" />
-                <span className="text-neutral-300">+221 XX XXX XX XX</span>
+                <span className="text-neutral-300">76 188 24 92 - 77 290 45 54 </span>
               </div>
               <div className="flex items-center space-x-3">
                 <Mail className="w-5 h-5 text-accent-400 flex-shrink-0" />
-                <span className="text-neutral-300">contact@feveo2050.com</span>
+                <span className="text-neutral-300">contact@feveo2050.sn</span>
               </div>
             </div>
           </div>
 
           {/* Newsletter */}
           <div>
-            <h4 className="text-lg font-semibold mb-6">Newsletter</h4>
-            <p className="text-neutral-300 mb-4">
-              Restez informé de nos dernières actualités et opportunités.
-            </p>
+            <h4 className="text-lg font-semibold mb-6">Canal Officiel</h4>
+            
             <div className="flex flex-col space-y-3">
-              <input
-                type="email"
-                placeholder="Votre email"
-                className="px-4 py-3 bg-neutral-800 border border-neutral-700 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-accent-500 transition-colors duration-200"
-              />
+             
               <button className="btn-accent">
-                S'abonner
+                Acceder  à FEVEO 2050
               </button>
             </div>
           </div>

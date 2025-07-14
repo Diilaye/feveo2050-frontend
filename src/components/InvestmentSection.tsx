@@ -19,33 +19,74 @@ import {
   QrCode
 } from 'lucide-react';
 
+interface GieData {
+  identification: string;
+  nom: string;
+  presidenteNom: string;
+  presidenteEmail: string;
+  presidenteTelephone: string;
+  region: string;
+  nombreMembres: number;
+}
+
+interface SubscriptionData {
+  nombreParts: number;
+  typeInvestissement: string;
+  objectifProjet: string;
+  secteurActivite: string;
+  dureeInvestissement?: string;
+  descriptionProjet?: string;
+  montantTotal?: number;
+}
+
+interface PaymentData {
+  operateur: string;
+  numeroTelephone: string;
+  codePin: string;
+  montantTotal: number;
+}
+
+interface FormErrors {
+  identification?: string;
+  nom?: string;
+  presidenteNom?: string;
+  presidenteEmail?: string;
+  region?: string;
+  nombreParts?: string;
+  typeInvestissement?: string;
+  objectifProjet?: string;
+  operateur?: string;
+  numeroTelephone?: string;
+  codePin?: string;
+}
+
 const InvestmentSection = () => {
   const [currentStep, setCurrentStep] = useState(1);
-  const [gieData, setGieData] = useState({
+  const [gieData, setGieData] = useState<GieData>({
     identification: '',
     nom: '',
     presidenteNom: '',
     presidenteEmail: '',
     presidenteTelephone: '',
     region: '',
-    secteur: '',
-    nombreMembres: '',
-    dateCreation: ''
+    nombreMembres: 0
   });
   
-  const [subscriptionData, setSubscriptionData] = useState({
-    nombreParts: '',
-    montantTotal: 0,
+  const [subscriptionData, setSubscriptionData] = useState<SubscriptionData>({
+    nombreParts: 0,
     typeInvestissement: '',
-    dureeInvestissement: '',
     objectifProjet: '',
-    descriptionProjet: ''
+    secteurActivite: '',
+    dureeInvestissement: '',
+    descriptionProjet: '',
+    montantTotal: 0
   });
 
-  const [paymentData, setPaymentData] = useState({
+  const [paymentData, setPaymentData] = useState<PaymentData & { showPin: boolean }>({
     operateur: '',
     numeroTelephone: '',
     codePin: '',
+    montantTotal: 0,
     showPin: false
   });
 
@@ -56,7 +97,7 @@ const InvestmentSection = () => {
   });
 
   const [walletGenerated, setWalletGenerated] = useState(false);
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState<FormErrors>({});
 
   const steps = [
     { id: 1, title: 'Identification GIE', icon: Building },
@@ -91,8 +132,8 @@ const InvestmentSection = () => {
     { value: 'mixte', label: 'Projet Mixte', min: 75000, max: 3000000 }
   ];
 
-  const validateStep = (step) => {
-    const newErrors = {};
+  const validateStep = (step: number) => {
+    const newErrors: FormErrors = {};
     
     switch (step) {
       case 1:
@@ -125,7 +166,7 @@ const InvestmentSection = () => {
         const prixPart = 10000; // 10 000 FCFA par part
         setSubscriptionData(prev => ({
           ...prev,
-          montantTotal: parseInt(prev.nombreParts) * prixPart
+          montantTotal: prev.nombreParts * prixPart
         }));
       }
       setCurrentStep(prev => prev + 1);
@@ -338,7 +379,7 @@ const InvestmentSection = () => {
                     min="1"
                     max="500"
                     value={subscriptionData.nombreParts}
-                    onChange={(e) => setSubscriptionData(prev => ({ ...prev, nombreParts: e.target.value }))}
+                    onChange={(e) => setSubscriptionData(prev => ({ ...prev, nombreParts: parseInt(e.target.value) || 0 }))}
                     className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-accent-500 transition-colors duration-200 ${
                       errors.nombreParts ? 'border-red-300' : 'border-neutral-300'
                     }`}
@@ -347,7 +388,7 @@ const InvestmentSection = () => {
                   {errors.nombreParts && <p className="text-red-500 text-sm mt-1">{errors.nombreParts}</p>}
                   {subscriptionData.nombreParts && (
                     <p className="text-sm text-success-600 mt-1">
-                      Montant total: {(parseInt(subscriptionData.nombreParts) * 10000).toLocaleString()} FCFA
+                      Montant total: {(subscriptionData.nombreParts * 10000).toLocaleString()} FCFA
                     </p>
                   )}
                 </div>
@@ -584,7 +625,7 @@ const InvestmentSection = () => {
                         errors.codePin ? 'border-red-300' : 'border-neutral-300'
                       }`}
                       placeholder="Code PIN"
-                      maxLength="4"
+                      maxLength={4}
                     />
                     <button
                       type="button"

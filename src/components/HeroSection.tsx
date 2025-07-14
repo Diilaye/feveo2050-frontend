@@ -1,32 +1,38 @@
 import React, { useState } from 'react';
 import { Play, TrendingUp, Users, Calendar, Target, Heart, Lightbulb, X } from 'lucide-react';
 
-const HeroSection = () => {
+interface HeroSectionProps {
+  onNavigate?: (page: string) => void;
+}
+
+const HeroSection: React.FC<HeroSectionProps> = ({ onNavigate }) => {
   const [showVideo, setShowVideo] = useState(false);
 
   const metrics = [
-    { icon: Users, value: '9 125', label: 'GIE Actifs', color: 'text-accent-500' },
-    { icon: TrendingUp, value: '6B', label: 'FCFA Investis', color: 'text-success-500' },
-    { icon: Calendar, value: '1 826', label: 'Jours d\'Impact', color: 'text-accent-500' },
+    { icon: TrendingUp, value: '?', label: 'GIEs enregistrés', color: 'text-accent-500' },
+    { icon: Users, value: '691 250', label: 'Nbre min. de femmes', color: 'text-success-500' },
+    { icon: Users, value: '331 800', label: 'Nbre de jeunes', color: 'text-accent-500' },
+    { icon: Users, value: '82 950', label: 'Nbre d’adultes', color: 'text-success-500' },
+    { icon: Calendar, value: '1 826', label: 'Nbre jours d’invest', color: 'text-accent-500' },
   ];
 
   const visionMission = [
     {
       icon: Target,
       title: 'Notre Vision',
-      description: 'Créer un écosystème d\'investissement organique qui autonomise 365 000 femmes entrepreneures africaines d\'ici 2050.',
+      description: 'Créer un écosystème d’investissement Économique organique pour faire des femmes le moteur de la transformation systémique de l’économie du Sénégal',
       color: 'bg-primary-500'
     },
     {
       icon: Heart,
       title: 'Notre Mission',
-      description: 'Faciliter l\'accès au financement et aux marchés pour les GIE féminins à travers une plateforme d\'investissement innovante.',
+      description: 'Placer les femmes au cœur du système de création de richesses par l’exploitation de toute la chaine de valeur',
       color: 'bg-success-500'
     },
     {
       icon: Lightbulb,
       title: 'Nos Projets',
-      description: 'Développer 4 piliers stratégiques : FEVEO CASH, Grande Distribution, Production Locale et Transformation.',
+      description: '- AVEC FEVEO GRANDE DISTRIBUTION \n - PLANS VASTES DE ZONES \n - AEROBUS \n - FEVEO CASH',
       color: 'bg-accent-500'
     }
   ];
@@ -42,31 +48,33 @@ const HeroSection = () => {
         <div className="max-w-4xl mx-auto text-center text-neutral-50 mb-20">
           <div className="animate-slide-up">
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold leading-tight mb-6">
-              L'avenir de l'investissement
-              <span className="block text-accent-400">organique en Afrique</span>
+             AVEC INVESTISSEMENT 
+              <span className="block text-accent-400">« FEVEO 2050 »</span>
             </h1>
             
-            <p className="text-xl md:text-2xl text-neutral-100 mb-8 max-w-3xl mx-auto leading-relaxed">
-              Rejoignez <span className="font-semibold text-accent-400">365 000 femmes entrepreneures</span> dans la révolution économique avec FEVEO 2050
+            <p className="text-xl md:text-2xl text-neutral-100 mb-8  mx-auto leading-relaxed">
+              L’avenir de l’investissement en économie organique, à partir du Sénégal
             </p>
 
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
-              <button className="btn-accent text-lg px-8 py-4 hover:scale-105 transform transition-all duration-200">
+              <button 
+                onClick={() => onNavigate?.('about')}
+                className="btn-accent text-lg px-8 py-4 hover:scale-105 transform transition-all duration-200"
+              >
                 Découvrir la plateforme
               </button>
               <button 
                 onClick={() => setShowVideo(true)}
                 className="btn-secondary bg-neutral-50/10 border-neutral-50/20 text-neutral-50 hover:bg-neutral-50/20 text-lg px-8 py-4 hover:scale-105 transform transition-all duration-200"
               >
-                <Play className="w-5 h-5 mr-2" />
-                Voir présentation vidéo
+                Voir la gallery
               </button>
             </div>
           </div>
 
           {/* Metrics */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto animate-fade-in">
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-8 max-w-4xl mx-auto animate-fade-in">
             {metrics.map((metric, index) => (
               <div key={index} className="text-center animate-float" style={{ animationDelay: `${index * 0.2}s` }}>
                 <div className="inline-flex items-center justify-center w-16 h-16 bg-neutral-50/10 backdrop-blur-sm rounded-full mb-4">
@@ -86,7 +94,7 @@ const HeroSection = () => {
               Présentation FEVEO 2050
             </h2>
             <p className="text-xl text-neutral-200 max-w-2xl mx-auto">
-              Une plateforme révolutionnaire pour l'autonomisation économique des femmes en Afrique
+             Une vision d’entreprise en économie organique, autour des femmes, dans la perspective d’une transformation structurelle des potentiels économiques territoriales
             </p>
           </div>
 

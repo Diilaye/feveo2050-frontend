@@ -51,50 +51,50 @@
 
 .background-slideshow-enhanced {
   background: linear-gradient(135deg, rgba(20, 33, 61, 0.9), rgba(252, 163, 17, 0.8)),
-              url('https://images.pexels.com/photos/1595385/pexels-photo-1595385.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop') center/cover;
+              url('/images/bg1.jpg') center/cover;
   animation: backgroundSlideEnhanced 20s infinite;
 }
 
 @keyframes backgroundSlideEnhanced {
   0%, 20% {
     background: linear-gradient(135deg, rgba(20, 33, 61, 0.9), rgba(252, 163, 17, 0.8)),
-                url('https://images.pexels.com/photos/1595385/pexels-photo-1595385.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop') center/cover;
+                url('/images/bg2.jpg') center/cover;
   }
   25%, 45% {
     background: linear-gradient(135deg, rgba(20, 33, 61, 0.9), rgba(252, 163, 17, 0.8)),
-                url('https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop') center/cover;
+                url('/images/bg3.jpg') center/cover;
   }
   50%, 70% {
     background: linear-gradient(135deg, rgba(20, 33, 61, 0.9), rgba(252, 163, 17, 0.8)),
-                url('https://images.pexels.com/photos/1181534/pexels-photo-1181534.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop') center/cover;
+                url('/images/bg1.jpg') center/cover;
   }
   75%, 95% {
     background: linear-gradient(135deg, rgba(20, 33, 61, 0.9), rgba(252, 163, 17, 0.8)),
-                url('https://images.pexels.com/photos/2280571/pexels-photo-2280571.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop') center/cover;
+                url('/images/bg2.jpg') center/cover;
   }
   96%, 100% {
     background: linear-gradient(135deg, rgba(20, 33, 61, 0.9), rgba(252, 163, 17, 0.8)),
-                url('https://images.pexels.com/photos/1595385/pexels-photo-1595385.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop') center/cover;
+                url('/images/bg3.jpg') center/cover;
   }
 }
 
 .background-slideshow {
   background: linear-gradient(135deg, rgba(20, 33, 61, 0.9), rgba(252, 163, 17, 0.8)),
-              url('https://images.pexels.com/photos/1595385/pexels-photo-1595385.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop') center/cover;
+              url('/images/bg1.jpg') center/cover;
   animation: backgroundSlide 15s infinite;
 }
 
 @keyframes backgroundSlide {
   0%, 33% {
     background: linear-gradient(135deg, rgba(20, 33, 61, 0.9), rgba(252, 163, 17, 0.8)),
-                url('https://images.pexels.com/photos/1595385/pexels-photo-1595385.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop') center/cover;
+                url('/images/bg1.jpg') center/cover;
   }
   34%, 66% {
     background: linear-gradient(135deg, rgba(20, 33, 61, 0.9), rgba(252, 163, 17, 0.8)),
-                url('https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop') center/cover;
+                url('/images/bg2.jpg') center/cover;
   }
   67%, 100% {
     background: linear-gradient(135deg, rgba(20, 33, 61, 0.9), rgba(252, 163, 17, 0.8)),
-                url('https://images.pexels.com/photos/1181534/pexels-photo-1181534.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop') center/cover;
+                url('/images/bg3.jpg') center/cover;
   }
 }

@@ -1,8 +1,77 @@
 import React, { useState } from 'react';
 import { Building, FileText, MapPin, User, Phone, Calendar, CreditCard, Download, ArrowLeft, CheckCircle } from 'lucide-react';
 
-const AdhesionForm = ({ onBack }) => {
-  const [formData, setFormData] = useState({
+interface Departement {
+  nom: string;
+  arrondissements: { [key: string]: string };
+}
+
+interface Region {
+  nom: string;
+  departements: { [key: string]: Departement };
+}
+
+interface FormData {
+  // Identification GIE
+  numeroAdhesion: string;
+  codeRegion: string;
+  codeDepartement: string;
+  codeArrondissement: string;
+  codeCommune: string;
+  numeroListe: string;
+  commune: string;
+  arrondissement: string;
+  departement: string;
+  region: string;
+  
+  // Immatriculation
+  immatricule: boolean;
+  numeroRegistre: string;
+  
+  // Présidente
+  presidenteNom: string;
+  presidentePrenom: string;
+  dateNaissance: string;
+  cinNumero: string;
+  cinDelivrance: string;
+  cinValidite: string;
+  telephone: string;
+  
+  // Activités
+  activites: string[];
+  autresActivites: string;
+  agriculture: boolean;
+  elevage: boolean;
+  transformation: boolean;
+  commerceDistribution: boolean;
+  
+  // Coordonnateur
+  coordinateurNom: string;
+  coordinateurMatricule: string;
+  
+  // Signatures
+  dateSignature: string;
+}
+
+interface FormErrors {
+  codeRegion?: string;
+  codeDepartement?: string;
+  codeArrondissement?: string;
+  numeroListe?: string;
+  presidenteNom?: string;
+  presidentePrenom?: string;
+  dateNaissance?: string;
+  cinNumero?: string;
+  telephone?: string;
+  activites?: string;
+}
+
+interface AdhesionFormProps {
+  onBack: () => void;
+}
+
+const AdhesionForm: React.FC<AdhesionFormProps> = ({ onBack }) => {
+  const [formData, setFormData] = useState<FormData>({
     // Identification GIE
     numeroAdhesion: '',
     codeRegion: '',
@@ -29,6 +98,8 @@ const AdhesionForm = ({ onBack }) => {
     telephone: '',
     
     // Activités
+    activites: [],
+    autresActivites: '',
     agriculture: false,
     elevage: false,
     transformation: false,
@@ -43,7 +114,7 @@ const AdhesionForm = ({ onBack }) => {
   });
 
   const [currentStep, setCurrentStep] = useState(1);
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState<FormErrors>({});
 
   // Données géographiques du Sénégal
   const regionsData = {
@@ -523,8 +594,8 @@ const AdhesionForm = ({ onBack }) => {
     }
   };
 
-  const validateStep = (step) => {
-    const newErrors = {};
+  const validateStep = (step: number) => {
+    const newErrors: FormErrors = {};
     
     switch (step) {
       case 1:
@@ -655,7 +726,7 @@ const AdhesionForm = ({ onBack }) => {
                     } ${!formData.codeRegion ? 'bg-neutral-100' : ''}`}
                   >
                     <option value="">Sélectionnez le département</option>
-                    {formData.codeRegion && Object.entries(regionsData[formData.codeRegion]?.departements || {}).map(([code, dept]) => (
+                    {formData.codeRegion && Object.entries((regionsData as any)[formData.codeRegion]?.departements || {}).map(([code, dept]: [string, Departement]) => (
                       <option key={code} value={code}>{code} - {dept.nom}</option>
                     ))}
                   </select>
@@ -675,7 +746,7 @@ const AdhesionForm = ({ onBack }) => {
                     } ${!formData.codeDepartement ? 'bg-neutral-100' : ''}`}
                   >
                     <option value="">Sélectionnez l'arrondissement</option>
-                    {formData.codeDepartement && Object.entries(regionsData[formData.codeRegion]?.departements[formData.codeDepartement]?.arrondissements || {}).map(([code, arr]) => (
+                    {formData.codeDepartement && Object.entries((regionsData as any)[formData.codeRegion]?.departements[formData.codeDepartement]?.arrondissements || {}).map(([code, arr]: [string, string]) => (
                       <option key={code} value={code}>{code} - {arr}</option>
                     ))}
                   </select>

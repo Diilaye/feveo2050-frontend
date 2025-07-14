@@ -103,7 +103,7 @@ const GIEDashboard = () => {
     departement: '',
     arrondissement: '',
     commune: '',
-    membres: Array(40).fill().map((_, i) => ({
+    membres: Array(40).fill(null).map((_, i) => ({
       id: i + 1,
       prenomNom: '',
       dateNaissance: '',

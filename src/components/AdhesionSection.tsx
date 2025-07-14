@@ -2,9 +2,25 @@ import React, { useState } from 'react';
 import { Users, FileText, CreditCard, Check, ArrowRight } from 'lucide-react';
 import AdhesionForm from './AdhesionForm';
 
+interface FormData {
+  nom: string;
+  email: string;
+  telephone: string;
+  region: string;
+  secteur: string;
+}
+
+interface FormErrors {
+  nom?: string;
+  email?: string;
+  telephone?: string;
+  region?: string;
+  secteur?: string;
+}
+
 const AdhesionSection = () => {
   const [showForm, setShowForm] = useState(false);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     nom: '',
     email: '',
     telephone: '',
@@ -12,7 +28,7 @@ const AdhesionSection = () => {
     secteur: ''
   });
 
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState<FormErrors>({});
 
   if (showForm) {
     return <AdhesionForm onBack={() => setShowForm(false)} />;
@@ -51,7 +67,7 @@ const AdhesionSection = () => {
   ];
 
   const validateForm = () => {
-    const newErrors = {};
+    const newErrors: FormErrors = {};
     
     if (!formData.nom.trim()) newErrors.nom = 'Le nom est requis';
     if (!formData.email.trim()) newErrors.email = 'L\'email est requis';
@@ -64,7 +80,7 @@ const AdhesionSection = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (validateForm()) {
       console.log('Formulaire soumis:', formData);

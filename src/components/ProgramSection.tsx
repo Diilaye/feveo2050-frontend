@@ -9,28 +9,28 @@ const ProgramSection = () => {
     {
       icon: Wallet,
       title: 'FEVEO CASH',
-      description: 'Solution de financement innovante pour les GIE avec des taux préférentiels et un accompagnement personnalisé.',
+      description: 'Solution d’investissements Innovants pour les GIEs de femmes en vue d’une exploitation de chaines de valeurs, grâce à :',
       color: 'bg-primary-500',
-      features: ['Micro-crédit accessible', 'Taux préférentiels', 'Accompagnement dédié']
+      features: ['Un fonds d’investissement International', 'Garantie internationale du fonds', 'Accompagnement des GIEs']
     },
     {
       icon: Store,
       title: 'Grande Distribution',
-      description: 'Réseau de distribution étendu pour commercialiser vos produits sur les marchés locaux et internationaux.',
+      description: 'Un réseau de distribution étendu pour la commercialiser des produits importés et locaux de la plateforme « FEVEO 2050 »',
       color: 'bg-success-500',
-      features: ['Réseau étendu', 'Marchés locaux', 'Export international']
+      features: ['Réseau étendu', 'Marchés locaux', 'MarchéS international']
     },
     {
       icon: Leaf,
-      title: 'Production Locale',
-      description: 'Soutien à la production agricole durable avec des techniques modernes et respectueuses de l\'environnement.',
+      title: 'Plans vastes de zones',
+      description: 'Centres communaux de transformations des produits du secteur primaire pour une création de grandes Valeurs ajoutées',
       color: 'bg-accent-500',
-      features: ['Agriculture durable', 'Techniques modernes', 'Respect environnemental']
+      features: ['Agriculture durable', 'Dans une économie organique', 'Avec la nature, notre partenaire']
     },
     {
       icon: Settings,
       title: 'Transformation',
-      description: 'Unités de transformation pour valoriser vos produits agricoles et créer de la valeur ajoutée.',
+      description: 'Centre communaux de transformations des du secteur primaire pour une création de grandes Valeurs ajoutées',
       color: 'bg-primary-500',
       features: ['Valeur ajoutée', 'Transformation locale', 'Innovation technologique']
     }
@@ -66,8 +66,8 @@ const ProgramSection = () => {
   const content = {
     fr: {
       platformTitle: "Plateforme d'Investissement Économie Organique",
-      platformSubtitle: "Une révolution dans l'approche de l'investissement en Afrique",
-      platformDescription: "FEVEO 2050 redéfinit l'investissement en Afrique avec une approche organique qui respecte les écosystèmes locaux, favorise l'autonomisation des femmes et génère un impact social durable. Notre plateforme connecte les investisseurs conscients avec des projets porteurs de sens.",
+      platformSubtitle: "Une révolution dans l'approche de l'investissement",
+      platformDescription: "Un modèle alternatif de développement par la valorisation des ressources humaines féminines au sein des terroirs. Ce modèle associe les femmes des groupements féminins à des investisseurs et partenaires internationaux qui partagent ensemble la vision « Femmes Economie Organique 2050 » consistant en une affirmation du leadership féminin dans une exploitation aboutie de chaines de valeurs économiques pour une souveraineté alimentaire.",
       programTitle: "Programme Projets FEVEO 2050",
       programSubtitle: "Quatre piliers stratégiques pour transformer l'économie africaine",
       programDescription: "Notre programme intégré combine financement, distribution, production et transformation pour créer un écosystème complet d'autonomisation économique. Chaque pilier est conçu pour renforcer les autres et maximiser l'impact collectif.",
@@ -77,7 +77,7 @@ const ProgramSection = () => {
     wo: {
       platformTitle: "Plateforme bu Investissement Économie Organique",
       platformSubtitle: "Benn révolution ci approche bi investissement ci Afrique",
-      platformDescription: "FEVEO 2050 dafa wax ci investissement ci Afrique ak benn approche organique bu respecter écosystèmes yu locale, favoriser autonomisation yu jigéen yi ak génerer benn impact social bu durable.",
+      platformDescription: "Benn model bu wuuteel ci wàllu développement mooy jëfandikoo ay jigéen ci xeeti terroir yi, ba noppi jox ay doole ci wàllu jàmm ak yéene. Ci model bii, ñu boole jigéeni wàllu groupement ak ay jëfandikukat ak ñaari mbéy yi (investisseurs) ak ay partenaire yu dëkk yu biti, ñuy bokk ci seen gis-gis bu mujj « Jigéen yi ci Ekonomi Organique 2050 ». Gis-gis bii dafay taxawu ci dooleel jigéen yi, ba ñuy doxal ay chaîne de valeur bu ekonomique ngir jot ci ay njariñu mujj te wër ndoxal ci wàllu suverénité alimentaire",
       programTitle: "Programme Projets FEVEO 2050",
       programSubtitle: "Ñeent piliers stratégiques ngir transformer économie bu Afrique",
       programDescription: "Sunuy programme bu intégré dafa combine financement, distribution, production ak transformation ngir sos benn écosystème bu complet bu autonomisation économique.",
@@ -163,7 +163,7 @@ const ProgramSection = () => {
 
           {/* Platform Features */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {platformFeatures.map((feature, index) => (
+            {/* {platformFeatures.map((feature, index) => (
               <div key={index} className="group">
                 <div className="card h-full hover:scale-105 transition-all duration-300 border-l-4 border-l-accent-500">
                   <div className="flex items-center justify-between mb-4">
@@ -179,13 +179,13 @@ const ProgramSection = () => {
                   <p className="text-neutral-600 text-sm leading-relaxed">{feature.description}</p>
                 </div>
               </div>
-            ))}
+            ))} */}
           </div>
         </div>
 
         {/* Program Projects */}
         <div className="mb-16">
-          <div className="text-center mb-12">
+          {/* <div className="text-center mb-12">
             <h2 className="text-4xl md:text-5xl font-bold text-neutral-900 mb-6">
               {content[currentLanguage].programTitle}
             </h2>
@@ -217,7 +217,7 @@ const ProgramSection = () => {
             <p className="text-lg text-neutral-600 max-w-4xl mx-auto leading-relaxed">
               {content[currentLanguage].programDescription}
             </p>
-          </div>
+          </div> */}
 
           {/* Program Pillars */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -253,9 +253,8 @@ const ProgramSection = () => {
 
         {/* CTA Section */}
         <div className="text-center bg-primary-500 rounded-2xl p-8 text-neutral-50">
-          <h3 className="text-2xl font-bold mb-4">Prêt à rejoindre la révolution ?</h3>
+          <h3 className="text-2xl font-bold mb-4">Prêt à rejoindre la révolution féminine ?</h3>
           <p className="text-lg mb-6 opacity-90">
-            Découvrez comment FEVEO 2050 peut transformer votre parcours entrepreneurial
           </p>
           <button className="bg-accent-500 hover:bg-accent-600 text-neutral-50 font-semibold px-8 py-4 rounded-lg hover:scale-105 transform transition-all duration-200 shadow-lg">
             Adhérer à la plateforme

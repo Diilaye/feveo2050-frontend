@@ -1,24 +1,60 @@
-import React, { useState } from 'react';
-import { Menu, X, Globe } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Menu, X, Globe, ChevronDown } from 'lucide-react';
 
 const Header = ({ onNavigate }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isProgramsDropdownOpen, setIsProgramsDropdownOpen] = useState(false);
   const [language, setLanguage] = useState('fr');
+  const dropdownRef = useRef(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsProgramsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   const navigation = [
     { name: 'Accueil', href: '#accueil', action: () => onNavigate('home') },
-    { name: 'Programme', href: '#programme' },
-    { name: 'Adhérer', href: '#adherer' },
-    { name: 'Investir', href: '#investir' },
+    { 
+      name: 'Programmes', 
+      href: '#programme',
+      hasDropdown: true,
+      submenu: [
+        { name: 'Initiative globale Nexus', action: () => onNavigate('about') },
+        { name: 'Présentation projet AEROBUS', action: () => console.log('AEROBUS presentation') },
+        { name: 'Adhérer AVEC FEVEO', action: () => onNavigate('adhesion') },
+        { name: 'Souscrire actions AEROBUS', action: () => console.log('AEROBUS subscription') }
+      ]
+    },
+    { name: 'Adhérer', href: '#adherer', action: () => onNavigate('adhesion') },
+    { name: 'Investir', href: '#investir' , action: () => onNavigate('investir')  },
     { name: 'Wallet GIE', href: '#wallet', action: () => onNavigate('dashboard') },
-    { name: 'Galerie', href: '#galerie' },
   ];
 
   const handleNavClick = (item) => {
-    if (item.action) {
+    if (item.hasDropdown) {
+      setIsProgramsDropdownOpen(!isProgramsDropdownOpen);
+    } else if (item.action) {
       item.action();
+      setIsMenuOpen(false);
+      setIsProgramsDropdownOpen(false);
+    }
+  };
+
+  const handleSubmenuClick = (submenuItem) => {
+    if (submenuItem.action) {
+      submenuItem.action();
     }
     setIsMenuOpen(false);
+    setIsProgramsDropdownOpen(false);
   };
 
   return (
@@ -39,13 +75,32 @@ const Header = ({ onNavigate }) => {
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center space-x-8">
             {navigation.map((item) => (
-              <button
-                key={item.name}
-                onClick={() => handleNavClick(item)}
-                className="text-neutral-600 hover:text-accent-500 font-medium transition-colors duration-200"
-              >
-                {item.name}
-              </button>
+              <div key={item.name} className="relative" ref={item.hasDropdown ? dropdownRef : null}>
+                <button
+                  onClick={() => handleNavClick(item)}
+                  className="flex items-center gap-1 text-neutral-600 hover:text-accent-500 font-medium transition-colors duration-200"
+                >
+                  {item.name}
+                  {item.hasDropdown && (
+                    <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isProgramsDropdownOpen ? 'rotate-180' : ''}`} />
+                  )}
+                </button>
+                
+                {/* Dropdown Menu */}
+                {item.hasDropdown && isProgramsDropdownOpen && (
+                  <div className="absolute top-full left-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-neutral-200 py-2 z-50">
+                    {item.submenu?.map((submenuItem, index) => (
+                      <button
+                        key={index}
+                        onClick={() => handleSubmenuClick(submenuItem)}
+                        className="w-full text-left px-4 py-2 text-neutral-600 hover:text-accent-500 hover:bg-accent-50 transition-colors duration-200"
+                      >
+                        {submenuItem.name}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
             ))}
           </nav>
 
@@ -77,13 +132,32 @@ const Header = ({ onNavigate }) => {
           <div className="lg:hidden py-4 border-t border-neutral-200 animate-fade-in">
             <nav className="flex flex-col space-y-3">
               {navigation.map((item) => (
-                <button
-                  key={item.name}
-                  onClick={() => handleNavClick(item)}
-                  className="text-neutral-600 hover:text-accent-500 font-medium py-2 transition-colors duration-200 text-left"
-                >
-                  {item.name}
-                </button>
+                <div key={item.name}>
+                  <button
+                    onClick={() => handleNavClick(item)}
+                    className="flex items-center justify-between w-full text-neutral-600 hover:text-accent-500 font-medium py-2 transition-colors duration-200 text-left"
+                  >
+                    {item.name}
+                    {item.hasDropdown && (
+                      <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isProgramsDropdownOpen ? 'rotate-180' : ''}`} />
+                    )}
+                  </button>
+                  
+                  {/* Mobile Submenu */}
+                  {item.hasDropdown && isProgramsDropdownOpen && (
+                    <div className="ml-4 mt-2 space-y-2">
+                      {item.submenu?.map((submenuItem, index) => (
+                        <button
+                          key={index}
+                          onClick={() => handleSubmenuClick(submenuItem)}
+                          className="block w-full text-left text-neutral-500 hover:text-accent-500 py-1 text-sm transition-colors duration-200"
+                        >
+                          • {submenuItem.name}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
               ))}
               <div className="flex items-center justify-between pt-4 border-t border-neutral-200">
                 <button
