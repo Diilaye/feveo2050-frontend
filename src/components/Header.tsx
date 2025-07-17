@@ -30,8 +30,8 @@ const Header = ({ onNavigate }) => {
       submenu: [
         { name: 'Initiative globale Nexus', action: () => onNavigate('about') },
         { name: 'Présentation projet AEROBUS', action: () => console.log('AEROBUS presentation') },
-        { name: 'Adhérer AVEC FEVEO', action: () => onNavigate('adhesion') },
-        { name: 'Souscrire actions AEROBUS', action: () => console.log('AEROBUS subscription') }
+        // { name: 'Adhérer AVEC FEVEO', action: () => onNavigate('adhesion') },
+        // { name: 'Souscrire actions AEROBUS', action: () => console.log('AEROBUS subscription') }
       ]
     },
     { name: 'Adhérer', href: '#adherer', action: () => onNavigate('adhesion') },
@@ -114,7 +114,7 @@ const Header = ({ onNavigate }) => {
               <span className="text-sm font-medium">{language === 'fr' ? 'FR' : 'WO'}</span>
             </button>
             <button className="btn-accent">
-              Commencer
+              AEROBUS
             </button>
           </div>
 
@@ -168,7 +168,7 @@ const Header = ({ onNavigate }) => {
                   <span className="text-sm font-medium">{language === 'fr' ? 'FR' : 'WO'}</span>
                 </button>
                 <button className="btn-accent">
-                  Commencer
+                  AEROBUS
                 </button>
               </div>
             </nav>

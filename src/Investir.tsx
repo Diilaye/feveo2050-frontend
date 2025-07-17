@@ -133,7 +133,7 @@ const Investir = () => {
           <div className="text-center mb-16">
             <div className="inline-flex items-center bg-accent-500/20 backdrop-blur-sm rounded-full px-6 py-3 mb-6">
               <TrendingUp className="w-5 h-5 text-accent-400 mr-3" />
-              <span className="text-accent-400 font-medium">Investissement FEVEO 2050</span>
+              <span className="text-accent-400 font-medium">Investir avec FEVEO 2050</span>
             </div>
             
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-neutral-50 leading-tight mb-6">
@@ -142,9 +142,8 @@ const Investir = () => {
             </h1>
             
             <p className="text-xl text-neutral-200 max-w-4xl mx-auto leading-relaxed">
-              FEVEO 2050 révolutionne l'investissement avec un système simple et accessible : 
-              <strong className="text-accent-400"> 6 060 FCFA par jour</strong> pour participer à l'autonomisation 
-              de 365 000 femmes entrepreneures africaines.
+              FEVEO 2050 révolutionne l'investissement des GIEs de femmes avec un système simple et accessible à tous ses membres affiliés à la plateforme d'investissement économie organique. Cette plateforme permet a chaque GIE d'investir une somme de 
+              <strong className="text-accent-400"> 6 060 f.cfa par jour. </strong> Cette somme est constituée d'une épargne investissement de 150 f.cfa par membre .
             </p>
           </div>
 
@@ -161,13 +160,13 @@ const Investir = () => {
               
               <div className="space-y-4 text-neutral-200">
                 <p className="leading-relaxed">
-                  <strong className="text-accent-400">6 060 FCFA/jour</strong> = un investissement quotidien accessible qui se transforme en force collective massive.
+                  <strong className="text-accent-400">6 060 FCFA/jour</strong>  = un investissement quotidien soutenable qui se transforme en force collective massive.
                 </p>
                 <p className="leading-relaxed">
-                  Chaque jour, votre contribution rejoint celle de milliers d'autres investisseurs pour financer des projets concrets menés par des femmes entrepreneures.
+                 Chaque jour, votre contribution rejoint un fonds d'investissement international sécurisé avec d'autres investisseurs du monde global pour financer des projets concrets menés par des GIEs femmes sénégalaises entrepreneures dans l'économie organique.
                 </p>
                 <p className="leading-relaxed text-accent-300">
-                  💡 <strong>L'idée :</strong> Rendre l'investissement aussi simple qu'un café quotidien, mais avec un impact transformationnel.
+                  💡 <strong>L'idée :</strong> Rendre structurante l'investissement des GIEs de femmes pour la transformation systémique des potentiels économiques territoriaux, à partir d'un coût moins onéreux que l'achat d'un sachet café Touba vendu à 250 f.cfa
                 </p>
               </div>
             </div>
@@ -180,20 +179,19 @@ const Investir = () => {
                 </div>
                 <h2 className="text-2xl font-bold text-neutral-50">Le Mécanisme</h2>
               </div>
-              
               <div className="space-y-4">
                 <div className="flex items-start gap-3">
                   <div className="w-8 h-8 bg-success-500 rounded-full flex items-center justify-center flex-shrink-0 text-white font-bold text-sm">1</div>
                   <div>
                     <h4 className="font-semibold text-neutral-50 mb-1">Investissement quotidien</h4>
-                    <p className="text-sm text-neutral-300">6 060 FCFA prélevés automatiquement via Wave</p>
+                    <p className="text-sm text-neutral-300">6 060 FCFA transférés automatiquement dans le compte Wave de FEVEO 2050, à partir du N° PAYMASTER Wave du GIE, indiqué dans la fiche d'adhésion et d'affiliation</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
                   <div className="w-8 h-8 bg-success-500 rounded-full flex items-center justify-center flex-shrink-0 text-white font-bold text-sm">2</div>
                   <div>
                     <h4 className="font-semibold text-neutral-50 mb-1">Financement de projets</h4>
-                    <p className="text-sm text-neutral-300">Votre argent finance directement des GIE féminins</p>
+                    <p className="text-sm text-neutral-300">L'investissement des GIEs FEVEO contribue directement aux leviers financiers d'ordre international qui assurent le financement du projet global économie organique FEVEO 2050 porté par les GIEs de femmes.</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
@@ -249,7 +247,7 @@ const Investir = () => {
               </div>
               <h3 className="text-xl font-bold text-neutral-50 mb-3">Impact Direct</h3>
               <p className="text-neutral-300 text-sm">
-                Chaque FCFA investi finance directement des projets de femmes entrepreneures africaines
+                Chaque FCFA investi participe directement à la consolidation et à l'épanouissement économique et financier du pilier de la famille sénégalaise, la femme. Au moins 691 250 familles % seront impactés.
               </p>
             </div>
             <div className="text-center">

@@ -272,13 +272,7 @@ const GIEDocumentWorkflow: React.FC<DocumentWorkflowProps> = ({
   };
 
   const secteurs = [
-    'Agriculture & Maraîchage',
-    'Élevage & Aviculture', 
-    'Pêche & Aquaculture',
-    'Transformation Alimentaire',
-    'Artisanat & Textile',
-    'Commerce & Distribution',
-    'Services & Écotourisme'
+    'Agriculture', 'Élevage', 'Transformation', 'Commerce & Distribution', 
   ];
 
   const activitesPossibles = [
@@ -907,7 +901,7 @@ ${gieData.presidentePrenom} ${gieData.presidenteNom}
             </div>
 
             {/* Activités */}
-            <div>
+            {/* <div>
               <label className="block text-sm font-medium text-neutral-700 mb-2">
                 Activités du GIE
               </label>
@@ -930,7 +924,7 @@ ${gieData.presidentePrenom} ${gieData.presidenteNom}
                   </label>
                 ))}
               </div>
-            </div>
+            </div> */}
 
             {/* Membres */}
             <div>

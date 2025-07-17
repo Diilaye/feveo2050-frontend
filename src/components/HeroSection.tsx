@@ -32,8 +32,34 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onNavigate }) => {
     {
       icon: Lightbulb,
       title: 'Nos Projets',
-      description: '- AVEC FEVEO GRANDE DISTRIBUTION \n - PLANS VASTES DE ZONES \n - AEROBUS \n - FEVEO CASH',
-      color: 'bg-accent-500'
+      description: '',
+      color: 'bg-accent-500',
+      projects: [
+        {
+          name: 'FEVEO GRANDE DISTRIBUTION',
+          icon: '🏪',
+          description: 'Réseau de distribution moderne et innovant',
+          color: 'bg-blue-500/20 border-blue-400/30'
+        },
+        {
+          name: 'PLANS VASTES DE ZONES',
+          icon: '🏗️',
+          description: 'Développement territorial intégré',
+          color: 'bg-green-500/20 border-green-400/30'
+        },
+        {
+          name: 'AEROBUS',
+          icon: '✈️',
+          description: 'Transport aérien connecté',
+          color: 'bg-purple-500/20 border-purple-400/30'
+        },
+        {
+          name: 'FEVEO CASH',
+          icon: '💰',
+          description: 'Solutions financières digitales',
+          color: 'bg-yellow-500/20 border-yellow-400/30'
+        }
+      ]
     }
   ];
 
@@ -107,7 +133,25 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onNavigate }) => {
                   </div>
                   
                   <h3 className="text-xl font-bold text-neutral-50 mb-4">{item.title}</h3>
-                  <p className="text-neutral-200 leading-relaxed">{item.description}</p>
+                  
+                  {item.title === 'Nos Projets' ? (
+                    <div className="space-y-3">
+                      {item.projects?.map((project, projIndex) => (
+                        <div className="flex-1" key={projIndex}>
+                              <h4 className="font-semibold text-neutral-50 text-sm mb-1 group-hover/project:text-accent-400 transition-colors duration-300">
+                                ❖ {project.name}
+                              </h4>
+                              {/* <p className="text-neutral-300 text-xs leading-relaxed">
+                                {project.description}
+                              </p> */}
+                            </div>
+                      ))}
+                      
+                     
+                    </div>
+                  ) : (
+                    <p className="text-neutral-200 leading-relaxed">{item.description}</p>
+                  )}
                 </div>
               </div>
             ))}

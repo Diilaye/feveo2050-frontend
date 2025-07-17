@@ -111,9 +111,7 @@ const About: React.FC<AboutProps> = ({ onBack, onNavigate }) => {
             Qu'est-ce que l'économie organique ?
           </h2>
           <p className="text-lg text-neutral-200 leading-relaxed text-center mb-12 max-w-4xl mx-auto">
-            L'économie organique est un modèle économique d'interactions autonomes d'activités par un système opérationnel d'ingénierie économique et financière pour un résultat de précision qui s'appuie sur huit sous-secteurs interdépendants.
-          </p>
-
+           L'économie organique est un modèle économique d'interactions d'activités autonomes par un système opérationnel d'ingénierie économique et financière pour un résultat de précision qui s'appuie sur huit sous-secteurs interdépendants.          </p>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {budgetSectors.map((sector, index) => (
               <div key={index} className="bg-neutral-50/5 backdrop-blur-sm rounded-xl p-6 border border-neutral-50/10 hover:bg-neutral-50/10 transition-all duration-300">
@@ -331,7 +329,7 @@ const About: React.FC<AboutProps> = ({ onBack, onNavigate }) => {
                  onClick={() => onNavigate?.('adhesions')}
                 className="btn-secondary bg-neutral-50/10 border-neutral-50/20 text-neutral-50 hover:bg-neutral-50/20 text-lg px-8 py-4"
               >
-                Adhérer à un GIE
+                Adhérer un GIE
               </button>
             </div>
           </div>

@@ -53,9 +53,7 @@ const Adhesion: React.FC<AdhesionProps> = ({ onNavigate }) => {
   ];
 
   const secteurs = [
-    'Agriculture & Maraîchage', 'Élevage & Aviculture', 'Pêche & Aquaculture', 
-    'Artisanat & Textile', 'Commerce & Distribution', 'Transformation Alimentaire', 
-    'Services & Technologie', 'Écotourisme', 'Énergies Renouvelables'
+    'Agriculture', 'Élevage', 'Transformation', 'Commerce & Distribution', 
   ];
 
   const typesAdhesion = [
@@ -79,13 +77,13 @@ const Adhesion: React.FC<AdhesionProps> = ({ onNavigate }) => {
     {
       icon: TrendingUp,
       title: 'Croissance Garantie',
-      description: 'Augmentation moyenne de 300% du chiffre d\'affaires en 2 ans',
+      description: "Augmentation constante et soutenue du chiffre d'affaires, chaque année",
       color: 'text-accent-500'
     },
     {
       icon: Users,
       title: 'Réseau National',
-      description: 'Rejoignez plus de 15 000 femmes entrepreneures dans 14 régions',
+      description: 'Rejoignez plus de 691 250 femmes entrepreneures dans les 553 communes du Sénégals',
       color: 'text-primary-500'
     },
     {
@@ -97,7 +95,7 @@ const Adhesion: React.FC<AdhesionProps> = ({ onNavigate }) => {
     {
       icon: Award,
       title: 'Accès au Marché',
-      description: 'Distribution nationale et internationale via notre plateforme',
+      description: 'Accès aux marchés Distribution nationale et internationale via notre plateforme commerciale « AVEC Grande Distribution »',
       color: 'text-accent-500'
     }
   ];
@@ -230,16 +228,16 @@ const Adhesion: React.FC<AdhesionProps> = ({ onNavigate }) => {
             <div className="text-center mb-16">
               <div className="inline-flex items-center bg-accent-500/20 backdrop-blur-sm rounded-full px-6 py-3 mb-6">
                 <Users className="w-5 h-5 text-accent-400 mr-3" />
-                <span className="text-accent-400 font-medium">Adhésion FEVEO 2050</span>
+                <span className="text-accent-400 font-medium">Adhésion GIE FEVEO</span>
               </div>
               
               <h1 className="text-4xl md:text-6xl font-bold text-neutral-50 leading-tight mb-6">
                 Rejoignez l'écosystème
-                <span className="block text-accent-400">qui transforme l'Afrique</span>
+                <span className="block text-accent-400">qui transforme les GIEs de femmes</span>
               </h1>
               
               <p className="text-xl text-neutral-200 mb-8 max-w-4xl mx-auto leading-relaxed">
-                Devenez membre de FEVEO 2050 et rejoignez plus de <strong className="text-accent-400">15 000 femmes entrepreneures</strong> qui révolutionnent l'économie africaine grâce à l'agriculture organique et l'innovation.
+                Devenez membre de FEVEO 2050 et rejoignez plus de <strong className="text-accent-400">27 650 GIEs de femmes entrepreneures</strong> qui révolutionnent l'économie africaine grâce à l'agriculture organique et l'innovation.
               </p>
             </div>
 
@@ -261,20 +259,20 @@ const Adhesion: React.FC<AdhesionProps> = ({ onNavigate }) => {
               <h2 className="text-2xl font-bold text-neutral-50 text-center mb-8">Pourquoi nous rejoindre ?</h2>
               <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
                 <div className="text-center">
-                  <div className="text-3xl font-bold text-accent-400 mb-2">15K+</div>
-                  <div className="text-sm text-neutral-300">Femmes entrepreneures</div>
+                  <div className="text-3xl font-bold text-accent-400 mb-2">27 650</div>
+                  <div className="text-sm text-neutral-300">GIEs de Femmes entrepreneures</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-3xl font-bold text-success-400 mb-2">300%</div>
-                  <div className="text-sm text-neutral-300">Croissance moyenne</div>
+                  <div className="text-3xl font-bold text-success-400 mb-2">?</div>
+                  <div className="text-sm text-neutral-300">Croissance soutenue</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-3xl font-bold text-primary-400 mb-2">14</div>
-                  <div className="text-sm text-neutral-300">Régions couvertes</div>
+                  <div className="text-3xl font-bold text-primary-400 mb-2">55</div>
+                  <div className="text-sm text-neutral-300">Communes à couvrir</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-3xl font-bold text-accent-400 mb-2">2.5M€</div>
-                  <div className="text-sm text-neutral-300">Fonds disponibles</div>
+                  <div className="text-3xl font-bold text-accent-400 mb-2">Milllards de $ US</div>
+                  <div className="text-sm text-neutral-300">Fonds d'investissement FEVEO 2050 garantie par la finance Internationale</div>
                 </div>
               </div>
             </div>

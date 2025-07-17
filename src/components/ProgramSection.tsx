@@ -16,14 +16,14 @@ const ProgramSection = () => {
     {
       icon: Store,
       title: 'Grande Distribution',
-      description: 'Un réseau de distribution étendu pour la commercialiser des produits importés et locaux de la plateforme « FEVEO 2050 »',
+      description: 'Un réseau de distribution étendu pour la commercialiser des produits importés et locaux de la plateforme «FEVEO 2050»',
       color: 'bg-success-500',
       features: ['Réseau étendu', 'Marchés locaux', 'MarchéS international']
     },
     {
       icon: Leaf,
       title: 'Plans vastes de zones',
-      description: 'Centres communaux de transformations des produits du secteur primaire pour une création de grandes Valeurs ajoutées',
+      description: 'Agriculture économique organique de précision, utilisant la nature comme partenaire',
       color: 'bg-accent-500',
       features: ['Agriculture durable', 'Dans une économie organique', 'Avec la nature, notre partenaire']
     },
@@ -235,7 +235,7 @@ const ProgramSection = () => {
                   </div>
                   
                   <h3 className="text-xl font-bold text-neutral-900 mb-4">{pillar.title}</h3>
-                  <p className="text-neutral-600 mb-6 leading-relaxed">{pillar.description}</p>
+                  <p className="text-neutral-600 mb-6 text-wrap">{pillar.description}</p>
                   
                   <ul className="space-y-2">
                     {pillar.features.map((feature, featureIndex) => (
