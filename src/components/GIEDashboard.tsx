@@ -40,15 +40,79 @@ const GIEDashboard = () => {
 
   // États pour les différentes sections
   const [gieInfo, setGieInfo] = useState({
-    id: 'FEVEO-GIE-DK-001-2024',
-    nom: 'GIE Ndèye Fatou',
+    id: 'FEVEO-01-01-01-01-001',
+    nom: 'FEVEO-01-01-01-01-001', // Nom généré automatiquement
     presidenteNom: 'Fatou Diop',
     region: 'Dakar',
-    commune: 'Parcelles Assainies',
+    departement: 'Dakar',
+    arrondissement: 'Dakar-Plateau',
+    commune: 'Dakar-Plateau',
+    codeRegion: '01',
+    codeDepartement: '01', 
+    codeArrondissement: '01',
+    codeCommune: '01',
+    numeroProtocole: '001', // Commence par 001
     dateCreation: '2024-01-15',
-    nombreMembres: 25,
+    nombreMembres: 40,
     statut: 'Actif'
   });
+
+  // Fonction pour générer le nom du GIE automatiquement
+  const generateGIEName = (codeRegion, codeDepartement, codeArrondissement, codeCommune, numeroProtocole) => {
+    return `FEVEO-${codeRegion}-${codeDepartement}-${codeArrondissement}-${codeCommune}-${numeroProtocole}`;
+  };
+
+  // Fonction pour générer le prochain numéro de protocole
+  const generateNextProtocolNumber = () => {
+    // Dans une vraie application, cette logique récupérerait le dernier numéro depuis la base de données
+    // Pour la démonstration, on simule avec le localStorage
+    const lastProtocol = localStorage.getItem('lastProtocolNumber') || '000';
+    const nextNumber = (parseInt(lastProtocol) + 1).toString().padStart(3, '0');
+    localStorage.setItem('lastProtocolNumber', nextNumber);
+    return nextNumber;
+  };
+
+  // Fonction pour obtenir le prochain numéro de protocole disponible sans l'incrémenter
+  const getNextProtocolNumber = () => {
+    const lastProtocol = localStorage.getItem('lastProtocolNumber') || '000';
+    const nextNumber = (parseInt(lastProtocol) + 1).toString().padStart(3, '0');
+    return nextNumber;
+  };
+
+  // Mettre à jour le nom du GIE quand les codes changent
+  const updateGieLocation = (field, value) => {
+    const updatedInfo = { ...gieInfo, [field]: value };
+    
+    // Si on modifie le numéro de protocole manuellement, on l'accepte
+    if (field === 'numeroProtocole') {
+      // Formater le numéro pour qu'il soit toujours sur 3 chiffres
+      const formattedProtocol = value.toString().padStart(3, '0');
+      updatedInfo.numeroProtocole = formattedProtocol;
+    }
+    
+    // Régénérer le nom du GIE si tous les codes sont présents
+    if (updatedInfo.codeRegion && updatedInfo.codeDepartement && 
+        updatedInfo.codeArrondissement && updatedInfo.codeCommune && 
+        updatedInfo.numeroProtocole) {
+      const newName = generateGIEName(
+        updatedInfo.codeRegion,
+        updatedInfo.codeDepartement, 
+        updatedInfo.codeArrondissement,
+        updatedInfo.codeCommune,
+        updatedInfo.numeroProtocole
+      );
+      updatedInfo.nom = newName;
+      updatedInfo.id = newName;
+    }
+    
+    setGieInfo(updatedInfo);
+  };
+
+  // Fonction pour auto-générer un nouveau numéro de protocole
+  const generateNewProtocol = () => {
+    const newProtocol = generateNextProtocolNumber();
+    updateGieLocation('numeroProtocole', newProtocol);
+  };
 
   const [walletData, setWalletData] = useState({
     solde: 2450000,
@@ -192,7 +256,7 @@ const GIEDashboard = () => {
                   value={loginData.gieId}
                   onChange={(e) => setLoginData(prev => ({ ...prev, gieId: e.target.value }))}
                   className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-accent-500 transition-colors duration-200"
-                  placeholder="FEVEO-GIE-XXXX-YYYY"
+                  placeholder="FEVEO-01-01-01-01-001"
                   required
                 />
               </div>
@@ -568,50 +632,193 @@ const GIEDashboard = () => {
 
                 <div className="card">
                   <h3 className="text-lg font-bold text-neutral-900 mb-4">Informations Générales</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <label className="block text-sm font-medium text-neutral-700 mb-2">
-                        ID du GIE
-                      </label>
-                      <input
-                        type="text"
-                        value={gieInfo.id}
-                        disabled
-                        className="w-full px-4 py-3 border border-neutral-300 rounded-lg bg-neutral-100 text-neutral-500"
-                      />
+                  <div className="space-y-6">
+                    
+                    {/* Identifiant et nom généré automatiquement */}
+                    <div className="bg-accent-50 p-4 rounded-lg border border-accent-200">
+                      <h4 className="font-semibold text-accent-800 mb-3">Identifiant GIE (généré automatiquement)</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium text-neutral-700 mb-2">
+                            ID du GIE
+                          </label>
+                          <input
+                            type="text"
+                            value={gieInfo.id}
+                            disabled
+                            className="w-full px-4 py-3 border border-neutral-300 rounded-lg bg-neutral-100 text-neutral-500 font-mono"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-neutral-700 mb-2">
+                            Nom du GIE (généré automatiquement)
+                          </label>
+                          <input
+                            type="text"
+                            value={gieInfo.nom}
+                            disabled
+                            className="w-full px-4 py-3 border border-neutral-300 rounded-lg bg-neutral-100 text-neutral-500 font-mono"
+                          />
+                        </div>
+                      </div>
+                      
                     </div>
+
+                    {/* Codes géographiques */}
                     <div>
-                      <label className="block text-sm font-medium text-neutral-700 mb-2">
-                        Nom du GIE
-                      </label>
-                      <input
-                        type="text"
-                        value={gieInfo.nom}
-                        onChange={(e) => setGieInfo(prev => ({ ...prev, nom: e.target.value }))}
-                        className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-accent-500"
-                      />
+                      <h4 className="font-semibold text-neutral-900 mb-3">Codes géographiques</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium text-neutral-700 mb-2">
+                            Code Région
+                          </label>
+                          <input
+                            type="text"
+                            value={gieInfo.codeRegion}
+                            onChange={(e) => updateGieLocation('codeRegion', e.target.value)}
+                            className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-accent-500"
+                            placeholder="01"
+                            maxLength="2"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-neutral-700 mb-2">
+                            Code Département
+                          </label>
+                          <input
+                            type="text"
+                            value={gieInfo.codeDepartement}
+                            onChange={(e) => updateGieLocation('codeDepartement', e.target.value)}
+                            className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-accent-500"
+                            placeholder="01"
+                            maxLength="2"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-neutral-700 mb-2">
+                            Code Arrondissement
+                          </label>
+                          <input
+                            type="text"
+                            value={gieInfo.codeArrondissement}
+                            onChange={(e) => updateGieLocation('codeArrondissement', e.target.value)}
+                            className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-accent-500"
+                            placeholder="01"
+                            maxLength="2"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-neutral-700 mb-2">
+                            Code Commune
+                          </label>
+                          <input
+                            type="text"
+                            value={gieInfo.codeCommune}
+                            onChange={(e) => updateGieLocation('codeCommune', e.target.value)}
+                            className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-accent-500"
+                            placeholder="01"
+                            maxLength="2"
+                          />
+                        </div>
+                      </div>
                     </div>
+
+                    {/* Informations administratives */}
                     <div>
-                      <label className="block text-sm font-medium text-neutral-700 mb-2">
-                        Région
-                      </label>
-                      <input
-                        type="text"
-                        value={gieInfo.region}
-                        onChange={(e) => setGieInfo(prev => ({ ...prev, region: e.target.value }))}
-                        className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-accent-500"
-                      />
+                      <h4 className="font-semibold text-neutral-900 mb-3">Informations administratives</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium text-neutral-700 mb-2">
+                            N° de Protocole d'adhésion
+                          </label>
+                          <div className="flex gap-2">
+                            <input
+                              type="text"
+                              value={gieInfo.numeroProtocole}
+                              onChange={(e) => updateGieLocation('numeroProtocole', e.target.value)}
+                              className="flex-1 px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-accent-500 font-mono"
+                              placeholder="001"
+                              maxLength="3"
+                              pattern="[0-9]{3}"
+                            />
+                            <button
+                              onClick={generateNewProtocol}
+                              className="px-4 py-3 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors duration-200 text-sm whitespace-nowrap"
+                              title="Générer automatiquement le prochain numéro"
+                            >
+                              Auto ({getNextProtocolNumber()})
+                            </button>
+                          </div>
+                          <p className="text-xs text-neutral-500 mt-1">
+                            Format : 3 chiffres (001, 002, 003...). Prochain disponible : {getNextProtocolNumber()}
+                          </p>
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-neutral-700 mb-2">
+                            Nombre de membres
+                          </label>
+                          <input
+                            type="number"
+                            value={gieInfo.nombreMembres}
+                            onChange={(e) => setGieInfo(prev => ({ ...prev, nombreMembres: parseInt(e.target.value) || 40 }))}
+                            className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-accent-500"
+                            min="40"
+                            max="40"
+                          />
+                          <p className="text-xs text-neutral-500 mt-1">Nombre fixe : 40 membres selon FEVEO 2050</p>
+                        </div>
+                      </div>
                     </div>
+
+                    {/* Localisation textuelle */}
                     <div>
-                      <label className="block text-sm font-medium text-neutral-700 mb-2">
-                        Commune
-                      </label>
-                      <input
-                        type="text"
-                        value={gieInfo.commune}
-                        onChange={(e) => setGieInfo(prev => ({ ...prev, commune: e.target.value }))}
-                        className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-accent-500"
-                      />
+                      <h4 className="font-semibold text-neutral-900 mb-3">Localisation</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium text-neutral-700 mb-2">
+                            Région
+                          </label>
+                          <input
+                            type="text"
+                            value={gieInfo.region}
+                            onChange={(e) => setGieInfo(prev => ({ ...prev, region: e.target.value }))}
+                            className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-accent-500"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-neutral-700 mb-2">
+                            Département
+                          </label>
+                          <input
+                            type="text"
+                            value={gieInfo.departement}
+                            onChange={(e) => setGieInfo(prev => ({ ...prev, departement: e.target.value }))}
+                            className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-accent-500"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-neutral-700 mb-2">
+                            Arrondissement
+                          </label>
+                          <input
+                            type="text"
+                            value={gieInfo.arrondissement}
+                            onChange={(e) => setGieInfo(prev => ({ ...prev, arrondissement: e.target.value }))}
+                            className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-accent-500"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-neutral-700 mb-2">
+                            Commune
+                          </label>
+                          <input
+                            type="text"
+                            value={gieInfo.commune}
+                            onChange={(e) => setGieInfo(prev => ({ ...prev, commune: e.target.value }))}
+                            className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-accent-500"
+                          />
+                        </div>
+                      </div>
                     </div>
                   </div>
                   <div className="mt-6">

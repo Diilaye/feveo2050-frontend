@@ -267,7 +267,7 @@ const Adhesion: React.FC<AdhesionProps> = ({ onNavigate }) => {
                   <div className="text-sm text-neutral-300">Croissance soutenue</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-3xl font-bold text-primary-400 mb-2">55</div>
+                  <div className="text-3xl font-bold text-primary-400 mb-2">553</div>
                   <div className="text-sm text-neutral-300">Communes à couvrir</div>
                 </div>
                 <div className="text-center">

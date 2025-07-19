@@ -41,6 +41,8 @@ interface GIEData {
     fonction: string;
     cin: string;
     telephone: string;
+    genre: 'femme' | 'jeune' | 'homme';
+    age?: number;
   }>;
   
   // Activités
@@ -65,6 +67,26 @@ const GIEDocumentWorkflow: React.FC<DocumentWorkflowProps> = ({
   onComplete, 
   onCancel 
 }) => {
+  // Fonction pour générer le prochain numéro de protocole
+  const generateNextProtocolNumber = () => {
+    const lastProtocol = localStorage.getItem('lastProtocolNumber') || '000';
+    const nextNumber = (parseInt(lastProtocol) + 1).toString().padStart(3, '0');
+    localStorage.setItem('lastProtocolNumber', nextNumber);
+    return nextNumber;
+  };
+
+  // Fonction pour obtenir le prochain numéro sans l'incrémenter
+  const getNextProtocolNumber = () => {
+    const lastProtocol = localStorage.getItem('lastProtocolNumber') || '000';
+    const nextNumber = (parseInt(lastProtocol) + 1).toString().padStart(3, '0');
+    return nextNumber;
+  };
+
+  // Génération du nom du GIE automatiquement
+  const generateGIEName = (codeRegion, codeDepartement, codeArrondissement, codeCommune, numeroProtocole) => {
+    return `FEVEO-${codeRegion}-${codeDepartement}-${codeArrondissement}-${codeCommune}-${numeroProtocole}`;
+  };
+
   const [currentStep, setCurrentStep] = useState(1);
   const [gieData, setGieData] = useState<GIEData>({
     nomGIE: '',
@@ -87,7 +109,7 @@ const GIEDocumentWorkflow: React.FC<DocumentWorkflowProps> = ({
     activites: [],
     objectifs: '',
     identifiantGIE: '',
-    numeroProtocole: '',
+    numeroProtocole: '', // Sera généré lors de la création de l'identifiant
     dateConstitution: new Date().toISOString().split('T')[0],
     ...initialData
   });
@@ -318,9 +340,8 @@ const GIEDocumentWorkflow: React.FC<DocumentWorkflowProps> = ({
       return '';
     }
     
-    const timestamp = Date.now().toString().slice(-6);
-    const numeroProtocole = `${timestamp}`;
-    const identifiant = `FEVEO-${gieData.codeRegion}-${gieData.codeDepartement}-${gieData.codeArrondissement}-${gieData.codeCommune}-${numeroProtocole}`;
+    const numeroProtocole = generateNextProtocolNumber();
+    const identifiant = generateGIEName(gieData.codeRegion, gieData.codeDepartement, gieData.codeArrondissement, gieData.codeCommune, numeroProtocole);
     
     return identifiant;
   };
@@ -515,7 +536,34 @@ ${gieData.presidentePrenom} ${gieData.presidenteNom}
   };
 
   const updateGIEData = (field: string, value: any) => {
-    setGieData(prev => ({ ...prev, [field]: value }));
+    console.log(`🔄 Mise à jour: ${field} = ${value}`);
+    
+    const updatedData = { ...gieData, [field]: value };
+    
+    // Si on modifie les codes géographiques, on régénère automatiquement le nom du GIE
+    // Même sans numéro de protocole, on peut générer un aperçu
+    if (['codeRegion', 'codeDepartement', 'codeArrondissement', 'codeCommune'].includes(field)) {
+      if (updatedData.codeRegion && updatedData.codeDepartement && 
+          updatedData.codeArrondissement && updatedData.codeCommune) {
+        
+        // Utiliser le numéro de protocole existant ou le prochain disponible
+        const protocole = updatedData.numeroProtocole || getNextProtocolNumber();
+        
+        const newName = generateGIEName(
+          updatedData.codeRegion,
+          updatedData.codeDepartement,
+          updatedData.codeArrondissement,
+          updatedData.codeCommune,
+          protocole
+        );
+        updatedData.nomGIE = newName;
+        console.log(`✅ Nom GIE mis à jour: ${newName}`);
+      }
+    }
+    
+    setGieData(updatedData);
+    console.log('📊 État mis à jour:', updatedData);
+    
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: '' }));
     }
@@ -527,7 +575,9 @@ ${gieData.presidentePrenom} ${gieData.presidenteNom}
       prenom: '',
       fonction: 'Membre',
       cin: '',
-      telephone: ''
+      telephone: '',
+      genre: 'femme' as const,
+      age: undefined
     };
     setGieData(prev => ({
       ...prev,
@@ -535,7 +585,7 @@ ${gieData.presidentePrenom} ${gieData.presidenteNom}
     }));
   };
 
-  const updateMember = (index: number, field: string, value: string) => {
+  const updateMember = (index: number, field: string, value: string | number | undefined) => {
     setGieData(prev => ({
       ...prev,
       membres: prev.membres.map((member, i) => 
@@ -554,7 +604,7 @@ ${gieData.presidentePrenom} ${gieData.presidenteNom}
   const validateStep1 = () => {
     const newErrors: Record<string, string> = {};
     
-    if (!gieData.nomGIE.trim()) newErrors.nomGIE = 'Nom du GIE requis';
+    // Le nom du GIE est généré automatiquement, pas besoin de validation
     if (!gieData.presidenteNom.trim()) newErrors.presidenteNom = 'Nom de la présidente requis';
     if (!gieData.presidentePrenom.trim()) newErrors.presidentePrenom = 'Prénom requis';
     if (!gieData.presidenteCIN.trim()) newErrors.presidenteCIN = 'CIN requis';
@@ -562,7 +612,33 @@ ${gieData.presidentePrenom} ${gieData.presidenteNom}
     if (!gieData.departement) newErrors.departement = 'Département requis';
     if (!gieData.arrondissement) newErrors.arrondissement = 'Arrondissement requis';
     if (!gieData.commune) newErrors.commune = 'Commune requise';
-    if (gieData.membres.length < 4) newErrors.membres = 'Minimum 5 membres (présidente + 4)';
+    
+    // Validation de la composition des membres (39 + présidente = 40)
+    const totalMembers = gieData.membres.length + 1; // +1 pour la présidente
+    if (totalMembers !== 40) {
+      newErrors.membres = `Le GIE doit avoir exactement 40 membres (actuellement ${totalMembers})`;
+    } else {
+      // Vérifier la composition selon les règles FEVEO
+      const femmes = gieData.membres.filter(m => m.genre === 'femme').length + 1; // +1 présidente
+      const jeunes = gieData.membres.filter(m => m.genre === 'jeune').length;
+      const hommes = gieData.membres.filter(m => m.genre === 'homme').length;
+      
+      // Option 1: 100% femmes OU Option 2: composition mixte
+      const isOption1Valid = femmes === 40;
+      const isOption2Valid = femmes >= 25 && jeunes === 12 && hommes === 3;
+      
+      if (!isOption1Valid && !isOption2Valid) {
+        if (femmes < 25) {
+          newErrors.membres = `Minimum 25 femmes requis (actuellement ${femmes} incluant présidente)`;
+        } else if (jeunes !== 12) {
+          newErrors.membres = `Exactement 12 jeunes requis (actuellement ${jeunes})`;
+        } else if (hommes > 3) {
+          newErrors.membres = `Maximum 3 hommes adultes autorisés (actuellement ${hommes})`;
+        } else {
+          newErrors.membres = 'Composition non conforme aux règles FEVEO 2050';
+        }
+      }
+    }
     
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -572,12 +648,13 @@ ${gieData.presidentePrenom} ${gieData.presidenteNom}
     if (!gieData.codeRegion || !gieData.codeDepartement || !gieData.codeArrondissement || !gieData.codeCommune) return;
     
     const identifier = generateGIEIdentifier();
-    const protocol = Date.now().toString().slice(-6);
+    const numeroProtocole = identifier.split('-').pop(); // Récupérer le numéro de protocole depuis l'identifiant
     
     setGieData(prev => ({
       ...prev,
       identifiantGIE: identifier,
-      numeroProtocole: protocol
+      numeroProtocole: numeroProtocole,
+      nomGIE: identifier // Le nom du GIE est identique à l'identifiant
     }));
     
     setGeneratedDocuments(prev => ({ ...prev, statuts: true }));
@@ -681,16 +758,15 @@ ${gieData.presidentePrenom} ${gieData.presidenteNom}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-medium text-neutral-700 mb-2">
-                  Nom du GIE *
+                  Nom du GIE (généré automatiquement)
                 </label>
                 <input
                   type="text"
-                  value={gieData.nomGIE}
-                  onChange={(e) => updateGIEData('nomGIE', e.target.value)}
-                  className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-accent-500"
-                  placeholder="Ex: GIE Femmes Agricultrices de..."
+                  value={gieData.nomGIE || 'FEVEO-'}
+                  disabled
+                  className="w-full px-4 py-3 border border-neutral-300 rounded-lg bg-neutral-100 text-neutral-500 font-mono"
                 />
-                {errors.nomGIE && <p className="text-red-500 text-sm mt-1">{errors.nomGIE}</p>}
+            
               </div>
 
               <div>
@@ -750,7 +826,7 @@ ${gieData.presidentePrenom} ${gieData.presidenteNom}
 
               <div>
                 <label className="block text-sm font-medium text-neutral-700 mb-2">
-                  Téléphone *
+                  Téléphone PayMaster *
                 </label>
                 <input
                   type="tel"
@@ -763,7 +839,7 @@ ${gieData.presidentePrenom} ${gieData.presidenteNom}
 
               <div>
                 <label className="block text-sm font-medium text-neutral-700 mb-2">
-                  Email *
+                  Email 
                 </label>
                 <input
                   type="email"
@@ -781,24 +857,42 @@ ${gieData.presidentePrenom} ${gieData.presidenteNom}
                   value={gieData.region}
                   onChange={(e) => {
                     const selectedRegion = e.target.value;
-                    updateGIEData('region', selectedRegion);
-                    updateGIEData('codeRegion', regionsData[selectedRegion]?.code || '');
-                    // Reset des niveaux inférieurs
-                    updateGIEData('departement', '');
-                    updateGIEData('codeDepartement', '');
-                    updateGIEData('arrondissement', '');
-                    updateGIEData('codeArrondissement', '');
-                    updateGIEData('commune', '');
-                    updateGIEData('codeCommune', '');
+                    console.log('🌍 Région sélectionnée:', selectedRegion);
+                    
+                    if (selectedRegion) {
+                      const regionCode = regionsData[selectedRegion]?.code || '';
+                      console.log('🔑 Code région:', regionCode);
+                      
+                      // Mettre à jour tous les champs géographiques en une seule fois
+                      const updatedData = { 
+                        ...gieData, 
+                        region: selectedRegion,
+                        codeRegion: regionCode,
+                        // Reset des niveaux inférieurs
+                        departement: '',
+                        codeDepartement: '',
+                        arrondissement: '',
+                        codeArrondissement: '',
+                        commune: '',
+                        codeCommune: ''
+                      };
+                      
+                      setGieData(updatedData);
+                      console.log('📊 Données mises à jour:', updatedData);
+                    } else {
+                      updateGIEData('region', '');
+                    }
                   }}
                   className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-accent-500"
                 >
                   <option value="">Sélectionnez la région</option>
-                  {Object.keys(regionsData).map(region => (
-                    <option key={region} value={region}>{region}</option>
-                  ))}
+                  <option value="DAKAR">DAKAR</option>
+                  <option value="THIES">THIES</option>
+                  <option value="SAINT-LOUIS">SAINT-LOUIS</option>
+                  <option value="DIOURBEL">DIOURBEL</option>
+                  <option value="KAOLACK">KAOLACK</option>
                 </select>
-                {errors.region && <p className="text-red-500 text-sm mt-1">{errors.region}</p>}
+              
               </div>
 
               <div>
@@ -810,13 +904,29 @@ ${gieData.presidentePrenom} ${gieData.presidenteNom}
                   disabled={!gieData.region}
                   onChange={(e) => {
                     const selectedDepartement = e.target.value;
-                    updateGIEData('departement', selectedDepartement);
-                    updateGIEData('codeDepartement', regionsData[gieData.region]?.departements[selectedDepartement]?.code || '');
-                    // Reset des niveaux inférieurs
-                    updateGIEData('arrondissement', '');
-                    updateGIEData('codeArrondissement', '');
-                    updateGIEData('commune', '');
-                    updateGIEData('codeCommune', '');
+                    console.log('🏢 Département sélectionné:', selectedDepartement);
+                    
+                    if (selectedDepartement) {
+                      const deptCode = regionsData[gieData.region]?.departements[selectedDepartement]?.code || '';
+                      console.log('🔑 Code département:', deptCode);
+                      
+                      // Mettre à jour le département et reset les niveaux inférieurs
+                      const updatedData = { 
+                        ...gieData, 
+                        departement: selectedDepartement,
+                        codeDepartement: deptCode,
+                        // Reset des niveaux inférieurs
+                        arrondissement: '',
+                        codeArrondissement: '',
+                        commune: '',
+                        codeCommune: ''
+                      };
+                      
+                      setGieData(updatedData);
+                      console.log('📊 Données département mises à jour:', updatedData);
+                    } else {
+                      updateGIEData('departement', '');
+                    }
                   }}
                   className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-accent-500 disabled:bg-neutral-100"
                 >
@@ -838,13 +948,41 @@ ${gieData.presidentePrenom} ${gieData.presidenteNom}
                   disabled={!gieData.departement}
                   onChange={(e) => {
                     const selectedArrondissement = e.target.value;
-                    updateGIEData('arrondissement', selectedArrondissement);
-                    updateGIEData('codeArrondissement', 
-                      regionsData[gieData.region]?.departements[gieData.departement]?.arrondissements[selectedArrondissement]?.code || ''
-                    );
-                    // Reset commune
-                    updateGIEData('commune', '');
-                    updateGIEData('codeCommune', '');
+                    console.log('🏘️ Arrondissement sélectionné:', selectedArrondissement);
+                    
+                    if (selectedArrondissement) {
+                      const arrCode = regionsData[gieData.region]?.departements[gieData.departement]?.arrondissements[selectedArrondissement]?.code || '';
+                      console.log('🔑 Code arrondissement:', arrCode);
+                      
+                      // Mettre à jour l'arrondissement et reset les niveaux inférieurs
+                      const updatedData = { 
+                        ...gieData, 
+                        arrondissement: selectedArrondissement,
+                        codeArrondissement: arrCode,
+                        // Reset des niveaux inférieurs
+                        commune: '',
+                        codeCommune: ''
+                      };
+                      
+                      // Régénérer le nom GIE si tous les codes sont disponibles
+                      if (updatedData.codeRegion && updatedData.codeDepartement && arrCode) {
+                        const protocole = updatedData.numeroProtocole || getNextProtocolNumber();
+                        const newName = generateGIEName(
+                          updatedData.codeRegion,
+                          updatedData.codeDepartement,
+                          arrCode,
+                          '00', // Code commune temporaire
+                          protocole
+                        );
+                        updatedData.nomGIE = `${newName.substring(0, newName.lastIndexOf('-'))}-XX-${protocole}`;
+                        console.log(`✅ Nom GIE mis à jour (partiel): ${updatedData.nomGIE}`);
+                      }
+                      
+                      setGieData(updatedData);
+                      console.log('📊 Données arrondissement mises à jour:', updatedData);
+                    } else {
+                      updateGIEData('arrondissement', '');
+                    }
                   }}
                   className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-accent-500 disabled:bg-neutral-100"
                 >
@@ -866,12 +1004,42 @@ ${gieData.presidentePrenom} ${gieData.presidenteNom}
                   disabled={!gieData.arrondissement}
                   onChange={(e) => {
                     const selectedCommune = e.target.value;
-                    updateGIEData('commune', selectedCommune);
-                    // Génération du code commune basé sur l'index + 1
-                    const communes = regionsData[gieData.region]?.departements[gieData.departement]?.arrondissements[gieData.arrondissement]?.communes || [];
-                    const communeIndex = communes.indexOf(selectedCommune);
-                    const codeCommune = String(communeIndex + 1).padStart(2, '0');
-                    updateGIEData('codeCommune', codeCommune);
+                    console.log('🏘️ Commune sélectionnée:', selectedCommune);
+                    
+                    if (selectedCommune) {
+                      // Génération du code commune basé sur l'index + 1
+                      const communes = regionsData[gieData.region]?.departements[gieData.departement]?.arrondissements[gieData.arrondissement]?.communes || [];
+                      const communeIndex = communes.indexOf(selectedCommune);
+                      const codeCommune = String(communeIndex + 1).padStart(2, '0');
+                      console.log('🔑 Code commune:', codeCommune);
+                      
+                      // Mettre à jour la commune et son code
+                      const updatedData = { 
+                        ...gieData, 
+                        commune: selectedCommune,
+                        codeCommune: codeCommune
+                      };
+                      
+                      // Régénérer le nom GIE si tous les codes sont maintenant disponibles
+                      if (updatedData.codeRegion && updatedData.codeDepartement && 
+                          updatedData.codeArrondissement && codeCommune) {
+                        const protocole = updatedData.numeroProtocole || getNextProtocolNumber();
+                        const newName = generateGIEName(
+                          updatedData.codeRegion,
+                          updatedData.codeDepartement,
+                          updatedData.codeArrondissement,
+                          codeCommune,
+                          protocole
+                        );
+                        updatedData.nomGIE = newName;
+                        console.log(`✅ Nom GIE complet généré: ${newName}`);
+                      }
+                      
+                      setGieData(updatedData);
+                      console.log('📊 Données commune mises à jour:', updatedData);
+                    } else {
+                      updateGIEData('commune', '');
+                    }
                   }}
                   className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-accent-500 disabled:bg-neutral-100"
                 >
@@ -885,6 +1053,8 @@ ${gieData.presidentePrenom} ${gieData.presidenteNom}
                 {errors.commune && <p className="text-red-500 text-sm mt-1">{errors.commune}</p>}
               </div>
             </div>
+
+           
 
             {/* Adresse complète */}
             <div>
@@ -930,18 +1100,96 @@ ${gieData.presidentePrenom} ${gieData.presidenteNom}
             <div>
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-neutral-900">
-                  Membres du GIE (minimum 5 incluant la présidente)
+                  Membres du GIE (exactement 40 membres incluant la présidente)
                 </h3>
                 <button
                   onClick={addMember}
-                  className="btn-accent text-sm px-4 py-2"
+                  disabled={gieData.membres.length >= 39}
+                  className={`btn-accent text-sm px-4 py-2 ${
+                    gieData.membres.length >= 39 ? 'opacity-50 cursor-not-allowed' : ''
+                  }`}
                 >
-                  Ajouter un membre
+                  Ajouter un membre ({gieData.membres.length + 1}/40)
                 </button>
               </div>
 
+              {/* Indicateur de composition FEVEO 2050 */}
+              <div className="bg-gradient-to-r from-accent-50 to-primary-50 p-6 rounded-lg mb-6 border border-accent-200">
+                <h4 className="font-bold text-neutral-900 mb-4 flex items-center gap-2">
+                  <Shield className="w-5 h-5 text-accent-500" />
+                  Règles de composition FEVEO 2050
+                </h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="bg-white p-4 rounded-lg border">
+                    <p className="text-sm font-semibold text-neutral-700 mb-3">Option 1 : 100% Femmes</p>
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="w-4 h-4 bg-pink-500 rounded"></div>
+                      <span className="text-sm">40 femmes (incluant présidente)</span>
+                    </div>
+                    <p className="text-xs text-neutral-600">Composition recommandée pour l'autonomisation féminine</p>
+                  </div>
+                  <div className="bg-white p-4 rounded-lg border">
+                    <p className="text-sm font-semibold text-neutral-700 mb-3">Option 2 : Composition mixte</p>
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <div className="w-4 h-4 bg-pink-500 rounded"></div>
+                        <span className="text-sm">25 femmes minimum (incluant présidente)</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-4 h-4 bg-blue-500 rounded"></div>
+                        <span className="text-sm">12 jeunes (18-35 ans)</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-4 h-4 bg-green-500 rounded"></div>
+                        <span className="text-sm">3 adultes hommes maximum</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Compteur actuel */}
+                <div className="mt-4 p-4 bg-white rounded-lg border">
+                  <p className="text-sm font-medium text-neutral-700 mb-3">Composition actuelle :</p>
+                  <div className="flex flex-wrap gap-4 text-sm">
+                    <span className="text-pink-600 font-medium">
+                      👩 Femmes : {gieData.membres.filter(m => m.genre === 'femme').length + 1} 
+                      (incluant présidente)
+                    </span>
+                    <span className="text-blue-600 font-medium">
+                      👨‍💼 Jeunes : {gieData.membres.filter(m => m.genre === 'jeune').length}
+                    </span>
+                    <span className="text-green-600 font-medium">
+                      👨 Hommes adultes : {gieData.membres.filter(m => m.genre === 'homme').length}
+                    </span>
+                    <span className="text-neutral-600 font-bold">
+                      Total : {gieData.membres.length + 1}/40
+                    </span>
+                  </div>
+                  {gieData.membres.length + 1 === 40 && (
+                    <div className="mt-2 p-2 bg-success-50 text-success-700 rounded text-sm flex items-center gap-2">
+                      <CheckCircle className="w-4 h-4" />
+                      Composition complète ! Le GIE peut être constitué.
+                    </div>
+                  )}
+                </div>
+
+                {/* Informations sur l'investissement */}
+                <div className="mt-4 p-4 bg-accent-50 rounded-lg border border-accent-200">
+                  <h5 className="font-semibold text-accent-800 mb-2 flex items-center gap-2">
+                    <Clock className="w-4 h-4" />
+                    Cycle d'investissement FEVEO 2050
+                  </h5>
+                  <div className="text-sm text-accent-700 space-y-1">
+                    <p>• <strong>Durée :</strong> 1 826 jours d'investissement</p>
+                    <p>• <strong>Début :</strong> 1er avril 2025</p>
+                    <p>• <strong>Montant journalier :</strong> 6 000 FCFA par jour</p>
+                    <p>• <strong>Suivi :</strong> Tableau de bord avec jours investis (vert) et restants (rouge)</p>
+                  </div>
+                </div>
+              </div>
+
               {gieData.membres.map((member, index) => (
-                <div key={index} className="grid grid-cols-1 md:grid-cols-5 gap-4 p-4 border rounded-lg mb-4">
+                <div key={index} className="grid grid-cols-1 md:grid-cols-7 gap-4 p-4 border rounded-lg mb-4">
                   <input
                     type="text"
                     placeholder="Prénom"
@@ -966,6 +1214,26 @@ ${gieData.presidentePrenom} ${gieData.presidenteNom}
                     <option value="Trésorière">Trésorière</option>
                     <option value="Vice-Présidente">Vice-Présidente</option>
                   </select>
+                  <select
+                    value={member.genre}
+                    onChange={(e) => updateMember(index, 'genre', e.target.value)}
+                    className="px-3 py-2 border rounded focus:ring-2 focus:ring-accent-500"
+                  >
+                    <option value="femme">👩 Femme</option>
+                    <option value="jeune">👨‍💼 Jeune (18-35)</option>
+                    <option value="homme">👨 Homme adulte</option>
+                  </select>
+                  {member.genre === 'jeune' && (
+                    <input
+                      type="number"
+                      placeholder="Âge"
+                      min="18"
+                      max="35"
+                      value={member.age || ''}
+                      onChange={(e) => updateMember(index, 'age', parseInt(e.target.value) || undefined)}
+                      className="px-3 py-2 border rounded focus:ring-2 focus:ring-accent-500"
+                    />
+                  )}
                   <input
                     type="text"
                     placeholder="CIN"
@@ -1324,6 +1592,7 @@ ${gieData.presidentePrenom} ${gieData.presidenteNom}
                     <li>• Formation de base</li>
                     <li>• Support technique</li>
                     <li>• Réseau FEVEO</li>
+                    <li>• Wallet GIE avec suivi d'investissement</li>
                   </ul>
                 </div>
                 <div className="border-2 border-primary-200 rounded-lg p-6 hover:border-primary-500 transition-colors opacity-50">
@@ -1339,6 +1608,53 @@ ${gieData.presidentePrenom} ${gieData.presidenteNom}
                   </ul>
                   <div className="mt-4 text-xs text-neutral-500">Bientôt disponible</div>
                 </div>
+              </div>
+            </div>
+
+            {/* Informations Wallet GIE et Investissement */}
+            <div className="bg-gradient-to-br from-green-50 to-blue-50 p-6 rounded-lg border border-green-200">
+              <h3 className="text-lg font-bold text-neutral-900 mb-4 flex items-center gap-2">
+                <CreditCard className="w-5 h-5 text-green-600" />
+                Wallet GIE - Système d'investissement FEVEO 2050
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-3">
+                  <div className="flex items-start gap-3">
+                    <div className="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
+                    <div>
+                      <p className="font-medium text-neutral-800">Cycle d'investissement</p>
+                      <p className="text-sm text-neutral-600">1 826 jours à partir du 1er avril 2025</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
+                    <div>
+                      <p className="font-medium text-neutral-800">Montant quotidien</p>
+                      <p className="text-sm text-neutral-600">6 000 FCFA par jour d'investissement</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="space-y-3">
+                  <div className="flex items-start gap-3">
+                    <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
+                    <div>
+                      <p className="font-medium text-neutral-800">Suivi visuel</p>
+                      <p className="text-sm text-neutral-600">Jours investis en vert, restants en rouge</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
+                    <div>
+                      <p className="font-medium text-neutral-800">Tableau de bord</p>
+                      <p className="text-sm text-neutral-600">Accès wallet après validation adhésion</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="mt-4 p-3 bg-white rounded border border-green-200">
+                <p className="text-sm text-green-700">
+                  <strong>Total investissement :</strong> 6 000 × 1 826 = 10 956 000 FCFA sur la durée complète du cycle
+                </p>
               </div>
             </div>
 

@@ -35,7 +35,7 @@ const Investir = () => {
       id: 'day1', 
       label: 'Paiement Journalier', 
       description: 'Investissement quotidien',
-      amount: 6060,
+      amount: 6000,
       period: '1 jour',
       color: 'bg-green-500',
       url: 'https://pay.wave.com/m/M_sn_t3V8_2xeRR6Z/c/sn/?amount=6060'
@@ -44,7 +44,7 @@ const Investir = () => {
       id: 'day10', 
       label: 'Paiement 10 jours', 
       description: 'Investissement pour 10 jours',
-      amount: 60600,
+      amount: 60000,
       period: '10 jours',
       color: 'bg-blue-500',
       url: 'https://pay.wave.com/m/M_sn_t3V8_2xeRR6Z/c/sn/?amount=60600'
@@ -53,7 +53,7 @@ const Investir = () => {
       id: 'day15', 
       label: 'Paiement 15 jours', 
       description: 'Investissement pour 15 jours',
-      amount: 90900,
+      amount: 90000,
       period: '15 jours',
       color: 'bg-orange-500',
       url: 'https://pay.wave.com/m/M_sn_t3V8_2xeRR6Z/c/sn/?amount=90900'
@@ -62,7 +62,7 @@ const Investir = () => {
       id: 'day30', 
       label: 'Paiement 30 jours', 
       description: 'Investissement pour 30 jours',
-      amount: 181800,
+      amount: 180000,
       period: '30 jours',
       color: 'bg-purple-500',
       url: 'https://pay.wave.com/m/M_sn_t3V8_2xeRR6Z/c/sn/?amount=181800'
@@ -184,7 +184,7 @@ const Investir = () => {
                   <div className="w-8 h-8 bg-success-500 rounded-full flex items-center justify-center flex-shrink-0 text-white font-bold text-sm">1</div>
                   <div>
                     <h4 className="font-semibold text-neutral-50 mb-1">Investissement quotidien</h4>
-                    <p className="text-sm text-neutral-300">6 060 FCFA transférés automatiquement dans le compte Wave de FEVEO 2050, à partir du N° PAYMASTER Wave du GIE, indiqué dans la fiche d'adhésion et d'affiliation</p>
+                    <p className="text-sm text-neutral-300">6 000 FCFA transférés automatiquement dans le compte Wave de FEVEO 2050, à partir du N° PAYMASTER Wave du GIE, indiqué dans la fiche d'adhésion et d'affiliation</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
@@ -211,22 +211,22 @@ const Investir = () => {
             
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
               <div className="text-center p-6 bg-white/5 rounded-xl border border-neutral-50/10">
-                <div className="text-3xl font-bold text-accent-400 mb-2">6 060</div>
+                <div className="text-3xl font-bold text-accent-400 mb-2">6 000</div>
                 <div className="text-neutral-300 text-sm mb-2">FCFA/jour</div>
                 <div className="text-xs text-neutral-400">Paiement quotidien</div>
               </div>
               <div className="text-center p-6 bg-white/5 rounded-xl border border-neutral-50/10">
-                <div className="text-3xl font-bold text-blue-400 mb-2">60 600</div>
+                <div className="text-3xl font-bold text-blue-400 mb-2">60 000</div>
                 <div className="text-neutral-300 text-sm mb-2">FCFA/10 jours</div>
                 <div className="text-xs text-neutral-400">Plus pratique</div>
               </div>
               <div className="text-center p-6 bg-white/5 rounded-xl border border-neutral-50/10">
-                <div className="text-3xl font-bold text-orange-400 mb-2">90 900</div>
+                <div className="text-3xl font-bold text-orange-400 mb-2">90 000</div>
                 <div className="text-neutral-300 text-sm mb-2">FCFA/15 jours</div>
                 <div className="text-xs text-neutral-400">Équilibré</div>
               </div>
               <div className="text-center p-6 bg-white/5 rounded-xl border border-neutral-50/10">
-                <div className="text-3xl font-bold text-purple-400 mb-2">181 800</div>
+                <div className="text-3xl font-bold text-purple-400 mb-2">180 000</div>
                 <div className="text-neutral-300 text-sm mb-2">FCFA/mois</div>
                 <div className="text-xs text-neutral-400">Plus économique</div>
               </div>
@@ -440,7 +440,7 @@ const Investir = () => {
                     <div className="text-center">
                       <CheckCircle className="w-16 h-16 text-success-500 mx-auto mb-4" />
                       <h3 className="text-2xl font-bold text-neutral-900 mb-2">Commencez votre investissement journalier</h3>
-                      <p className="text-neutral-600">Investissement quotidien de 6 060 FCFA avec Wave</p>
+                      <p className="text-neutral-600">Investissement quotidien de 6 000 FCFA avec Wave</p>
                     </div>
 
                     {/* Summary Card */}
@@ -462,7 +462,7 @@ const Investir = () => {
                           <div className="flex justify-between items-center">
                             <span className="text-neutral-600">Montant journalier:</span>
                             <span className="text-2xl font-bold text-accent-600">
-                              6 060 FCFA
+                              6 000 FCFA
                             </span>
                           </div>
                         </div>
