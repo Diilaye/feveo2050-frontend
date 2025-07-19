@@ -678,7 +678,7 @@ const GIEDashboard = () => {
                             onChange={(e) => updateGieLocation('codeRegion', e.target.value)}
                             className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-accent-500"
                             placeholder="01"
-                            maxLength="2"
+                            maxLength={2}
                           />
                         </div>
                         <div>
@@ -691,7 +691,7 @@ const GIEDashboard = () => {
                             onChange={(e) => updateGieLocation('codeDepartement', e.target.value)}
                             className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-accent-500"
                             placeholder="01"
-                            maxLength="2"
+                            maxLength={2}
                           />
                         </div>
                         <div>
@@ -704,7 +704,7 @@ const GIEDashboard = () => {
                             onChange={(e) => updateGieLocation('codeArrondissement', e.target.value)}
                             className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-accent-500"
                             placeholder="01"
-                            maxLength="2"
+                            maxLength={2}
                           />
                         </div>
                         <div>
@@ -717,7 +717,7 @@ const GIEDashboard = () => {
                             onChange={(e) => updateGieLocation('codeCommune', e.target.value)}
                             className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-accent-500"
                             placeholder="01"
-                            maxLength="2"
+                            maxLength={2}
                           />
                         </div>
                       </div>
@@ -738,7 +738,7 @@ const GIEDashboard = () => {
                               onChange={(e) => updateGieLocation('numeroProtocole', e.target.value)}
                               className="flex-1 px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-accent-500 font-mono"
                               placeholder="001"
-                              maxLength="3"
+                              maxLength={3}
                               pattern="[0-9]{3}"
                             />
                             <button
