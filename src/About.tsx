@@ -1,14 +1,11 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Target, Users, DollarSign, Globe, Building, Factory, Truck, Zap, TreePine, Construction, Droplets, Network, Award, CheckCircle } from 'lucide-react';
 import Header from './components/Header';
 import Footer from './components/Footer';
 
-interface AboutProps {
-  onBack: () => void;
-  onNavigate?: (page: string) => void;
-}
-
-const About: React.FC<AboutProps> = ({ onBack, onNavigate }) => {
+const About: React.FC = () => {
+  const navigate = useNavigate();
   const budgetSectors = [
     { name: 'Agriculture', percentage: '23%', amount: '1 700 M€', amountCFA: '1 115 126 900 000 FCFA', icon: TreePine, color: 'bg-green-500' },
     { name: 'Urbanisme', percentage: '23,5%', amount: '1 750 M€', amountCFA: '1 147 924 750 000 FCFA', icon: Building, color: 'bg-blue-500' },
@@ -54,11 +51,11 @@ const About: React.FC<AboutProps> = ({ onBack, onNavigate }) => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary-900 via-primary-800 to-neutral-900">
       {/* Header */}
-      <Header onNavigate={onNavigate || (() => {})} />
+      <Header />
        {/* Back Button */}
       <div className="container-max section-padding pt-8 pb-4">
         <button 
-          onClick={onBack}
+          onClick={() => navigate(-1)}
           className="flex items-center gap-2 text-neutral-200 hover:text-accent-400 transition-colors duration-200"
         >
           <ArrowLeft className="w-5 h-5" />
@@ -320,13 +317,13 @@ const About: React.FC<AboutProps> = ({ onBack, onNavigate }) => {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button
-                 onClick={() => onNavigate?.('investir')}
+                 onClick={() => navigate('/investir')}
                 className="btn-accent text-lg px-8 py-4"
               >
                 Commencer mon investissement
               </button>
               <button
-                 onClick={() => onNavigate?.('adhesions')}
+                 onClick={() => navigate('/adhesion')}
                 className="btn-secondary bg-neutral-50/10 border-neutral-50/20 text-neutral-50 hover:bg-neutral-50/20 text-lg px-8 py-4"
               >
                 Adhérer un GIE

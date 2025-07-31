@@ -1,17 +1,26 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Menu, X, Globe, ChevronDown } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Menu, X, Globe, ChevronDown, User, LogOut } from 'lucide-react';
+import { useAuthContext } from '../contexts/AuthContext';
 
-const Header = ({ onNavigate }) => {
+const Header = () => {
+  const navigate = useNavigate();
+  const { user, isAuthenticated, logout } = useAuthContext();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProgramsDropdownOpen, setIsProgramsDropdownOpen] = useState(false);
+  const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
   const [language, setLanguage] = useState('fr');
   const dropdownRef = useRef(null);
+  const userDropdownRef = useRef(null);
 
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setIsProgramsDropdownOpen(false);
+      }
+      if (userDropdownRef.current && !userDropdownRef.current.contains(event.target)) {
+        setIsUserDropdownOpen(false);
       }
     };
 
@@ -21,22 +30,22 @@ const Header = ({ onNavigate }) => {
     };
   }, []);
 
-  const navigation = [
-    { name: 'Accueil', href: '#accueil', action: () => onNavigate('home') },
+  const navItems = [
+    { name: 'Accueil', href: '#accueil', action: () => navigate('/') },
     { 
       name: 'Programmes', 
       href: '#programme',
       hasDropdown: true,
       submenu: [
-        { name: 'Initiative globale Nexus', action: () => onNavigate('about') },
+        { name: 'Initiative globale Nexus', action: () => navigate('/about') },
         { name: 'Présentation projet AEROBUS', action: () => console.log('AEROBUS presentation') },
-        // { name: 'Adhérer AVEC FEVEO', action: () => onNavigate('adhesion') },
+        // { name: 'Adhérer AVEC FEVEO', action: () => navigate('/adhesion') },
         // { name: 'Souscrire actions AEROBUS', action: () => console.log('AEROBUS subscription') }
       ]
     },
-    { name: 'Adhérer', href: '#adherer', action: () => onNavigate('adhesion') },
-    { name: 'Investir', href: '#investir' , action: () => onNavigate('investir')  },
-    { name: 'Wallet GIE', href: '#wallet', action: () => onNavigate('dashboard') },
+    { name: 'Adhérer', href: '#adherer', action: () => navigate('/adhesion') },
+    { name: 'Investir', href: '#investir' , action: () => navigate('/investir')  },
+    { name: 'Wallet GIE', href: '#wallet', action: () => navigate('/wallet/login') },
   ];
 
   const handleNavClick = (item) => {
@@ -57,12 +66,18 @@ const Header = ({ onNavigate }) => {
     setIsProgramsDropdownOpen(false);
   };
 
+  const handleLogout = () => {
+    logout();
+    setIsUserDropdownOpen(false);
+    navigate('/');
+  };
+
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-neutral-50/95 backdrop-blur-sm border-b border-neutral-200">
       <div className="container-max section-padding">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <div className="flex items-center space-x-2 cursor-pointer" onClick={() => onNavigate('home')}>
+          <div className="flex items-center space-x-2 cursor-pointer" onClick={() => navigate('/')}>
             <div className="w-10 h-10 bg-primary-500 rounded-lg flex items-center justify-center">
               <span className="text-neutral-50 font-bold text-lg">F</span>
             </div>
@@ -74,7 +89,7 @@ const Header = ({ onNavigate }) => {
 
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center space-x-8">
-            {navigation.map((item) => (
+            {navItems.map((item) => (
               <div key={item.name} className="relative" ref={item.hasDropdown ? dropdownRef : null}>
                 <button
                   onClick={() => handleNavClick(item)}
@@ -104,7 +119,7 @@ const Header = ({ onNavigate }) => {
             ))}
           </nav>
 
-          {/* Language & CTA */}
+          {/* Language & CTA & User */}
           <div className="hidden lg:flex items-center space-x-4">
             <button
               onClick={() => setLanguage(language === 'fr' ? 'wo' : 'fr')}
@@ -113,6 +128,45 @@ const Header = ({ onNavigate }) => {
               <Globe className="w-4 h-4" />
               <span className="text-sm font-medium">{language === 'fr' ? 'FR' : 'WO'}</span>
             </button>
+            
+            {isAuthenticated ? (
+              <div className="relative" ref={userDropdownRef}>
+                <button
+                  onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)}
+                  className="flex items-center space-x-2 text-neutral-600 hover:text-accent-500 transition-colors duration-200"
+                >
+                  <User className="w-5 h-5" />
+                  <span className="text-sm font-medium">{user?.prenom}</span>
+                  <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isUserDropdownOpen ? 'rotate-180' : ''}`} />
+                </button>
+                
+                {isUserDropdownOpen && (
+                  <div className="absolute top-full right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-neutral-200 py-2 z-50">
+                    <div className="px-4 py-2 border-b border-neutral-200">
+                      <p className="text-sm font-medium text-neutral-900">{user?.prenom} {user?.nom}</p>
+                      <p className="text-xs text-neutral-500">{user?.email}</p>
+                    </div>
+                    <button
+                      onClick={() => {
+                        navigate('/dashboard');
+                        setIsUserDropdownOpen(false);
+                      }}
+                      className="w-full text-left px-4 py-2 text-neutral-600 hover:text-accent-500 hover:bg-accent-50 transition-colors duration-200"
+                    >
+                      Tableau de bord
+                    </button>
+                    <button
+                      onClick={handleLogout}
+                      className="w-full text-left px-4 py-2 text-red-600 hover:text-red-700 hover:bg-red-50 transition-colors duration-200 flex items-center"
+                    >
+                      <LogOut className="w-4 h-4 mr-2" />
+                      Déconnexion
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : null}
+            
             <button className="btn-accent">
               AEROBUS
             </button>
@@ -131,7 +185,7 @@ const Header = ({ onNavigate }) => {
         {isMenuOpen && (
           <div className="lg:hidden py-4 border-t border-neutral-200 animate-fade-in">
             <nav className="flex flex-col space-y-3">
-              {navigation.map((item) => (
+              {navItems.map((item) => (
                 <div key={item.name}>
                   <button
                     onClick={() => handleNavClick(item)}
@@ -167,9 +221,19 @@ const Header = ({ onNavigate }) => {
                   <Globe className="w-4 h-4" />
                   <span className="text-sm font-medium">{language === 'fr' ? 'FR' : 'WO'}</span>
                 </button>
-                <button className="btn-accent">
-                  AEROBUS
-                </button>
+                
+                {isAuthenticated ? (
+                  <div className="flex flex-col space-y-2">
+                    <span className="text-sm text-neutral-600">{user?.prenom} {user?.nom}</span>
+                    <button
+                      onClick={handleLogout}
+                      className="text-red-600 hover:text-red-700 text-sm flex items-center"
+                    >
+                      <LogOut className="w-4 h-4 mr-1" />
+                      Déconnexion
+                    </button>
+                  </div>
+                ) : null}
               </div>
             </nav>
           </div>

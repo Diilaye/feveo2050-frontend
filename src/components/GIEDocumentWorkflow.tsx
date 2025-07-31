@@ -13,6 +13,14 @@ import {
   Clock,
   Shield
 } from 'lucide-react';
+import { 
+  SENEGAL_GEOGRAPHIC_DATA, 
+  getRegions, 
+  getDepartements, 
+  getArrondissements, 
+  getCommunes,
+  validateGeographicLocation
+} from '../data/senegalGeography';
 
 interface GIEData {
   // Informations de base
@@ -83,8 +91,10 @@ const GIEDocumentWorkflow: React.FC<DocumentWorkflowProps> = ({
   };
 
   // Génération du nom du GIE automatiquement
-  const generateGIEName = (codeRegion, codeDepartement, codeArrondissement, codeCommune, numeroProtocole) => {
-    return `FEVEO-${codeRegion}-${codeDepartement}-${codeArrondissement}-${codeCommune}-${numeroProtocole}`;
+  const generateGIEName = (codeRegion, codeDepartement, indexArrondissement, indexCommune, numeroProtocole) => {
+    const arrCode = String(indexArrondissement).padStart(2, '0');
+    const commCode = String(indexCommune).padStart(2, '0');
+    return `FEVEO-${codeRegion}-${codeDepartement}-${arrCode}-${commCode}-${numeroProtocole}`;
   };
 
   const [currentStep, setCurrentStep] = useState(1);
@@ -128,170 +138,8 @@ const GIEDocumentWorkflow: React.FC<DocumentWorkflowProps> = ({
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  // Données géographiques du Sénégal - Structure hiérarchique complète
-  const regionsData = {
-    'DAKAR': {
-      code: '01',
-      departements: {
-        'DAKAR': {
-          code: '01',
-          arrondissements: {
-            'DAKAR-PLATEAU': { code: '01', communes: ['DAKAR-PLATEAU', 'GUEULE-TAPEE-FASS-COLOBANE'] },
-            'GRAND-DAKAR': { code: '02', communes: ['BISCUITERIE', 'MEDINA'] },
-            'ALMADIES': { code: '03', communes: ['NGOR', 'OUAKAM', 'YOFF'] },
-            'PARCELLES-ASSAINIES': { code: '04', communes: ['PARCELLES-ASSAINIES'] }
-          }
-        },
-        'PIKINE': {
-          code: '02',
-          arrondissements: {
-            'NIAVES': { code: '01', communes: ['NIAVES'] },
-            'PIKINE-DAGOUDANE': { code: '02', communes: ['PIKINE'] },
-            'THIAROYE': { code: '03', communes: ['THIAROYE-SUR-MER'] }
-          }
-        },
-        'RUFISQUE': {
-          code: '03',
-          arrondissements: {
-            'RUFISQUE-EST': { code: '01', communes: ['RUFISQUE-EST'] },
-            'SANGALKAM': { code: '02', communes: ['SANGALKAM'] },
-            'DIAMNIADIO': { code: '03', communes: ['DIAMNIADIO'] }
-          }
-        },
-        'GUEDIAWAYE': {
-          code: '04',
-          arrondissements: {
-            'WAKHINANE-NIMZATT': { code: '01', communes: ['WAKHINANE-NIMZATT'] },
-            'SAM-NOTAIRE': { code: '02', communes: ['SAM-NOTAIRE'] }
-          }
-        },
-        'KEUR-MASSAR': {
-          code: '05',
-          arrondissements: {
-            'MALIKA': { code: '01', communes: ['MALIKA'] },
-            'YEUMBEUL': { code: '02', communes: ['YEUMBEUL-SUD', 'YEUMBEUL-NORD'] },
-            'JAXAAY': { code: '03', communes: ['JAXAAY-PARCELLE-NIAKOUL-RAP'] }
-          }
-        }
-      }
-    },
-    'THIES': {
-      code: '02',
-      departements: {
-        'THIES': {
-          code: '01',
-          arrondissements: {
-            'THIES-NORD': { code: '01', communes: ['THIES-NORD', 'THIES-EST'] },
-            'THIES-SUD': { code: '02', communes: ['THIES-SUD', 'THIES-OUEST'] },
-            'FANDENE': { code: '03', communes: ['FANDENE', 'TASSETTE'] }
-          }
-        },
-        'TIVAOUANE': {
-          code: '02',
-          arrondissements: {
-            'TIVAOUANE': { code: '01', communes: ['TIVAOUANE', 'NIAKHENE'] },
-            'MBORO': { code: '02', communes: ['MBORO', 'TAIBA-NDIAYE'] },
-            'MEKHE': { code: '03', communes: ['MEKHE', 'NOTTO'] }
-          }
-        },
-        'MBOUR': {
-          code: '03',
-          arrondissements: {
-            'MBOUR': { code: '01', communes: ['MBOUR', 'THIADIAYE'] },
-            'JOAL-FADIOUTH': { code: '02', communes: ['JOAL-FADIOUTH', 'PALMARIN'] },
-            'SESSENE': { code: '03', communes: ['SESSENE', 'SANDIARA'] }
-          }
-        }
-      }
-    },
-    'SAINT-LOUIS': {
-      code: '03',
-      departements: {
-        'SAINT-LOUIS': {
-          code: '01',
-          arrondissements: {
-            'SAINT-LOUIS': { code: '01', communes: ['SAINT-LOUIS'] },
-            'GANDON': { code: '02', communes: ['GANDON'] },
-            'NDIEBENE-GANDIOLE': { code: '03', communes: ['NDIEBENE-GANDIOLE'] }
-          }
-        },
-        'DAGANA': {
-          code: '02',
-          arrondissements: {
-            'DAGANA': { code: '01', communes: ['DAGANA'] },
-            'ROSS-BETHIO': { code: '02', communes: ['ROSS-BETHIO'] },
-            'RICHARD-TOLL': { code: '03', communes: ['RICHARD-TOLL'] }
-          }
-        },
-        'PODOR': {
-          code: '03',
-          arrondissements: {
-            'PODOR': { code: '01', communes: ['PODOR'] },
-            'GOLERE': { code: '02', communes: ['GOLERE'] },
-            'NDIAYENE-PENDAO': { code: '03', communes: ['NDIAYENE-PENDAO'] }
-          }
-        }
-      }
-    },
-    'DIOURBEL': {
-      code: '04',
-      departements: {
-        'DIOURBEL': {
-          code: '01',
-          arrondissements: {
-            'DIOURBEL': { code: '01', communes: ['DIOURBEL'] },
-            'NDOULO': { code: '02', communes: ['NDOULO'] },
-            'TOUBA-MOSQUEE': { code: '03', communes: ['TOUBA'] }
-          }
-        },
-        'MBACKE': {
-          code: '02',
-          arrondissements: {
-            'MBACKE': { code: '01', communes: ['MBACKE'] },
-            'TAIBA': { code: '02', communes: ['TAIBA'] },
-            'DAROU-MOUSTY': { code: '03', communes: ['DAROU-MOUSTY'] }
-          }
-        },
-        'BAMBEY': {
-          code: '03',
-          arrondissements: {
-            'BAMBEY': { code: '01', communes: ['BAMBEY'] },
-            'NGOYE': { code: '02', communes: ['NGOYE'] },
-            'REFANE': { code: '03', communes: ['REFANE'] }
-          }
-        }
-      }
-    },
-    'KAOLACK': {
-      code: '05',
-      departements: {
-        'KAOLACK': {
-          code: '01',
-          arrondissements: {
-            'KAOLACK': { code: '01', communes: ['KAOLACK'] },
-            'LATMINGUE': { code: '02', communes: ['LATMINGUE'] },
-            'NDOFFANE': { code: '03', communes: ['NDOFFANE'] }
-          }
-        },
-        'NIORO-DU-RIP': {
-          code: '02',
-          arrondissements: {
-            'NIORO-DU-RIP': { code: '01', communes: ['NIORO-DU-RIP'] },
-            'WACK-NGOUNA': { code: '02', communes: ['WACK-NGOUNA'] },
-            'KEUR-BAKA': { code: '03', communes: ['KEUR-BAKA'] }
-          }
-        },
-        'GUINGUINEO': {
-          code: '03',
-          arrondissements: {
-            'GUINGUINEO': { code: '01', communes: ['GUINGUINEO'] },
-            'FIMELA': { code: '02', communes: ['FIMELA'] },
-            'NGAYENE': { code: '03', communes: ['NGAYENE'] }
-          }
-        }
-      }
-    }
-  };
+  // Utilisation des données géographiques officielles du Sénégal
+  const regions = getRegions();
 
   const secteurs = [
     'Agriculture', 'Élevage', 'Transformation', 'Commerce & Distribution', 
@@ -336,12 +184,19 @@ const GIEDocumentWorkflow: React.FC<DocumentWorkflowProps> = ({
 
   // Génération de l'identifiant GIE
   const generateGIEIdentifier = () => {
-    if (!gieData.codeRegion || !gieData.codeDepartement || !gieData.codeArrondissement || !gieData.codeCommune) {
+    if (!gieData.region || !gieData.departement || !gieData.arrondissement || !gieData.commune) {
       return '';
     }
     
+    // Obtenir les indices basés sur les positions dans les listes
+    const arrondissements = getArrondissements(gieData.region, gieData.departement);
+    const arrIndex = arrondissements.findIndex(arr => arr.code === gieData.arrondissement) + 1;
+    
+    const communes = getCommunes(gieData.region, gieData.departement, gieData.arrondissement);
+    const commIndex = communes.findIndex(comm => comm.nom === gieData.commune) + 1;
+    
     const numeroProtocole = generateNextProtocolNumber();
-    const identifiant = generateGIEName(gieData.codeRegion, gieData.codeDepartement, gieData.codeArrondissement, gieData.codeCommune, numeroProtocole);
+    const identifiant = generateGIEName(gieData.codeRegion, gieData.codeDepartement, arrIndex, commIndex, numeroProtocole);
     
     return identifiant;
   };
@@ -539,27 +394,6 @@ ${gieData.presidentePrenom} ${gieData.presidenteNom}
     console.log(`🔄 Mise à jour: ${field} = ${value}`);
     
     const updatedData = { ...gieData, [field]: value };
-    
-    // Si on modifie les codes géographiques, on régénère automatiquement le nom du GIE
-    // Même sans numéro de protocole, on peut générer un aperçu
-    if (['codeRegion', 'codeDepartement', 'codeArrondissement', 'codeCommune'].includes(field)) {
-      if (updatedData.codeRegion && updatedData.codeDepartement && 
-          updatedData.codeArrondissement && updatedData.codeCommune) {
-        
-        // Utiliser le numéro de protocole existant ou le prochain disponible
-        const protocole = updatedData.numeroProtocole || getNextProtocolNumber();
-        
-        const newName = generateGIEName(
-          updatedData.codeRegion,
-          updatedData.codeDepartement,
-          updatedData.codeArrondissement,
-          updatedData.codeCommune,
-          protocole
-        );
-        updatedData.nomGIE = newName;
-        console.log(`✅ Nom GIE mis à jour: ${newName}`);
-      }
-    }
     
     setGieData(updatedData);
     console.log('📊 État mis à jour:', updatedData);
@@ -860,7 +694,8 @@ ${gieData.presidentePrenom} ${gieData.presidenteNom}
                     console.log('🌍 Région sélectionnée:', selectedRegion);
                     
                     if (selectedRegion) {
-                      const regionCode = regionsData[selectedRegion]?.code || '';
+                      const regionData = SENEGAL_GEOGRAPHIC_DATA[selectedRegion];
+                      const regionCode = regionData?.code || '';
                       console.log('🔑 Code région:', regionCode);
                       
                       // Mettre à jour tous les champs géographiques en une seule fois
@@ -886,11 +721,11 @@ ${gieData.presidentePrenom} ${gieData.presidenteNom}
                   className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-accent-500"
                 >
                   <option value="">Sélectionnez la région</option>
-                  <option value="DAKAR">DAKAR</option>
-                  <option value="THIES">THIES</option>
-                  <option value="SAINT-LOUIS">SAINT-LOUIS</option>
-                  <option value="DIOURBEL">DIOURBEL</option>
-                  <option value="KAOLACK">KAOLACK</option>
+                  {regions.map(region => (
+                    <option key={region.code} value={region.code}>
+                      {region.nom}
+                    </option>
+                  ))}
                 </select>
               
               </div>
@@ -907,7 +742,8 @@ ${gieData.presidentePrenom} ${gieData.presidenteNom}
                     console.log('🏢 Département sélectionné:', selectedDepartement);
                     
                     if (selectedDepartement) {
-                      const deptCode = regionsData[gieData.region]?.departements[selectedDepartement]?.code || '';
+                      const deptData = SENEGAL_GEOGRAPHIC_DATA[gieData.region]?.departements[selectedDepartement];
+                      const deptCode = deptData?.code || '';
                       console.log('🔑 Code département:', deptCode);
                       
                       // Mettre à jour le département et reset les niveaux inférieurs
@@ -931,11 +767,11 @@ ${gieData.presidentePrenom} ${gieData.presidenteNom}
                   className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-accent-500 disabled:bg-neutral-100"
                 >
                   <option value="">Sélectionnez le département</option>
-                  {gieData.region && regionsData[gieData.region]?.departements && 
-                    Object.keys(regionsData[gieData.region].departements).map(dept => (
-                      <option key={dept} value={dept}>{dept}</option>
-                    ))
-                  }
+                  {gieData.region && getDepartements(gieData.region).map(dept => (
+                    <option key={dept.code} value={dept.code}>
+                      {dept.nom}
+                    </option>
+                  ))}
                 </select>
               </div>
 
@@ -951,32 +787,20 @@ ${gieData.presidentePrenom} ${gieData.presidenteNom}
                     console.log('🏘️ Arrondissement sélectionné:', selectedArrondissement);
                     
                     if (selectedArrondissement) {
-                      const arrCode = regionsData[gieData.region]?.departements[gieData.departement]?.arrondissements[selectedArrondissement]?.code || '';
-                      console.log('🔑 Code arrondissement:', arrCode);
+                      // Générer un index pour l'arrondissement basé sur sa position
+                      const arrondissements = getArrondissements(gieData.region, gieData.departement);
+                      const arrIndex = arrondissements.findIndex(arr => arr.code === selectedArrondissement) + 1;
+                      console.log('🔑 Index arrondissement:', arrIndex);
                       
                       // Mettre à jour l'arrondissement et reset les niveaux inférieurs
                       const updatedData = { 
                         ...gieData, 
                         arrondissement: selectedArrondissement,
-                        codeArrondissement: arrCode,
+                        codeArrondissement: String(arrIndex).padStart(2, '0'),
                         // Reset des niveaux inférieurs
                         commune: '',
                         codeCommune: ''
                       };
-                      
-                      // Régénérer le nom GIE si tous les codes sont disponibles
-                      if (updatedData.codeRegion && updatedData.codeDepartement && arrCode) {
-                        const protocole = updatedData.numeroProtocole || getNextProtocolNumber();
-                        const newName = generateGIEName(
-                          updatedData.codeRegion,
-                          updatedData.codeDepartement,
-                          arrCode,
-                          '00', // Code commune temporaire
-                          protocole
-                        );
-                        updatedData.nomGIE = `${newName.substring(0, newName.lastIndexOf('-'))}-XX-${protocole}`;
-                        console.log(`✅ Nom GIE mis à jour (partiel): ${updatedData.nomGIE}`);
-                      }
                       
                       setGieData(updatedData);
                       console.log('📊 Données arrondissement mises à jour:', updatedData);
@@ -987,11 +811,11 @@ ${gieData.presidentePrenom} ${gieData.presidenteNom}
                   className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-accent-500 disabled:bg-neutral-100"
                 >
                   <option value="">Sélectionnez l'arrondissement</option>
-                  {gieData.departement && regionsData[gieData.region]?.departements[gieData.departement]?.arrondissements &&
-                    Object.keys(regionsData[gieData.region].departements[gieData.departement].arrondissements).map(arr => (
-                      <option key={arr} value={arr}>{arr}</option>
-                    ))
-                  }
+                  {gieData.departement && getArrondissements(gieData.region, gieData.departement).map(arr => (
+                    <option key={arr.code} value={arr.code}>
+                      {arr.nom}
+                    </option>
+                  ))}
                 </select>
               </div>
 
@@ -1007,10 +831,10 @@ ${gieData.presidentePrenom} ${gieData.presidenteNom}
                     console.log('🏘️ Commune sélectionnée:', selectedCommune);
                     
                     if (selectedCommune) {
-                      // Génération du code commune basé sur l'index + 1
-                      const communes = regionsData[gieData.region]?.departements[gieData.departement]?.arrondissements[gieData.arrondissement]?.communes || [];
-                      const communeIndex = communes.indexOf(selectedCommune);
-                      const codeCommune = String(communeIndex + 1).padStart(2, '0');
+                      // Générer l'index de la commune basé sur sa position
+                      const communes = getCommunes(gieData.region, gieData.departement, gieData.arrondissement);
+                      const communeIndex = communes.findIndex(comm => comm.nom === selectedCommune) + 1;
+                      const codeCommune = String(communeIndex).padStart(2, '0');
                       console.log('🔑 Code commune:', codeCommune);
                       
                       // Mettre à jour la commune et son code
@@ -1024,11 +848,16 @@ ${gieData.presidentePrenom} ${gieData.presidenteNom}
                       if (updatedData.codeRegion && updatedData.codeDepartement && 
                           updatedData.codeArrondissement && codeCommune) {
                         const protocole = updatedData.numeroProtocole || getNextProtocolNumber();
+                        
+                        // Convertir les codes en indices pour la génération du nom
+                        const arrondissements = getArrondissements(gieData.region, gieData.departement);
+                        const arrIndex = arrondissements.findIndex(arr => arr.code === gieData.arrondissement) + 1;
+                        
                         const newName = generateGIEName(
                           updatedData.codeRegion,
                           updatedData.codeDepartement,
-                          updatedData.codeArrondissement,
-                          codeCommune,
+                          arrIndex,
+                          communeIndex,
                           protocole
                         );
                         updatedData.nomGIE = newName;
@@ -1044,11 +873,11 @@ ${gieData.presidentePrenom} ${gieData.presidenteNom}
                   className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-accent-500 disabled:bg-neutral-100"
                 >
                   <option value="">Sélectionnez la commune</option>
-                  {gieData.arrondissement && regionsData[gieData.region]?.departements[gieData.departement]?.arrondissements[gieData.arrondissement]?.communes &&
-                    regionsData[gieData.region].departements[gieData.departement].arrondissements[gieData.arrondissement].communes.map(commune => (
-                      <option key={commune} value={commune}>{commune}</option>
-                    ))
-                  }
+                  {gieData.arrondissement && getCommunes(gieData.region, gieData.departement, gieData.arrondissement).map(commune => (
+                    <option key={commune.nom} value={commune.nom}>
+                      {commune.nom}
+                    </option>
+                  ))}
                 </select>
                 {errors.commune && <p className="text-red-500 text-sm mt-1">{errors.commune}</p>}
               </div>

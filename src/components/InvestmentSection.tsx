@@ -16,8 +16,10 @@ import {
   DollarSign,
   ArrowRight,
   Download,
-  QrCode
+  QrCode,
+  Loader2
 } from 'lucide-react';
+import { useGIEValidation, GIEValidationErrorComponent } from '../services/gieValidationService';
 
 interface GieData {
   identification: string;
@@ -62,6 +64,12 @@ interface FormErrors {
 
 const InvestmentSection = () => {
   const [currentStep, setCurrentStep] = useState(1);
+  const [isLoadingGIE, setIsLoadingGIE] = useState(false);
+  const [validatedGIE, setValidatedGIE] = useState(null);
+  
+  // Service de validation GIE
+  const { validationError, isValidating, validateGIE, clearError } = useGIEValidation();
+  
   const [gieData, setGieData] = useState<GieData>({
     identification: '',
     nom: '',
@@ -159,7 +167,54 @@ const InvestmentSection = () => {
     return Object.keys(newErrors).length === 0;
   };
 
+  // Nouvelle fonction pour valider le GIE côté backend
+  const handleGIEValidation = async () => {
+    if (!gieData.identification.trim()) {
+      setErrors({ identification: 'Identification requise' });
+      return;
+    }
+
+    setIsLoadingGIE(true);
+    clearError();
+
+    try {
+      // Simulation d'appel API pour valider le GIE
+      const response = await validateGIE(gieData.identification, async (gieId) => {
+        // Ici on ferait l'appel réel à l'API
+        const res = await fetch(`http://localhost:5000/api/investissements/gie/${gieId}`, {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        if (!res.ok) {
+          throw new Error(`HTTP ${res.status}`);
+        }
+        
+        return await res.json();
+      });
+
+      // Si la validation réussit, on récupère les données du GIE
+      setValidatedGIE(response);
+      setCurrentStep(2);
+      
+    } catch (error) {
+      console.error('Erreur validation GIE:', error);
+      // L'erreur sera gérée par le composant d'erreur
+    } finally {
+      setIsLoadingGIE(false);
+    }
+  };
+
   const handleNext = () => {
+    // Pour l'étape 1, on utilise la validation GIE backend
+    if (currentStep === 1) {
+      handleGIEValidation();
+      return;
+    }
+    
+    // Pour les autres étapes, validation normale
     if (validateStep(currentStep)) {
       if (currentStep === 2) {
         // Calculer le montant total
@@ -238,6 +293,17 @@ const InvestmentSection = () => {
         </div>
 
         <div className="max-w-4xl mx-auto">
+          {/* Composant d'erreur de validation GIE */}
+          {validationError && (
+            <div className="mb-8">
+              <GIEValidationErrorComponent
+                error={{ response: { data: validationError } }}
+                onRetry={() => handleGIEValidation()}
+                onContact={() => window.open('/contact', '_blank')}
+              />
+            </div>
+          )}
+
           {/* Step 1: GIE Identification */}
           {currentStep === 1 && (
             <div className="card">
@@ -254,13 +320,43 @@ const InvestmentSection = () => {
                   <input
                     type="text"
                     value={gieData.identification}
-                    onChange={(e) => setGieData(prev => ({ ...prev, identification: e.target.value.toUpperCase() }))}
+                    onChange={(e) => {
+                      setGieData(prev => ({ ...prev, identification: e.target.value.toUpperCase() }));
+                      clearError(); // Effacer les erreurs lors de la saisie
+                    }}
                     className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-accent-500 transition-colors duration-200 font-mono text-lg ${
                       errors.identification ? 'border-red-300' : 'border-neutral-300'
                     }`}
-                    placeholder="FEVEO-GIE-XXXX-YYYY"
+                    placeholder="Ex: 68858062677053a96fa5cb54"
+                    disabled={isLoadingGIE || isValidating}
                   />
                   {errors.identification && <p className="text-red-500 text-sm mt-1">{errors.identification}</p>}
+                  <p className="text-sm text-neutral-500 mt-1">
+                    Saisissez l'ID MongoDB de votre GIE validé
+                  </p>
+                </div>
+                
+                {/* Information d'aide */}
+                <div className="md:col-span-2 bg-blue-50 rounded-lg p-4">
+                  <div className="flex items-start">
+                    <Shield className="w-5 h-5 text-blue-500 mt-0.5 mr-3 flex-shrink-0" />
+                    <div>
+                      <h4 className="font-medium text-blue-900 mb-1">GIE Disponibles pour Test</h4>
+                      <p className="text-sm text-blue-700 mb-2">
+                        Utilisez un de ces ID de GIE validés pour tester :
+                      </p>
+                      <div className="space-y-1 text-sm font-mono">
+                        <div className="bg-blue-100 rounded px-2 py-1">
+                          <span className="text-blue-800">68858062677053a96fa5cb54</span>
+                          <span className="text-blue-600 ml-2">(FEVEO-01-01-01-01-001)</span>
+                        </div>
+                        <div className="bg-blue-100 rounded px-2 py-1">
+                          <span className="text-blue-800">68858063677053a96fa5d2ad</span>
+                          <span className="text-blue-600 ml-2">(FEVEO-02-01-01-01-002)</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
                 <div>
@@ -332,9 +428,20 @@ const InvestmentSection = () => {
               </div>
 
               <div className="flex justify-end mt-8">
-                <button onClick={handleNext} className="btn-accent px-8 py-3">
-                  Continuer
-                  <ArrowRight className="w-5 h-5 ml-2" />
+                <button 
+                  onClick={handleNext} 
+                  disabled={isLoadingGIE || isValidating || !gieData.identification.trim()}
+                  className={`px-8 py-3 rounded-lg flex items-center ${
+                    isLoadingGIE || isValidating 
+                      ? 'bg-neutral-300 text-neutral-500 cursor-not-allowed' 
+                      : 'btn-accent'
+                  }`}
+                >
+                  {(isLoadingGIE || isValidating) && (
+                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                  )}
+                  {(isLoadingGIE || isValidating) ? 'Validation en cours...' : 'Valider le GIE'}
+                  {!(isLoadingGIE || isValidating) && <ArrowRight className="w-5 h-5 ml-2" />}
                 </button>
               </div>
             </div>

@@ -8,8 +8,12 @@ import {
   Award, 
   ArrowRight, 
   CheckCircle, 
-  CreditCard
+  CreditCard,
+  Loader2,
+  AlertCircle
 } from 'lucide-react';
+import { useGIEValidation, GIEValidationErrorComponent } from './services/gieValidationService';
+import { wavePaymentService, PaymentRequest } from './services/wavePaymentService';
 
 const Investir = () => {
   // États simplifiés pour le formulaire d'investissement
@@ -30,6 +34,13 @@ const Investir = () => {
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
+  // État pour le processus de paiement
+  const [isGeneratingPayment, setIsGeneratingPayment] = useState(false);
+  const [paymentError, setPaymentError] = useState<string | null>(null);
+
+  // Service de validation GIE
+  const { validateGIE, isValidating, validationError, validatedGIE } = useGIEValidation();
+
   const paymentPeriods = [
     { 
       id: 'day1', 
@@ -37,8 +48,7 @@ const Investir = () => {
       description: 'Investissement quotidien',
       amount: 6000,
       period: '1 jour',
-      color: 'bg-green-500',
-      url: 'https://pay.wave.com/m/M_sn_t3V8_2xeRR6Z/c/sn/?amount=6060'
+      color: 'bg-green-500'
     },
     { 
       id: 'day10', 
@@ -46,8 +56,7 @@ const Investir = () => {
       description: 'Investissement pour 10 jours',
       amount: 60000,
       period: '10 jours',
-      color: 'bg-blue-500',
-      url: 'https://pay.wave.com/m/M_sn_t3V8_2xeRR6Z/c/sn/?amount=60600'
+      color: 'bg-blue-500'
     },
     { 
       id: 'day15', 
@@ -55,8 +64,7 @@ const Investir = () => {
       description: 'Investissement pour 15 jours',
       amount: 90000,
       period: '15 jours',
-      color: 'bg-orange-500',
-      url: 'https://pay.wave.com/m/M_sn_t3V8_2xeRR6Z/c/sn/?amount=90900'
+      color: 'bg-orange-500'
     },
     { 
       id: 'day30', 
@@ -64,8 +72,7 @@ const Investir = () => {
       description: 'Investissement pour 30 jours',
       amount: 180000,
       period: '30 jours',
-      color: 'bg-purple-500',
-      url: 'https://pay.wave.com/m/M_sn_t3V8_2xeRR6Z/c/sn/?amount=181800'
+      color: 'bg-purple-500'
     }
   ];
 
@@ -116,9 +123,85 @@ const Investir = () => {
     }
   ];
 
+  // Fonction pour valider le GIE avant de continuer
+  const handleGIEValidation = async () => {
+    if (!gieData.codeGIE.trim()) {
+      setErrors({ codeGIE: 'Le code GIE est requis' });
+      return;
+    }
+
+    try {
+      const success = await validateGIE(gieData.codeGIE);
+      if (success) {
+        setErrors({});
+        setCurrentStep(3); // Passer directement au step 3 (paiement)
+      }
+    } catch (error) {
+      // L'erreur est déjà gérée par le hook useGIEValidation
+      console.error('Erreur de validation GIE:', error);
+    }
+  };
+
+  // Fonction pour générer et initier le paiement Wave
+  const handleWavePayment = async (selectedPeriod: any) => {
+    setIsGeneratingPayment(true);
+    setPaymentError(null);
+
+    try {
+      // Préparer la requête de paiement
+      const paymentRequest: PaymentRequest = {
+        amount: selectedPeriod.amount,
+        period: selectedPeriod.period,
+        gieCode: gieData.codeGIE,
+        giePhone: validatedGIE?.telephone || undefined,
+        description: `Investissement FEVEO 2050 - ${selectedPeriod.label} - ${gieData.codeGIE}`
+      };
+
+      // Tenter de générer un lien de paiement via l'API
+      const paymentResult = await wavePaymentService.generatePaymentLink(paymentRequest);
+
+      if (paymentResult.success && paymentResult.paymentUrl) {
+        // Succès avec l'API intégrée
+        const message = `🎉 Paiement initié avec succès !\n\nDétails :\n• Code GIE: ${gieData.codeGIE}\n• Montant: ${selectedPeriod.amount.toLocaleString()} FCFA\n• Type: ${selectedPeriod.label}\n• Transaction ID: ${paymentResult.transactionId}\n\nRedirection vers Wave...`;
+        
+        alert(message);
+        window.open(paymentResult.paymentUrl, '_blank');
+      } else {
+        // Fallback avec lien simple
+        console.warn('API intégrée indisponible, utilisation du fallback:', paymentResult.error);
+        
+        const simplePaymentUrl = await wavePaymentService.generateSimplePaymentLink(
+          selectedPeriod.amount,
+          validatedGIE?.telephone
+        );
+        
+        const message = `🎉 Redirection vers le paiement !\n\nDétails :\n• Code GIE: ${gieData.codeGIE}\n• Montant: ${selectedPeriod.amount.toLocaleString()} FCFA\n• Type: ${selectedPeriod.label}${validatedGIE?.telephone ? `\n• Téléphone GIE: ${validatedGIE.telephone}` : ''}\n\nRedirection vers Wave...`;
+        console.log('🔗 URL de paiement fallback:', simplePaymentUrl);
+        alert(message);
+        window.open(simplePaymentUrl, '_blank');
+      }
+
+      // Reset du formulaire après redirection
+      setTimeout(() => {
+        setCurrentStep(1);
+        setGieData({ codeGIE: '', presidenteNom: '', presidenteEmail: '' });
+        setSubscriptionData({ nombreParts: '', typeInvestissement: '', montantTotal: 0 });
+        setSelectedPaymentPeriod('');
+        setErrors({});
+        setPaymentError(null);
+      }, 2000);
+
+    } catch (error) {
+      console.error('Erreur lors du paiement:', error);
+      setPaymentError('Erreur lors de l\'initiation du paiement. Veuillez réessayer.');
+    } finally {
+      setIsGeneratingPayment(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-neutral-50">
-      <Header onNavigate={() => {}} />
+      <Header />
       
       {/* Hero Section - Explication de l'investissement */}
       <section className="relative min-h-screen bg-gradient-to-br from-primary-900 via-primary-800 to-accent-900 overflow-hidden">
@@ -394,12 +477,40 @@ const Investir = () => {
                                 : 'border-neutral-300'
                           }`}
                           placeholder="Ex: GIE2024001"
-                          maxLength={15}
+                          maxLength={100}
                         />
                         {errors.codeGIE && <p className="text-red-500 text-sm mt-1">{errors.codeGIE}</p>}
-                        {!errors.codeGIE && gieData.codeGIE.length >= 3 && (
-                          <p className="text-green-600 text-sm mt-1">✓ Code GIE valide</p>
+                        
+                        {/* Affichage des erreurs de validation GIE */}
+                        {validationError && (
+                          <div className="mt-2">
+                            <GIEValidationErrorComponent 
+                              error={validationError} 
+                              onRetry={handleGIEValidation}
+                              onContact={() => {
+                                // Remplacez ceci par la logique de contact souhaitée (ex: ouvrir un modal ou envoyer un email)
+                                alert("Veuillez contacter le support FEVEO pour assistance.");
+                              }}
+                            />
+                          </div>
                         )}
+                        
+                        {/* Affichage du GIE validé avec succès */}
+                        {validatedGIE && (
+                          <div className="mt-2 p-3 bg-green-50 border border-green-200 rounded-lg">
+                            <div className="flex items-center gap-2 text-green-700">
+                              <CheckCircle className="w-4 h-4" />
+                              <span className="text-sm font-medium">GIE validé avec succès</span>
+                            </div>
+                            <p className="text-sm text-green-600 mt-1">
+                              {validatedGIE.nom} - {validatedGIE.localisation}
+                            </p>
+                          </div>
+                        )}
+                        
+                        {/* {!errors.codeGIE && gieData.codeGIE.length >= 10 && (
+                          <p className="text-green-600 text-sm mt-1">✓ Code GIE valide</p>
+                        )} */}
                       </div>
 
                      
@@ -407,26 +518,18 @@ const Investir = () => {
 
                     <div className="flex justify-center pt-6">
                       <button
-                        onClick={() => {
-                          const newErrors: Record<string, string> = {};
-                          
-                          if (!gieData.codeGIE.trim()) {
-                            newErrors.codeGIE = 'Code GIE requis';
-                          } else if (gieData.codeGIE.trim().length < 3) {
-                            newErrors.codeGIE = 'Le code GIE doit contenir au moins 3 caractères';
-                          }
-                          
-
-                          if (Object.keys(newErrors).length === 0) {
-                            setCurrentStep(3);
-                            setErrors({});
-                          } else {
-                            setErrors(newErrors);
-                          }
-                        }}
-                        className="btn-accent px-8 py-3 text-lg"
+                        onClick={handleGIEValidation}
+                        disabled={isValidating || !gieData.codeGIE.trim()}
+                        className="btn-accent px-8 py-3 text-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                       >
-                        Continuer
+                        {isValidating ? (
+                          <>
+                            <Loader2 className="w-5 h-5 animate-spin" />
+                            Validation en cours...
+                          </>
+                        ) : (
+                          'Continuer'
+                        )}
                       </button>
                     </div>
                   </div>
@@ -452,6 +555,24 @@ const Investir = () => {
                             <span className="text-neutral-600">Code GIE:</span>
                             <span className="font-mono font-bold">{gieData.codeGIE}</span>
                           </div>
+                          {validatedGIE && (
+                            <>
+                              <div className="flex justify-between">
+                                <span className="text-neutral-600">Nom GIE:</span>
+                                <span className="font-medium">{validatedGIE.nom}</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="text-neutral-600">Localisation:</span>
+                                <span className="text-sm">{validatedGIE.localisation}</span>
+                              </div>
+                              {validatedGIE.telephone && (
+                                <div className="flex justify-between">
+                                  <span className="text-neutral-600">Téléphone:</span>
+                                  <span className="font-mono">{validatedGIE.telephone}</span>
+                                </div>
+                              )}
+                            </>
+                          )}
                          
                         </div>
                         <div className="space-y-3">
@@ -520,44 +641,48 @@ const Investir = () => {
                         Retour
                       </button>
                       <button
-                        onClick={() => {
+                        onClick={async () => {
                           if (!selectedPaymentPeriod) {
                             setErrors({ paymentPeriod: 'Veuillez sélectionner le mode d\'investissement' });
                             return;
                           }
 
                           const selectedPeriod = paymentPeriods.find(p => p.id === selectedPaymentPeriod);
-                          
-                          // Rediriger vers le lien de paiement Wave
-                          const paymentUrl = selectedPeriod.url;
-                          
-                          const message = `🎉 Redirection vers le paiement !\n\nDétails de votre investissement :\n• Code GIE: ${gieData.codeGIE}\n• Montant: ${selectedPeriod.amount.toLocaleString()} FCFA\n• Type: ${selectedPeriod.label}\n\nVous allez être redirigé vers Wave pour effectuer le paiement.`;
-                          
-                          alert(message);
-                          
-                          // Ouvrir le lien Wave dans un nouvel onglet
-                          window.open(paymentUrl, '_blank');
-                          
-                          // Reset du formulaire après redirection
-                          setTimeout(() => {
-                            setCurrentStep(1);
-                            setGieData({ codeGIE: '', presidenteNom: '', presidenteEmail: '' });
-                            setSubscriptionData({ nombreParts: '', typeInvestissement: '', montantTotal: 0 });
-                            setSelectedPaymentPeriod('');
-                            setErrors({});
-                          }, 2000);
+                          if (selectedPeriod) {
+                            await handleWavePayment(selectedPeriod);
+                          }
                         }}
-                        disabled={!selectedPaymentPeriod}
-                        className={`px-8 py-3 text-lg font-semibold ${
-                          selectedPaymentPeriod 
+                        disabled={!selectedPaymentPeriod || isGeneratingPayment}
+                        className={`px-8 py-3 text-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 ${
+                          selectedPaymentPeriod && !isGeneratingPayment
                             ? 'btn-success' 
                             : 'bg-neutral-300 text-neutral-500 cursor-not-allowed'
                         }`}
                       >
-                        <CreditCard className="w-5 h-5 mr-2" />
-                        Payer avec Wave
+                        {isGeneratingPayment ? (
+                          <>
+                            <Loader2 className="w-5 h-5 animate-spin" />
+                            Génération du paiement...
+                          </>
+                        ) : (
+                          <>
+                            <CreditCard className="w-5 h-5" />
+                            Payer avec Wave
+                          </>
+                        )}
                       </button>
                     </div>
+                    
+                    {/* Affichage des erreurs de paiement */}
+                    {paymentError && (
+                      <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+                        <div className="flex items-center gap-2 text-red-700">
+                          <AlertCircle className="w-5 h-5" />
+                          <span className="font-medium">Erreur de paiement</span>
+                        </div>
+                        <p className="text-red-600 mt-1">{paymentError}</p>
+                      </div>
+                    )}
                     
                     {errors.paymentPeriod && (
                       <p className="text-red-500 text-center mt-4">{errors.paymentPeriod}</p>

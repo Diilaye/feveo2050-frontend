@@ -1,5 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Building, FileText, MapPin, User, Phone, Calendar, CreditCard, Download, ArrowLeft, CheckCircle } from 'lucide-react';
+import { useAuthContext } from '../contexts/AuthContext';
+import { gieService } from '../services/gieService';
+import { adhesionService } from '../services/adhesionService';
+import { 
+  SENEGAL_GEOGRAPHIC_DATA, 
+  getRegions, 
+  getDepartements, 
+  getArrondissements, 
+  getCommunes,
+  validateGeographicLocation
+} from '../data/senegalGeography';
 
 interface Departement {
   nom: string;
@@ -71,6 +82,17 @@ interface AdhesionFormProps {
 }
 
 const AdhesionForm: React.FC<AdhesionFormProps> = ({ onBack }) => {
+  const { user, isAuthenticated } = useAuthContext();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  
+  // États pour les données géographiques
+  const [regions, setRegions] = useState<any[]>([]);
+  const [departements, setDepartements] = useState<any[]>([]);
+  const [arrondissements, setArrondissements] = useState<any[]>([]);
+  const [communes, setCommunes] = useState<any[]>([]);
+  
   const [formData, setFormData] = useState<FormData>({
     // Identification GIE
     numeroAdhesion: '',
@@ -116,436 +138,66 @@ const AdhesionForm: React.FC<AdhesionFormProps> = ({ onBack }) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [errors, setErrors] = useState<FormErrors>({});
 
-  // Données géographiques du Sénégal
-  const regionsData = {
-    '01': {
-      nom: 'DAKAR',
-      departements: {
-        '011': {
-          nom: 'DAKAR',
-          arrondissements: {
-            '0111': 'DAKAR PLATEAU',
-            '0112': 'GRAND DAKAR',
-            '0113': 'ALMADIES',
-            '0114': 'PARCELLES ASSAINIES'
-          }
-        },
-        '012': {
-          nom: 'PIKINE',
-          arrondissements: {
-            '0121': 'NIAVES',
-            '0122': 'PIKINE DAGOUDANE',
-            '0123': 'THIAROYE'
-          }
-        },
-        '013': {
-          nom: 'RUFISQUE',
-          arrondissements: {
-            '0131': 'RUFISQUE EST',
-            '0132': 'SANGALKAM',
-            '0133': 'DIAMNIADIO'
-          }
-        },
-        '014': {
-          nom: 'GUEDIAWAYE',
-          arrondissements: {
-            '0141': 'WAKHINANE NIMZATT',
-            '0142': 'SAM NOTAIRE'
-          }
-        },
-        '015': {
-          nom: 'KEUR MASSAR',
-          arrondissements: {
-            '0151': 'MALIKA',
-            '0152': 'YEUMBEUL',
-            '0153': 'JAXAAY'
-          }
-        }
-      }
-    },
-    '02': {
-      nom: 'ZIGUINCHOR',
-      departements: {
-        '021': {
-          nom: 'BIGNONA',
-          arrondissements: {
-            '0211': 'SINDIAN',
-            '0212': 'TENDOUCK',
-            '0213': 'TENGHORY',
-            '0214': 'KATABA I'
-          }
-        },
-        '022': {
-          nom: 'OUSSOUYE',
-          arrondissements: {
-            '0221': 'KABROUSSE',
-            '0222': 'LOUDIA OUOLOF'
-          }
-        },
-        '023': {
-          nom: 'ZIGUINCHOR',
-          arrondissements: {
-            '0231': 'NIAGUIS',
-            '0232': 'NYASSIA'
-          }
-        }
-      }
-    },
-    '03': {
-      nom: 'DIOURBEL',
-      departements: {
-        '031': {
-          nom: 'BAMBEY',
-          arrondissements: {
-            '0311': 'BABA GARAGE',
-            '0312': 'LAMBAYE',
-            '0313': 'NGOYE'
-          }
-        },
-        '032': {
-          nom: 'DIOURBEL',
-          arrondissements: {
-            '0321': 'NDINDY',
-            '0322': 'NDOULO'
-          }
-        },
-        '033': {
-          nom: 'M\'BACKE',
-          arrondissements: {
-            '0331': 'KAEL',
-            '0332': 'NDAME',
-            '0333': 'TAIF'
-          }
-        }
-      }
-    },
-    '04': {
-      nom: 'SAINT-LOUIS',
-      departements: {
-        '041': {
-          nom: 'DAGANA',
-          arrondissements: {
-            '0411': 'MBANE',
-            '0412': 'NDIAYE'
-          }
-        },
-        '042': {
-          nom: 'PODOR',
-          arrondissements: {
-            '0421': 'CAS-CAS',
-            '0422': 'SALDE',
-            '0423': 'THILLE BOUBACAR',
-            '0424': 'GAMADJI SARE'
-          }
-        },
-        '043': {
-          nom: 'SAINT LOUIS',
-          arrondissements: {
-            '0431': 'RAO'
-          }
-        }
-      }
-    },
-    '05': {
-      nom: 'TAMBACOUNDA',
-      departements: {
-        '051': {
-          nom: 'BAKEL',
-          arrondissements: {
-            '0511': 'KENIEBA',
-            '0512': 'BELE',
-            '0513': 'MOUDERY'
-          }
-        },
-        '052': {
-          nom: 'TAMBACOUNDA',
-          arrondissements: {
-            '0521': 'KOUSSANAR',
-            '0522': 'MAKACOLIBANTANG',
-            '0523': 'MISSIRAH'
-          }
-        },
-        '053': {
-          nom: 'GOUDIRY',
-          arrondissements: {
-            '0531': 'BALA',
-            '0532': 'BOYNGUEL BAMBA',
-            '0533': 'DIANKE MAKHA',
-            '0534': 'KOULOR'
-          }
-        },
-        '054': {
-          nom: 'KOUPENTOUM',
-          arrondissements: {
-            '0541': 'BAMBA THIALENE',
-            '0542': 'KOUTHIABA WOLOF'
-          }
-        }
-      }
-    },
-    '06': {
-      nom: 'KAOLACK',
-      departements: {
-        '061': {
-          nom: 'KAOLACK',
-          arrondissements: {
-            '0611': 'NDIEDIENG',
-            '0612': 'KOUMBAL',
-            '0613': 'NGOTHIE'
-          }
-        },
-        '062': {
-          nom: 'NIORO',
-          arrondissements: {
-            '0621': 'MEDINA-SABAKH',
-            '0622': 'PAOSKOTO',
-            '0623': 'WACK-NGOUNA'
-          }
-        },
-        '063': {
-          nom: 'GUINGUINEO',
-          arrondissements: {
-            '0631': 'MBADAKHOUNE',
-            '0632': 'NGUELOU'
-          }
-        }
-      }
-    },
-    '07': {
-      nom: 'THIES',
-      departements: {
-        '071': {
-          nom: 'M\'BOUR',
-          arrondissements: {
-            '0711': 'FISSEL',
-            '0712': 'SESSENE',
-            '0713': 'SINDIA'
-          }
-        },
-        '072': {
-          nom: 'THIES',
-          arrondissements: {
-            '0721': 'NOTTO',
-            '0722': 'THIES NORD',
-            '0723': 'THIENABA',
-            '0724': 'THIES SUD',
-            '0725': 'KEUR MOUSSA'
-          }
-        },
-        '073': {
-          nom: 'TIVAOUANE',
-          arrondissements: {
-            '0731': 'MEOUANE',
-            '0732': 'MERINA-DAKHAR',
-            '0733': 'NIAKHENE',
-            '0734': 'PAMBAL'
-          }
-        }
-      }
-    },
-    '08': {
-      nom: 'LOUGA',
-      departements: {
-        '081': {
-          nom: 'KEBEMER',
-          arrondissements: {
-            '0811': 'DAROU MOUSTY',
-            '0812': 'NDANDE',
-            '0813': 'SAGATTA GUETH'
-          }
-        },
-        '082': {
-          nom: 'LINGUERE',
-          arrondissements: {
-            '0821': 'BARKEDJI',
-            '0822': 'DODJI',
-            '0823': 'YANG YANG',
-            '0824': 'SAGATTA DJOLOF'
-          }
-        },
-        '083': {
-          nom: 'LOUGA',
-          arrondissements: {
-            '0831': 'COKI',
-            '0832': 'KEUR MOMAR SARR',
-            '0833': 'MBEDIENE',
-            '0834': 'SAKAL'
-          }
-        }
-      }
-    },
-    '09': {
-      nom: 'FATICK',
-      departements: {
-        '091': {
-          nom: 'FATICK',
-          arrondissements: {
-            '0911': 'NDIOB',
-            '0912': 'FIMELA',
-            '0913': 'NIAKHAR',
-            '0914': 'TATTAGUINE'
-          }
-        },
-        '092': {
-          nom: 'FOUNDIOUGNE',
-          arrondissements: {
-            '0921': 'DJILOR',
-            '0922': 'NIODIOR',
-            '0923': 'TOUBACOUTA'
-          }
-        },
-        '093': {
-          nom: 'GOSSAS',
-          arrondissements: {
-            '0931': 'COLOBANE',
-            '0932': 'OUADIOUR'
-          }
-        }
-      }
-    },
-    '10': {
-      nom: 'KOLDA',
-      departements: {
-        '101': {
-          nom: 'KOLDA',
-          arrondissements: {
-            '1011': 'DIOULACOLON',
-            '1012': 'MAMPATIM',
-            '1013': 'SARE BIDJI'
-          }
-        },
-        '102': {
-          nom: 'VELINGARA',
-          arrondissements: {
-            '1021': 'BONCONTO',
-            '1022': 'PAKOUR',
-            '1023': 'SARE COLY SALLE'
-          }
-        },
-        '103': {
-          nom: 'MEDINA YORO FOULAH',
-          arrondissements: {
-            '1031': 'FAFACOUROU',
-            '1032': 'NDORNA',
-            '1033': 'NIAMING'
-          }
-        }
-      }
-    },
-    '11': {
-      nom: 'MATAM',
-      departements: {
-        '111': {
-          nom: 'MATAM',
-          arrondissements: {
-            '1111': 'AGNAM-CIVOL',
-            '1112': 'OGO'
-          }
-        },
-        '112': {
-          nom: 'KANEL',
-          arrondissements: {
-            '1121': 'ORKADIERE',
-            '1122': 'OURO SIDY'
-          }
-        },
-        '113': {
-          nom: 'RANEROU',
-          arrondissements: {
-            '1131': 'VELINGARA'
-          }
-        }
-      }
-    },
-    '12': {
-      nom: 'KAFFRINE',
-      departements: {
-        '121': {
-          nom: 'KAFFRINE',
-          arrondissements: {
-            '1211': 'GNIBY',
-            '1212': 'KATAKEL'
-          }
-        },
-        '122': {
-          nom: 'BIRKELANE',
-          arrondissements: {
-            '1221': 'KEUR M\'BOUKI',
-            '1222': 'MABO'
-          }
-        },
-        '123': {
-          nom: 'KOUNGHEUL',
-          arrondissements: {
-            '1231': 'IDA MOURIDE',
-            '1232': 'LOUR ESCALE',
-            '1233': 'MISSIRAH WADENE'
-          }
-        },
-        '124': {
-          nom: 'MALEM HODDAR',
-          arrondissements: {
-            '1241': 'DAROU MINAM II',
-            '1242': 'SAGHA'
-          }
-        }
-      }
-    },
-    '13': {
-      nom: 'KEDOUGOU',
-      departements: {
-        '131': {
-          nom: 'KEDOUGOU',
-          arrondissements: {
-            '1311': 'BANDAFASSI',
-            '1312': 'FONGOLEMBI'
-          }
-        },
-        '132': {
-          nom: 'SALEMATA',
-          arrondissements: {
-            '1321': 'DAKATELI',
-            '1322': 'DAR SALAM'
-          }
-        },
-        '133': {
-          nom: 'SARAYA',
-          arrondissements: {
-            '1331': 'BEMBOU',
-            '1332': 'SABODOLA'
-          }
-        }
-      }
-    },
-    '14': {
-      nom: 'SEDHIOU',
-      departements: {
-        '141': {
-          nom: 'SEDHIOU',
-          arrondissements: {
-            '1411': 'DIENDE',
-            '1412': 'DJIBABOUYA',
-            '1413': 'DJIREDJI'
-          }
-        },
-        '142': {
-          nom: 'BOUNKILING',
-          arrondissements: {
-            '1421': 'BOGHAL',
-            '1422': 'BONA',
-            '1423': 'DIAROUME'
-          }
-        },
-        '143': {
-          nom: 'GOUDOMP',
-          arrondissements: {
-            '1431': 'DJIBANAR',
-            '1432': 'KARANTABA',
-            '1433': 'SIMBANDI BRASSOU'
-          }
-        }
-      }
-    }
+  // Initialiser les données géographiques
+  useEffect(() => {
+    setRegions(getRegions());
+  }, []);
+
+  // Gestion des changements géographiques
+  const handleRegionChange = (regionCode: string) => {
+    const regionData = SENEGAL_GEOGRAPHIC_DATA[regionCode];
+    setFormData(prev => ({
+      ...prev,
+      codeRegion: regionCode,
+      region: regionData?.nom || '',
+      codeDepartement: '',
+      departement: '',
+      codeArrondissement: '',
+      arrondissement: '',
+      codeCommune: '',
+      commune: ''
+    }));
+    
+    setDepartements(getDepartements(regionCode));
+    setArrondissements([]);
+    setCommunes([]);
+  };
+
+  const handleDepartementChange = (departementCode: string) => {
+    const departementData = SENEGAL_GEOGRAPHIC_DATA[formData.codeRegion]?.departements[departementCode];
+    setFormData(prev => ({
+      ...prev,
+      codeDepartement: departementCode,
+      departement: departementData?.nom || '',
+      codeArrondissement: '',
+      arrondissement: '',
+      codeCommune: '',
+      commune: ''
+    }));
+    
+    setArrondissements(getArrondissements(formData.codeRegion, departementCode));
+    setCommunes([]);
+  };
+
+  const handleArrondissementChange = (arrondissementCode: string) => {
+    const arrondissementData = SENEGAL_GEOGRAPHIC_DATA[formData.codeRegion]?.departements[formData.codeDepartement]?.arrondissements[arrondissementCode];
+    setFormData(prev => ({
+      ...prev,
+      codeArrondissement: arrondissementCode,
+      arrondissement: arrondissementData?.nom || '',
+      codeCommune: '',
+      commune: ''
+    }));
+    
+    setCommunes(getCommunes(formData.codeRegion, formData.codeDepartement, arrondissementCode));
+  };
+
+  const handleCommuneChange = (communeNom: string) => {
+    setFormData(prev => ({
+      ...prev,
+      commune: communeNom,
+      codeCommune: `${prev.codeArrondissement}-${communeNom.replace(/\s+/g, '-').toUpperCase()}`
+    }));
   };
 
   const generateGIECode = () => {
@@ -555,39 +207,8 @@ const AdhesionForm: React.FC<AdhesionFormProps> = ({ onBack }) => {
     return '';
   };
 
-  const handleInputChange = (field, value) => {
-    setFormData(prev => {
-      const newData = { ...prev, [field]: value };
-      
-      // Auto-remplissage des noms géographiques
-      if (field === 'codeRegion') {
-        const region = regionsData[value];
-        newData.region = region ? region.nom : '';
-        newData.codeDepartement = '';
-        newData.departement = '';
-        newData.codeArrondissement = '';
-        newData.arrondissement = '';
-        newData.codeCommune = '';
-        newData.commune = '';
-      } else if (field === 'codeDepartement') {
-        const region = regionsData[newData.codeRegion];
-        const departement = region?.departements[value];
-        newData.departement = departement ? departement.nom : '';
-        newData.codeArrondissement = '';
-        newData.arrondissement = '';
-        newData.codeCommune = '';
-        newData.commune = '';
-      } else if (field === 'codeArrondissement') {
-        const region = regionsData[newData.codeRegion];
-        const departement = region?.departements[newData.codeDepartement];
-        const arrondissement = departement?.arrondissements[value];
-        newData.arrondissement = arrondissement || '';
-        newData.codeCommune = '';
-        newData.commune = '';
-      }
-      
-      return newData;
-    });
+  const handleInputChange = (field: string, value: string | boolean) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
     
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: '' }));
@@ -628,10 +249,110 @@ const AdhesionForm: React.FC<AdhesionFormProps> = ({ onBack }) => {
     }
   };
 
-  const handleSubmit = () => {
-    if (validateStep(currentStep)) {
-      console.log('Formulaire soumis:', formData);
-      // Ici vous ajouteriez la logique de soumission
+  const handleSubmit = async () => {
+    if (!isAuthenticated) {
+      setSubmitError('Vous devez être connecté pour soumettre une adhésion');
+      return;
+    }
+
+    if (!validateStep(currentStep)) {
+      return;
+    }
+
+    setIsSubmitting(true);
+    setSubmitError(null);
+
+    try {
+      // D'abord créer le GIE
+      const gieData = {
+        nomGIE: `GIE ${formData.presidenteNom}`, // Vous pouvez ajuster la logique de nommage
+        presidenteNom: formData.presidenteNom,
+        presidentePrenom: formData.presidentePrenom,
+        adresse: {
+          region: formData.region,
+          departement: formData.departement,
+          arrondissement: formData.arrondissement,
+          commune: formData.commune,
+        },
+        contact: {
+          telephone: formData.telephone,
+        },
+        activites: formData.activites,
+        autresActivites: formData.autresActivites,
+        nomCoordinateur: formData.coordinateurNom,
+        matriculeCoordinateur: formData.coordinateurMatricule,
+        immatricule: formData.immatricule,
+        numeroRegistre: formData.numeroRegistre,
+      };
+
+      const gieResponse = await gieService.createGIE(gieData);
+      
+      if (!gieResponse.success || !gieResponse.data) {
+        throw new Error(gieResponse.message || 'Erreur lors de la création du GIE');
+      }
+
+      // Ensuite créer l'adhésion
+      const adhesionData = {
+        numeroAdhesion: formData.numeroAdhesion,
+        localisation: {
+          region: formData.region,
+          departement: formData.departement,
+          arrondissement: formData.arrondissement,
+          commune: formData.commune,
+          codeRegion: formData.codeRegion,
+          codeDepartement: formData.codeDepartement,
+          codeArrondissement: formData.codeArrondissement,
+          codeCommune: formData.codeCommune,
+          numeroListe: formData.numeroListe,
+        },
+        immatriculation: {
+          immatricule: formData.immatricule,
+          numeroRegistre: formData.numeroRegistre,
+        },
+        presidente: {
+          nom: formData.presidenteNom,
+          prenom: formData.presidentePrenom,
+          dateNaissance: formData.dateNaissance,
+          cin: {
+            numero: formData.cinNumero,
+            dateDelivrance: formData.cinDelivrance,
+            dateValidite: formData.cinValidite,
+          },
+          telephone: formData.telephone,
+        },
+        activites: {
+          liste: formData.activites,
+          autres: formData.autresActivites,
+          secteurs: {
+            agriculture: formData.agriculture,
+            elevage: formData.elevage,
+            transformation: formData.transformation,
+            commerceDistribution: formData.commerceDistribution,
+          },
+        },
+        coordinateur: {
+          nom: formData.coordinateurNom,
+          matricule: formData.coordinateurMatricule,
+        },
+        dateSignature: formData.dateSignature,
+      };
+
+      const adhesionResponse = await adhesionService.createAdhesion(
+        gieResponse.data._id,
+        adhesionData
+      );
+
+      if (adhesionResponse.success) {
+        setSubmitSuccess(true);
+        console.log('Adhésion créée avec succès:', adhesionResponse.data);
+      } else {
+        throw new Error(adhesionResponse.message || 'Erreur lors de la création de l\'adhésion');
+      }
+    } catch (error: any) {
+      console.error('Erreur lors de la soumission:', error);
+      setSubmitError(error.message || 'Erreur lors de la soumission du formulaire');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -660,6 +381,39 @@ const AdhesionForm: React.FC<AdhesionFormProps> = ({ onBack }) => {
           </div>
           <div className="w-20"></div>
         </div>
+
+        {/* Success Message */}
+        {submitSuccess && (
+          <div className="bg-green-50 border border-green-200 text-green-700 px-6 py-4 rounded-lg mb-6">
+            <div className="flex items-center">
+              <CheckCircle className="w-6 h-6 mr-3" />
+              <div>
+                <h3 className="font-semibold">Demande soumise avec succès !</h3>
+                <p className="text-sm mt-1">
+                  Votre demande d'adhésion a été enregistrée. Vous recevrez une confirmation par email.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Error Message */}
+        {submitError && (
+          <div className="bg-red-50 border border-red-200 text-red-700 px-6 py-4 rounded-lg mb-6">
+            <h3 className="font-semibold">Erreur lors de la soumission</h3>
+            <p className="text-sm mt-1">{submitError}</p>
+          </div>
+        )}
+
+        {/* Authentication Warning */}
+        {!isAuthenticated && (
+          <div className="bg-yellow-50 border border-yellow-200 text-yellow-700 px-6 py-4 rounded-lg mb-6">
+            <h3 className="font-semibold">Connexion requise</h3>
+            <p className="text-sm mt-1">
+              Vous devez être connecté pour soumettre une demande d'adhésion.
+            </p>
+          </div>
+        )}
 
         {/* Progress Steps */}
         <div className="flex justify-center mb-12">
@@ -700,14 +454,14 @@ const AdhesionForm: React.FC<AdhesionFormProps> = ({ onBack }) => {
                   </label>
                   <select
                     value={formData.codeRegion}
-                    onChange={(e) => handleInputChange('codeRegion', e.target.value)}
+                    onChange={(e) => handleRegionChange(e.target.value)}
                     className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-accent-500 transition-colors duration-200 ${
                       errors.codeRegion ? 'border-red-300' : 'border-neutral-300'
                     }`}
                   >
                     <option value="">Sélectionnez la région</option>
-                    {Object.entries(regionsData).map(([code, region]) => (
-                      <option key={code} value={code}>{code} - {region.nom}</option>
+                    {regions.map((region) => (
+                      <option key={region.code} value={region.code}>{region.code} - {region.nom}</option>
                     ))}
                   </select>
                   {errors.codeRegion && <p className="text-red-500 text-sm mt-1">{errors.codeRegion}</p>}
@@ -719,15 +473,15 @@ const AdhesionForm: React.FC<AdhesionFormProps> = ({ onBack }) => {
                   </label>
                   <select
                     value={formData.codeDepartement}
-                    onChange={(e) => handleInputChange('codeDepartement', e.target.value)}
+                    onChange={(e) => handleDepartementChange(e.target.value)}
                     disabled={!formData.codeRegion}
                     className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-accent-500 transition-colors duration-200 ${
                       errors.codeDepartement ? 'border-red-300' : 'border-neutral-300'
                     } ${!formData.codeRegion ? 'bg-neutral-100' : ''}`}
                   >
                     <option value="">Sélectionnez le département</option>
-                    {formData.codeRegion && Object.entries((regionsData as any)[formData.codeRegion]?.departements || {}).map(([code, dept]: [string, Departement]) => (
-                      <option key={code} value={code}>{code} - {dept.nom}</option>
+                    {departements.map((dept) => (
+                      <option key={dept.code} value={dept.code}>{dept.code} - {dept.nom}</option>
                     ))}
                   </select>
                   {errors.codeDepartement && <p className="text-red-500 text-sm mt-1">{errors.codeDepartement}</p>}
@@ -739,15 +493,15 @@ const AdhesionForm: React.FC<AdhesionFormProps> = ({ onBack }) => {
                   </label>
                   <select
                     value={formData.codeArrondissement}
-                    onChange={(e) => handleInputChange('codeArrondissement', e.target.value)}
+                    onChange={(e) => handleArrondissementChange(e.target.value)}
                     disabled={!formData.codeDepartement}
                     className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-accent-500 transition-colors duration-200 ${
                       errors.codeArrondissement ? 'border-red-300' : 'border-neutral-300'
                     } ${!formData.codeDepartement ? 'bg-neutral-100' : ''}`}
                   >
                     <option value="">Sélectionnez l'arrondissement</option>
-                    {formData.codeDepartement && Object.entries((regionsData as any)[formData.codeRegion]?.departements[formData.codeDepartement]?.arrondissements || {}).map(([code, arr]: [string, string]) => (
-                      <option key={code} value={code}>{code} - {arr}</option>
+                    {arrondissements.map((arr) => (
+                      <option key={arr.code} value={arr.code}>{arr.code} - {arr.nom}</option>
                     ))}
                   </select>
                   {errors.codeArrondissement && <p className="text-red-500 text-sm mt-1">{errors.codeArrondissement}</p>}
@@ -755,15 +509,21 @@ const AdhesionForm: React.FC<AdhesionFormProps> = ({ onBack }) => {
 
                 <div>
                   <label className="block text-sm font-medium text-neutral-700 mb-2">
-                    Code Commune
+                    Commune
                   </label>
-                  <input
-                    type="text"
-                    value={formData.codeCommune}
-                    onChange={(e) => handleInputChange('codeCommune', e.target.value)}
-                    className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-accent-500 transition-colors duration-200"
-                    placeholder="Code commune (optionnel)"
-                  />
+                  <select
+                    value={formData.commune}
+                    onChange={(e) => handleCommuneChange(e.target.value)}
+                    disabled={!formData.codeArrondissement}
+                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-accent-500 transition-colors duration-200 ${
+                      !formData.codeArrondissement ? 'bg-neutral-100' : 'border-neutral-300'
+                    }`}
+                  >
+                    <option value="">Sélectionnez la commune</option>
+                    {communes.map((commune, index) => (
+                      <option key={index} value={commune.nom}>{commune.nom}</option>
+                    ))}
+                  </select>
                 </div>
 
                 <div>
@@ -1197,9 +957,21 @@ const AdhesionForm: React.FC<AdhesionFormProps> = ({ onBack }) => {
                     <Download className="w-5 h-5 mr-2" />
                     Télécharger PDF
                   </button>
-                  <button onClick={handleSubmit} className="btn-success px-8 py-3">
-                    <CheckCircle className="w-5 h-5 mr-2" />
-                    Soumettre la demande
+                  <button onClick={handleSubmit} 
+                    className="btn-success px-8 py-3 disabled:opacity-50 disabled:cursor-not-allowed"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                        Soumission en cours...
+                      </>
+                    ) : (
+                      <>
+                        <CheckCircle className="w-5 h-5 mr-2" />
+                        Soumettre la demande
+                      </>
+                    )}
                   </button>
                 </div>
               </div>

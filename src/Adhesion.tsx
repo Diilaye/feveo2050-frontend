@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { 
   Users, 
   Target, 
@@ -25,11 +26,8 @@ interface FormErrors {
   [key: string]: string;
 }
 
-interface AdhesionProps {
-  onNavigate: (page: string) => void;
-}
-
-const Adhesion: React.FC<AdhesionProps> = ({ onNavigate }) => {
+const Adhesion: React.FC = () => {
+  const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
   const [showFullForm, setShowFullForm] = useState(false);
   const [showDocumentWorkflow, setShowDocumentWorkflow] = useState(false);
@@ -170,7 +168,7 @@ const Adhesion: React.FC<AdhesionProps> = ({ onNavigate }) => {
   if (showFullForm) {
     return (
       <div className="min-h-screen flex flex-col">
-        <Header onNavigate={onNavigate} />
+        <Header />
         <AdhesionForm onBack={() => setShowFullForm(false)} />
         <Footer />
       </div>
@@ -180,7 +178,7 @@ const Adhesion: React.FC<AdhesionProps> = ({ onNavigate }) => {
   if (showDocumentWorkflow) {
     return (
       <div className="min-h-screen bg-neutral-50">
-        <Header onNavigate={onNavigate} />
+        <Header />
         <div className="py-20">
           <GIEDocumentWorkflow 
             initialData={{
@@ -211,7 +209,7 @@ const Adhesion: React.FC<AdhesionProps> = ({ onNavigate }) => {
 
   return (
     <div className="min-h-screen bg-neutral-50">
-      <Header onNavigate={onNavigate} />
+      <Header />
       
       {/* Hero Section */}
       <section className="relative min-h-screen bg-gradient-to-br from-primary-900 via-primary-800 to-accent-900 overflow-hidden">
