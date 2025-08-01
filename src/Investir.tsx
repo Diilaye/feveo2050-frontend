@@ -12,7 +12,7 @@ import {
   Loader2,
   AlertCircle
 } from 'lucide-react';
-import { useGIEValidation, GIEValidationErrorComponent } from './services/gieValidationService';
+import gieValidationService from './services/gieValidationService';
 import { wavePaymentService, PaymentRequest } from './services/wavePaymentService';
 
 const Investir = () => {
@@ -32,14 +32,15 @@ const Investir = () => {
 
   const [selectedPaymentPeriod, setSelectedPaymentPeriod] = useState('');
 
+  // États pour la validation GIE
+  const [isValidating, setIsValidating] = useState(false);
+  const [validationError, setValidationError] = useState<string | null>(null);
+  const [validatedGIE, setValidatedGIE] = useState<any>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   // État pour le processus de paiement
   const [isGeneratingPayment, setIsGeneratingPayment] = useState(false);
   const [paymentError, setPaymentError] = useState<string | null>(null);
-
-  // Service de validation GIE
-  const { validateGIE, isValidating, validationError, validatedGIE } = useGIEValidation();
 
   const paymentPeriods = [
     { 
@@ -130,15 +131,24 @@ const Investir = () => {
       return;
     }
 
+    setIsValidating(true);
+    setValidationError(null);
+
     try {
-      const success = await validateGIE(gieData.codeGIE);
-      if (success) {
+      const result = await gieValidationService.validateGie(gieData.codeGIE);
+      
+      if (result.isValid && result.gie) {
+        setValidatedGIE(result.gie);
         setErrors({});
         setCurrentStep(3); // Passer directement au step 3 (paiement)
+      } else {
+        setValidationError(result.error || 'GIE non valide');
       }
     } catch (error) {
-      // L'erreur est déjà gérée par le hook useGIEValidation
       console.error('Erreur de validation GIE:', error);
+      setValidationError('Erreur de connexion au serveur de validation');
+    } finally {
+      setIsValidating(false);
     }
   };
 
@@ -483,15 +493,28 @@ const Investir = () => {
                         
                         {/* Affichage des erreurs de validation GIE */}
                         {validationError && (
-                          <div className="mt-2">
-                            <GIEValidationErrorComponent 
-                              error={validationError} 
-                              onRetry={handleGIEValidation}
-                              onContact={() => {
-                                // Remplacez ceci par la logique de contact souhaitée (ex: ouvrir un modal ou envoyer un email)
-                                alert("Veuillez contacter le support FEVEO pour assistance.");
-                              }}
-                            />
+                          <div className="mt-2 p-3 bg-red-50 border border-red-200 rounded-lg">
+                            <div className="flex items-start space-x-2">
+                              <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+                              <div className="flex-1">
+                                <p className="text-red-700 text-sm font-medium">Erreur de validation</p>
+                                <p className="text-red-600 text-sm mt-1">{validationError}</p>
+                                <div className="mt-2 flex space-x-2">
+                                  <button
+                                    onClick={handleGIEValidation}
+                                    className="text-red-600 text-sm underline hover:no-underline"
+                                  >
+                                    Réessayer
+                                  </button>
+                                  <button
+                                    onClick={() => alert("Veuillez contacter le support FEVEO pour assistance.")}
+                                    className="text-red-600 text-sm underline hover:no-underline"
+                                  >
+                                    Contacter le support
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
                           </div>
                         )}
                         
