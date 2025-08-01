@@ -57,7 +57,7 @@ const Investir = () => {
 
   return (
     <div className="min-h-screen bg-neutral-50">
-      <Header onNavigate={() => {}} />
+      <Header />
       
       {/* Hero Section */}
       <section className="relative min-h-screen bg-gradient-to-br from-primary-900 via-primary-800 to-accent-900 overflow-hidden">

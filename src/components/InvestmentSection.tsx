@@ -19,7 +19,7 @@ import {
   QrCode,
   Loader2
 } from 'lucide-react';
-import { useGIEValidation, GIEValidationErrorComponent } from '../services/gieValidationService';
+import gieValidationService from '../services/gieValidationService';
 
 interface GieData {
   identification: string;
@@ -67,8 +67,9 @@ const InvestmentSection = () => {
   const [isLoadingGIE, setIsLoadingGIE] = useState(false);
   const [validatedGIE, setValidatedGIE] = useState(null);
   
-  // Service de validation GIE
-  const { validationError, isValidating, validateGIE, clearError } = useGIEValidation();
+  // États pour la validation GIE
+  const [validationError, setValidationError] = useState<string | null>(null);
+  const [isValidating, setIsValidating] = useState(false);
   
   const [gieData, setGieData] = useState<GieData>({
     identification: '',
@@ -167,7 +168,7 @@ const InvestmentSection = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  // Nouvelle fonction pour valider le GIE côté backend
+  // Fonction pour valider le GIE
   const handleGIEValidation = async () => {
     if (!gieData.identification.trim()) {
       setErrors({ identification: 'Identification requise' });
@@ -175,36 +176,31 @@ const InvestmentSection = () => {
     }
 
     setIsLoadingGIE(true);
-    clearError();
+    setIsValidating(true);
+    setValidationError(null);
 
     try {
-      // Simulation d'appel API pour valider le GIE
-      const response = await validateGIE(gieData.identification, async (gieId) => {
-        // Ici on ferait l'appel réel à l'API
-        const res = await fetch(`http://localhost:5000/api/investissements/gie/${gieId}`, {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`,
-            'Content-Type': 'application/json'
-          }
-        });
-        
-        if (!res.ok) {
-          throw new Error(`HTTP ${res.status}`);
-        }
-        
-        return await res.json();
-      });
-
-      // Si la validation réussit, on récupère les données du GIE
-      setValidatedGIE(response);
-      setCurrentStep(2);
+      const result = await gieValidationService.validateGie(gieData.identification);
       
+      if (result.isValid && result.gie) {
+        setValidatedGIE(result.gie);
+        setCurrentStep(2); // Passer à l'étape suivante
+        setErrors({});
+      } else {
+        setValidationError(result.error || 'GIE non valide');
+      }
     } catch (error) {
       console.error('Erreur validation GIE:', error);
-      // L'erreur sera gérée par le composant d'erreur
+      setValidationError('Erreur de connexion au serveur');
     } finally {
       setIsLoadingGIE(false);
+      setIsValidating(false);
     }
+  };
+
+  // Fonction pour effacer les erreurs
+  const clearError = () => {
+    setValidationError(null);
   };
 
   const handleNext = () => {
@@ -295,12 +291,32 @@ const InvestmentSection = () => {
         <div className="max-w-4xl mx-auto">
           {/* Composant d'erreur de validation GIE */}
           {validationError && (
-            <div className="mb-8">
-              <GIEValidationErrorComponent
-                error={{ response: { data: validationError } }}
-                onRetry={() => handleGIEValidation()}
-                onContact={() => window.open('/contact', '_blank')}
-              />
+            <div className="mb-8 p-4 bg-red-50 border border-red-200 rounded-lg">
+              <div className="flex items-start space-x-3">
+                <div className="flex-shrink-0">
+                  <svg className="w-5 h-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <div className="flex-1">
+                  <h4 className="text-sm font-medium text-red-800">Erreur de validation</h4>
+                  <p className="mt-1 text-sm text-red-600">{validationError}</p>
+                  <div className="mt-4 flex space-x-3">
+                    <button
+                      onClick={() => handleGIEValidation()}
+                      className="text-sm bg-red-100 text-red-800 px-3 py-1 rounded hover:bg-red-200"
+                    >
+                      Réessayer
+                    </button>
+                    <button
+                      onClick={() => window.open('/contact', '_blank')}
+                      className="text-sm text-red-600 underline hover:no-underline"
+                    >
+                      Contacter le support
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
           )}
 

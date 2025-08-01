@@ -44,7 +44,7 @@ const Home: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-neutral-50">
-      <Header onNavigate={handleNavigate} />
+      <Header />
       <main>
         <HeroSection onNavigate={handleNavigate} />
         <ProgramSection />
