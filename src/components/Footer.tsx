@@ -99,7 +99,7 @@ const Footer = () => {
             
             <div className="flex flex-col space-y-3">
              
-              <button className="btn-accent">
+              <button className="btn-accent" onClick={() => window.location.href = 'https://chat.whatsapp.com/Gs4peluPmE3H8ghfPZz6x8'}>
                 Acceder  à FEVEO 2050
               </button>
             </div>

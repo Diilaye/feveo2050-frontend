@@ -212,7 +212,7 @@ export const useGIEValidation = () => {
     setValidatedGIE(null);
 
     try {
-      const response = await fetch('http://localhost:5000/api/investissements/validate-gie', {
+      const response = await fetch('https://api.feveo2025.sn/api/investissements/validate-gie', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

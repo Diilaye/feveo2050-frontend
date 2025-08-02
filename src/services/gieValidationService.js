@@ -3,7 +3,7 @@
  * Vérifie l'éligibilité des GIE pour les investissements FEVEO 2050
  */
 
-const API_BASE_URL = 'http://localhost:5000/api';
+const API_BASE_URL = 'https://api.feveo2025.sn/api';
 
 /**
  * Interface TypeScript pour un GIE

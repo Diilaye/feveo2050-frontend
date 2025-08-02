@@ -46,7 +46,7 @@ export const usePaiement = () => {
         throw new Error('Token d\'authentification manquant');
       }
 
-      const response = await fetch('http://localhost:5000/api/paiements', {
+      const response = await fetch('https://api.feveo2025.sn/api/paiements', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -95,7 +95,7 @@ export const usePaiement = () => {
     try {
       const token = localStorage.getItem('token');
       
-      const response = await fetch(`http://localhost:5000/api/paiements/${paiementId}`, {
+      const response = await fetch(`https://api.feveo2025.sn/api/paiements/${paiementId}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -129,7 +129,7 @@ export const usePaiement = () => {
     setError(null);
 
     try {
-      const response = await fetch(`http://localhost:5000/api/paiements/reference/${reference}`);
+      const response = await fetch(`https://api.feveo2025.sn/api/paiements/reference/${reference}`);
       const data = await response.json();
 
       if (data.success) {
@@ -160,7 +160,7 @@ export const usePaiement = () => {
     try {
       const token = localStorage.getItem('token');
       
-      const response = await fetch(`http://localhost:5000/api/paiements/${paiementId}/verifier-statut`, {
+      const response = await fetch(`https://api.feveo2025.sn/api/paiements/${paiementId}/verifier-statut`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -197,7 +197,7 @@ export const usePaiement = () => {
     try {
       const token = localStorage.getItem('token');
       
-      const response = await fetch(`http://localhost:5000/api/paiements/${paiementId}/annuler`, {
+      const response = await fetch(`https://api.feveo2025.sn/api/paiements/${paiementId}/annuler`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -249,7 +249,7 @@ export const usePaiement = () => {
       if (filtres?.dateDebut) params.append('dateDebut', filtres.dateDebut);
       if (filtres?.dateFin) params.append('dateFin', filtres.dateFin);
 
-      const response = await fetch(`http://localhost:5000/api/paiements?${params}`, {
+      const response = await fetch(`https://api.feveo2025.sn/api/paiements?${params}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }

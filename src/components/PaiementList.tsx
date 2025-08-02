@@ -57,7 +57,7 @@ const PaiementList: React.FC<PaiementListProps> = ({ utilisateurId, filtres }) =
       if (filtres?.dateDebut) params.append('dateDebut', filtres.dateDebut);
       if (filtres?.dateFin) params.append('dateFin', filtres.dateFin);
 
-      const response = await fetch(`http://localhost:5000/api/paiements?${params}`, {
+      const response = await fetch(`https://api.feveo2025.sn/api/paiements?${params}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -82,7 +82,7 @@ const PaiementList: React.FC<PaiementListProps> = ({ utilisateurId, filtres }) =
     try {
       const token = localStorage.getItem('token');
       
-      const response = await fetch(`http://localhost:5000/api/paiements/${paiementId}/verifier-statut`, {
+      const response = await fetch(`https://api.feveo2025.sn/api/paiements/${paiementId}/verifier-statut`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -108,7 +108,7 @@ const PaiementList: React.FC<PaiementListProps> = ({ utilisateurId, filtres }) =
     try {
       const token = localStorage.getItem('token');
       
-      const response = await fetch(`http://localhost:5000/api/paiements/${paiementId}/annuler`, {
+      const response = await fetch(`https://api.feveo2025.sn/api/paiements/${paiementId}/annuler`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`

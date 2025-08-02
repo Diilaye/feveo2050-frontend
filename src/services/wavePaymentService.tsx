@@ -18,8 +18,8 @@ export interface WavePaymentResponse {
 }
 
 class WavePaymentService {
-  private baseUrl = 'http://localhost:5000/api'; // URL de votre backend
-  private waveToken = 'wave_sn_prod_FIdhHNGkeoAFnuGNxuh8WD3L9XjEBqjRCKx2zEZ87H7LWSwHs2v2aA_5q_ZJGwaLfphltYSRawKP-voVugCpwWB2FMH3ZTtC0w';
+  private baseUrl = import.meta.env.VITE_API_URL || 'https://api.feveo2025.sn/api';
+  private waveToken = import.meta.env.VITE_WAVE_API_TOKEN || 'wave_sn_prod_FIdhHNGkeoAFnuGNxuh8WD3L9XjEBqjRCKx2zEZ87H7LWSwHs2v2aA_5q_ZJGwaLfphltYSRawKP-voVugCpwWB2FMH3ZTtC0w';
 
   /**
    * Génère un lien de paiement Wave avec les informations du GIE

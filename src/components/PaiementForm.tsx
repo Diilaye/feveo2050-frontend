@@ -55,7 +55,7 @@ const PaiementForm: React.FC<PaiementFormProps> = ({
     try {
       const token = localStorage.getItem('token');
       
-      const response = await fetch('http://localhost:5000/api/paiements', {
+      const response = await fetch('https://api.feveo2025.sn/api/paiements', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

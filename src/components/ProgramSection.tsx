@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { Wallet, Store, Leaf, Settings, Play, Volume2, Globe, ChevronRight, Target, Users, TrendingUp, Award } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const ProgramSection = () => {
+   const navigate = useNavigate();
   const [currentLanguage, setCurrentLanguage] = useState('fr');
   const [playingAudio, setPlayingAudio] = useState(null);
 
@@ -256,7 +258,7 @@ const ProgramSection = () => {
           <h3 className="text-2xl font-bold mb-4">Prêt à rejoindre la révolution féminine ?</h3>
           <p className="text-lg mb-6 opacity-90">
           </p>
-          <button className="bg-accent-500 hover:bg-accent-600 text-neutral-50 font-semibold px-8 py-4 rounded-lg hover:scale-105 transform transition-all duration-200 shadow-lg">
+          <button onClick={() => navigate('/adhesion')}  className="bg-accent-500 hover:bg-accent-600 text-neutral-50 font-semibold px-8 py-4 rounded-lg hover:scale-105 transform transition-all duration-200 shadow-lg">
             Adhérer à la plateforme
           </button>
         </div>

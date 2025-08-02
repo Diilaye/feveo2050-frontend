@@ -17,7 +17,7 @@ const WalletLogin: React.FC = () => {
     setIsLoading(true);
 
     try {
-      const response = await fetch('http://localhost:5000/api/wallet/verify-gie', {
+      const response = await fetch('https://api.feveo2025.sn/api/wallet/verify-gie', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -51,7 +51,7 @@ const WalletLogin: React.FC = () => {
     setIsLoading(true);
 
     try {
-      const response = await fetch('http://localhost:5000/api/wallet/verify-whatsapp', {
+      const response = await fetch('https://api.feveo2025.sn/api/wallet/verify-whatsapp', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

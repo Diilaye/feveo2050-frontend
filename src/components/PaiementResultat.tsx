@@ -23,7 +23,7 @@ const PaiementResultat: React.FC = () => {
 
   const verifierPaiement = async () => {
     try {
-      const response = await fetch(`http://localhost:5000/api/paiements/reference/${reference}`);
+      const response = await fetch(`https://api.feveo2025.sn/api/paiements/reference/${reference}`);
       const data = await response.json();
 
       if (data.success) {
