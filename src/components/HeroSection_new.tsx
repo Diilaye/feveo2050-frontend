@@ -32,7 +32,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onNavigate }) => {
   const metrics = [
     { 
       icon: TrendingUp, 
-      value: isLoadingStats ? '...' : (stats?.totalGIEs?.toString() || '?'), 
+      value: isLoadingStats ? '...' : (stats?.totalGIEs?.toString() || '0'), 
       label: 'GIEs enregistrés', 
       color: 'text-accent-500' 
     },
@@ -51,13 +51,13 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onNavigate }) => {
     { 
       icon: Users, 
       value: isLoadingStats ? '...' : (stats?.estimations?.adultes?.toLocaleString() || '82 950'), 
-      label: 'Nbre d\'adultes', 
+      label: "Nbre d'adultes", 
       color: 'text-success-500' 
     },
     { 
       icon: Calendar, 
       value: isLoadingStats ? '...' : (stats?.joursInvestissement?.toLocaleString() || '1 826'), 
-      label: 'Nbre jours d\'invest', 
+      label: "Nbre jours d'invest", 
       color: 'text-accent-500' 
     },
   ];
@@ -66,13 +66,13 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onNavigate }) => {
     {
       icon: Target,
       title: 'Notre Vision',
-      description: 'Créer un écosystème d\'investissement Économique organique pour faire des femmes le moteur de la transformation systémique de l\'économie du Sénégal',
+      description: "Créer un écosystème d'investissement Économique organique pour faire des femmes le moteur de la transformation systémique de l'économie du Sénégal",
       color: 'bg-primary-500'
     },
     {
       icon: Heart,
       title: 'Notre Mission',
-      description: 'Placer les femmes au cœur du système de création de richesses par l\'exploitation de toute la chaine de valeur',
+      description: "Placer les femmes au cœur du système de création de richesses par l'exploitation de toute la chaine de valeur",
       color: 'bg-success-500'
     },
     {
@@ -187,8 +187,13 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onNavigate }) => {
                               <h4 className="font-semibold text-neutral-50 text-sm mb-1 group-hover/project:text-accent-400 transition-colors duration-300">
                                 ❖ {project.name}
                               </h4>
+                              {/* <p className="text-neutral-300 text-xs leading-relaxed">
+                                {project.description}
+                              </p> */}
                             </div>
                       ))}
+                      
+                     
                     </div>
                   ) : (
                     <p className="text-neutral-200 leading-relaxed">{item.description}</p>

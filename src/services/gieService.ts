@@ -75,6 +75,23 @@ export interface GIEStats {
   };
 }
 
+// Interface pour les statistiques publiques
+export interface StatsPubliques {
+  totalGIEs: number;
+  totalMembres: number;
+  estimations: {
+    femmes: number;
+    jeunes: number;
+    adultes: number;
+  };
+  joursInvestissement: number;
+  repartition: {
+    regions: { _id: string; count: number }[];
+    secteurs: { _id: string; count: number }[];
+  };
+  derniereMiseAJour: string;
+}
+
 // Service GIE
 export const gieService = {
   // Créer un nouveau GIE
@@ -118,5 +135,27 @@ export const gieService = {
   // Obtenir le prochain numéro de protocole
   async getNextProtocol(): Promise<ApiResponse<{ numeroProtocole: string }>> {
     return await apiCall<{ numeroProtocole: string }>('/gie/next-protocol');
+  },
+
+  // Obtenir les statistiques publiques (sans authentification)
+  async getStatsPubliques(): Promise<StatsPubliques> {
+    const response = await fetch('http://localhost:4320/api/gie/stats-publiques', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const result = await response.json();
+    
+    if (!result.success) {
+      throw new Error(result.message || 'Erreur lors de la récupération des statistiques');
+    }
+
+    return result.data;
   }
 };

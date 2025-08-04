@@ -17,12 +17,12 @@ const WalletLogin: React.FC = () => {
     setIsLoading(true);
 
     try {
-      const response = await fetch('https://api.feveo2025.sn/api/wallet/verify-gie', {
+      const response = await fetch('http://localhost:4320/api/wallet/verify-gie', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ gieCode, phoneNumber: '221772488807' }),
+        body: JSON.stringify({ gieCode }),
       });
 
       const data = await response.json();
