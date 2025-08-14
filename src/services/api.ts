@@ -1,5 +1,5 @@
 // Configuration de base pour les appels API
-const API_BASE_URL = (import.meta as any).env?.VITE_API_URL || 'https://api.feveo2025.sn/api';
+const API_BASE_URL = (import.meta as any).env?.VITE_API_URL || 'http://localhost:4320/api';
 
 // Interface pour les réponses API
 export interface ApiResponse<T = any> {

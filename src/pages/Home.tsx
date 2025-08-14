@@ -35,6 +35,9 @@ const Home: React.FC = () => {
       case 'about':
         navigate('/about');
         break;
+      case 'galerie':
+        navigate('/galerie');
+        break;
       case 'home':
       default:
         navigate('/');

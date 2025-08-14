@@ -3,7 +3,9 @@
  * Vérifie l'éligibilité des GIE pour les investissements FEVEO 2050
  */
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://api.feveo2025.sn/api';
+const BASE_URL = (import.meta as any).env?.VITE_API_URL || 'http://localhost:4320/api';
+
+// 
 
 /**
  * Interface TypeScript pour un GIE
@@ -25,7 +27,7 @@ export class GieValidationService {
   private apiUrl: string;
 
   constructor() {
-    this.apiUrl = API_BASE_URL;
+    this.apiUrl = BASE_URL;
   }
 
   /**
@@ -42,7 +44,10 @@ export class GieValidationService {
 
       console.log('🔍 Validation du GIE:', numeroRegistre);
 
-      const response = await fetch(`${this.apiUrl}/gie/validate/${encodeURIComponent(numeroRegistre)}`, {
+      console.log(`📞 Appel API de validation GIE: ${BASE_URL}/gie/validate/${encodeURIComponent(numeroRegistre)}`);
+      
+
+      const response = await fetch(`${BASE_URL}/gie/validate/${encodeURIComponent(numeroRegistre)}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -62,9 +67,24 @@ export class GieValidationService {
 
       if (data.success && data.gie) {
         console.log('✅ GIE validé:', data.gie);
+        
+        // Adapter les données du backend au format attendu par le frontend
+        const gieAdapte: GIE = {
+          id: data.gie.id,
+          nom: data.gie.nom,
+          numeroRegistre: data.gie.numeroRegistre,
+          secteurActivite: data.gie.secteurActivite,
+          statut: data.gie.statut,
+          validePourInvestissement: data.gie.validePourInvestissement,
+          documentsPourcentage: data.gie.documentsPourcentage,
+          dateCreation: new Date(data.gie.dateCreation),
+          adresse: data.gie.adresse,
+          description: data.gie.description
+        };
+        
         return {
           isValid: true,
-          gie: data.gie
+          gie: gieAdapte
         };
       } else {
         return {
@@ -78,6 +98,7 @@ export class GieValidationService {
       
       // Fallback avec données mock pour le développement
       if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
+        console.log('🔄 Utilisation des données mock en fallback');
         return this.getMockGieValidation(numeroRegistre);
       }
 
@@ -254,6 +275,18 @@ export class GieValidationService {
   getMockGies(): GIE[] {
     return [
       {
+        id: '689c7f6e07e436def3951995',
+        nom: 'FEVEO-12-01-02-01-001',
+        numeroRegistre: 'FEVEO-12-01-02-01-001',
+        secteurActivite: 'Agriculture',
+        statut: 'en_attente',
+        validePourInvestissement: false,
+        documentsPourcentage: 75,
+        dateCreation: new Date('2025-08-13'),
+        adresse: '01, BAKEL, TAMBACOUNDA',
+        description: 'GIE FEVEO spécialisé dans l\'agriculture durable'
+      },
+      {
         id: '1',
         nom: 'Coopérative Agricole Kaolack',
         numeroRegistre: 'GIE-2024-001',
@@ -311,18 +344,28 @@ export class GieValidationService {
     if (!gie) return 'Aucune information disponible';
 
     const eligibility = this.checkInvestmentEligibility(gie);
-    const statusIcon = gie.statut === 'actif' ? '✅' : '❌';
+    const statusIcon = gie.statut === 'actif' ? '✅' : gie.statut === 'en_attente' ? '⏳' : '❌';
     const eligibilityIcon = eligibility.isEligible ? '✅' : '❌';
 
-    return `
+    let info = `
       ${statusIcon} ${gie.nom}
       📋 N° Registre: ${gie.numeroRegistre}
       🏢 Secteur: ${gie.secteurActivite}
       📍 Adresse: ${gie.adresse}
       📊 Documents: ${gie.documentsPourcentage}%
+      📅 Créé le: ${gie.dateCreation.toLocaleDateString('fr-FR')}
       ${eligibilityIcon} Éligible: ${eligibility.isEligible ? 'Oui' : 'Non'}
-      ${!eligibility.isEligible ? '⚠️ Raisons: ' + eligibility.reasons.join(', ') : ''}
     `.trim();
+
+    if (!eligibility.isEligible && eligibility.reasons.length > 0) {
+      info += '\n⚠️ Raisons: ' + eligibility.reasons.join(', ');
+    }
+
+    if (gie.statut === 'en_attente') {
+      info += '\n💡 Statut: En attente de validation de paiement FEVEO 2050';
+    }
+
+    return info;
   }
 }
 

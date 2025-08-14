@@ -192,6 +192,8 @@ const Adhesion: React.FC = () => {
             }}
             onComplete={(data) => {
               console.log('Workflow terminé:', data);
+              // Afficher un message de succès
+              alert(`🎉 GIE "${data.nomGIE}" enregistré avec succès! Votre adhésion est en cours de traitement.`);
               setShowDocumentWorkflow(false);
               setCurrentStep(1);
               setFormData({
@@ -291,14 +293,15 @@ const Adhesion: React.FC = () => {
             }}
             onComplete={(data) => {
               console.log('Workflow terminé:', data);
-              setShowDocumentWorkflow(false);
-              setCurrentStep(1);
-              setFormData({
-                nomGIE: '', nomPresidente: '', email: '', telephone: '',
-                region: '', secteur: '', nombreMembres: '', typeAdhesion: ''
-              });
+              // Afficher un message de succès
+              alert(`🎉 GIE "${data.nomGIE}" enregistré avec succès! Votre adhésion est en cours de traitement.`);
+              // Optionnel: rediriger vers une page de confirmation
+              // navigate('/confirmation-adhesion');
             }}
-            onCancel={() => setShowDocumentWorkflow(false)}
+            onCancel={() => {
+              // Optionnel: gérer l'annulation
+              console.log('Workflow annulé');
+            }}
           />
       
 

@@ -160,11 +160,9 @@ const Investir = () => {
     try {
       // Préparer la requête de paiement
       const paymentRequest: PaymentRequest = {
-        amount: selectedPeriod.amount,
-        period: selectedPeriod.period,
+        montant: selectedPeriod.amount,
         gieCode: gieData.codeGIE,
-        giePhone: validatedGIE?.telephone || undefined,
-        description: `Investissement FEVEO 2050 - ${selectedPeriod.label} - ${gieData.codeGIE}`
+        typePaiement: 'investissement'  
       };
 
       // Tenter de générer un lien de paiement via l'API

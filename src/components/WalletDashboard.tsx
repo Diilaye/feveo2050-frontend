@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Wallet, 
@@ -18,7 +18,13 @@ import {
   Activity,
   Users,
   Package,
-  Shield
+  Shield,
+  Plus,
+  Edit,
+  Trash2,
+  X,
+  Save,
+  UserPlus
 } from 'lucide-react';
 
 const WalletDashboard: React.FC = () => {
@@ -28,9 +34,28 @@ const WalletDashboard: React.FC = () => {
   const [walletData, setWalletData] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('wallet');
+  
+  // États pour la gestion des membres
+  const [membres, setMembres] = useState<any[]>([]);
+  const [membresLoading, setMembresLoading] = useState(false);
+  const [membresStats, setMembresStats] = useState<any>(null);
+  const [showAddMemberModal, setShowAddMemberModal] = useState(false);
+  const [showEditMemberModal, setShowEditMemberModal] = useState(false);
+  const [selectedMember, setSelectedMember] = useState<any>(null);
+  const [memberForm, setMemberForm] = useState({
+    nom: '',
+    prenom: '',
+    telephone: '',
+    fonction: 'Membre',
+    genre: '',
+    cin: '',
+    dateNaissance: '',
+    profession: '',
+    adresse: ''
+  });
 
   // Charger les données du wallet au montage du composant
-  React.useEffect(() => {
+  useEffect(() => {
     const loadWalletData = () => {
       try {
         const storedData = localStorage.getItem('walletData');
@@ -69,40 +94,196 @@ const WalletDashboard: React.FC = () => {
     loadWalletData();
   }, []);
 
-  // Données simulées pour le wallet
-  const defaultWalletData = {
-    gieInfo: {
-      code: 'FEVEO-01-01-01-01-001',
-      nom: 'GIE Agriculture Bio Dakar',
-      presidente: 'Aïssatou Diallo'
-    },
-    balance: {
-      current: 156000,
-      invested: 60000,
-      returns: 8400
-    },
-    cycleInfo: {
-      currentDay: 12,
-      totalDays: 60,
-      dailyInvestment: 6000,
-      nextInvestmentDate: '2025-07-28'
+  // Fonction pour charger les données des membres
+  const loadMembres = async () => {
+    if (!walletData?.gieInfo?.code) return;
+    
+    setMembresLoading(true);
+    try {
+      const response = await fetch(`http://localhost:5000/api/wallet/members/${walletData.gieInfo.code}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        signal: AbortSignal.timeout(10000),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setMembres(data.membres || []);
+      } else {
+        console.error('Erreur lors de la récupération des membres');
+        setMembres([]);
+      }
+    } catch (error) {
+      console.error('Erreur lors de la récupération des membres:', error);
+      setMembres([]);
+    } finally {
+      setMembresLoading(false);
     }
   };
 
-  const transactions = [
-    { type: 'investment', amount: 6000, date: '2025-07-26', description: 'Investissement jour 12' },
-    { type: 'return', amount: 420, date: '2025-07-25', description: 'Retour investissement jour 11' },
-    { type: 'investment', amount: 6000, date: '2025-07-25', description: 'Investissement jour 11' },
-    { type: 'return', amount: 420, date: '2025-07-24', description: 'Retour investissement jour 10' }
-  ];
+  // Fonction pour charger les statistiques des membres
+  const loadMembresStats = async () => {
+    if (!walletData?.gieInfo?.code) return;
+    
+    try {
+      const response = await fetch(`http://localhost:5000/api/wallet/members/${walletData.gieInfo.code}/stats`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        signal: AbortSignal.timeout(10000),
+      });
 
-  const handleLogout = () => {
-    // Nettoyer les données du wallet lors de la déconnexion
-    localStorage.removeItem('walletData');
-    localStorage.removeItem('walletSession');
-    navigate('/');
+      if (response.ok) {
+        const data = await response.json();
+        setMembresStats(data);
+      } else {
+        console.error('Erreur lors de la récupération des statistiques');
+      }
+    } catch (error) {
+      console.error('Erreur lors de la récupération des statistiques:', error);
+    }
   };
 
+  // Fonction pour ajouter un membre
+  const handleAddMember = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!walletData?.gieInfo?.code) return;
+
+    try {
+      const response = await fetch(`http://localhost:5000/api/wallet/members/${walletData.gieInfo.code}/add`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(memberForm),
+        signal: AbortSignal.timeout(10000),
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        alert('Membre ajouté avec succès !');
+        setShowAddMemberModal(false);
+        resetMemberForm();
+        await loadMembres();
+        await loadMembresStats();
+      } else {
+        alert(`Erreur: ${data.message}`);
+      }
+    } catch (error) {
+      console.error('Erreur lors de l\'ajout du membre:', error);
+      alert('Erreur lors de l\'ajout du membre');
+    }
+  };
+
+  // Fonction pour modifier un membre
+  const handleEditMember = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!walletData?.gieInfo?.code || !selectedMember) return;
+
+    try {
+      const response = await fetch(`http://localhost:5000/api/wallet/members/${walletData.gieInfo.code}/${selectedMember._id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(memberForm),
+        signal: AbortSignal.timeout(10000),
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        alert('Membre modifié avec succès !');
+        setShowEditMemberModal(false);
+        resetMemberForm();
+        setSelectedMember(null);
+        await loadMembres();
+        await loadMembresStats();
+      } else {
+        alert(`Erreur: ${data.message}`);
+      }
+    } catch (error) {
+      console.error('Erreur lors de la modification du membre:', error);
+      alert('Erreur lors de la modification du membre');
+    }
+  };
+
+  // Fonction pour supprimer un membre
+  const handleDeleteMember = async (membre: any) => {
+    if (!walletData?.gieInfo?.code) return;
+    
+    if (!confirm(`Êtes-vous sûr de vouloir supprimer ${membre.prenom} ${membre.nom} ?`)) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`http://localhost:5000/api/wallet/members/${walletData.gieInfo.code}/${membre._id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        signal: AbortSignal.timeout(10000),
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        alert('Membre supprimé avec succès !');
+        await loadMembres();
+        await loadMembresStats();
+      } else {
+        alert(`Erreur: ${data.message}`);
+      }
+    } catch (error) {
+      console.error('Erreur lors de la suppression du membre:', error);
+      alert('Erreur lors de la suppression du membre');
+    }
+  };
+
+  // Fonction pour réinitialiser le formulaire
+  const resetMemberForm = () => {
+    setMemberForm({
+      nom: '',
+      prenom: '',
+      telephone: '',
+      fonction: 'Membre',
+      genre: '',
+      cin: '',
+      dateNaissance: '',
+      profession: '',
+      adresse: ''
+    });
+  };
+
+  // Fonction pour ouvrir le modal d'édition
+  const openEditModal = (membre: any) => {
+    setSelectedMember(membre);
+    setMemberForm({
+      nom: membre.nom || '',
+      prenom: membre.prenom || '',
+      telephone: membre.telephone || '',
+      fonction: membre.fonction || membre.role || 'Membre',
+      genre: membre.genre || '',
+      cin: membre.cin || '',
+      dateNaissance: membre.dateNaissance ? membre.dateNaissance.split('T')[0] : '',
+      profession: membre.profession || '',
+      adresse: membre.adresse || ''
+    });
+    setShowEditMemberModal(true);
+  };
+
+  // Charger les membres quand on change d'onglet vers membres
+  useEffect(() => {
+    if (activeTab === 'membres' && walletData?.gieInfo?.code) {
+      loadMembres();
+      loadMembresStats();
+    }
+  }, [activeTab, walletData?.gieInfo?.code]);
+
+  // ========== TOUS LES HOOKS DOIVENT ÊTRE AU-DESSUS DE CETTE LIGNE ==========
+  
+  // Vérifications conditionnelles après tous les hooks
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -126,6 +307,21 @@ const WalletDashboard: React.FC = () => {
       </div>
     );
   }
+
+  const handleLogout = () => {
+    // Nettoyer les données du wallet lors de la déconnexion
+    localStorage.removeItem('walletData');
+    localStorage.removeItem('walletSession');
+    navigate('/');
+  };
+
+  // Données simulées pour les transactions
+  const transactions = [
+    { type: 'investment', amount: 6000, date: '2025-07-26', description: 'Investissement jour 12' },
+    { type: 'return', amount: 420, date: '2025-07-25', description: 'Retour investissement jour 11' },
+    { type: 'investment', amount: 6000, date: '2025-07-25', description: 'Investissement jour 11' },
+    { type: 'return', amount: 420, date: '2025-07-24', description: 'Retour investissement jour 10' }
+  ];
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('fr-FR', {
@@ -247,82 +443,6 @@ const WalletDashboard: React.FC = () => {
       amount: 6000,
       type: 'Plan Quotidien',
       status: 'Programmé'
-    }
-  ];
-
-  // Données pour la page membres
-  const membres = [
-    {
-      id: 1,
-      nom: 'Aïssatou Diallo',
-      prenom: 'Aïssatou',
-      role: 'Présidente',
-      telephone: '+221 77 123 45 67',
-      email: 'aissatou.diallo@gmail.com',
-      dateAdhesion: '2024-01-15',
-      cotisation: 25000,
-      statut: 'Actif',
-      avatar: null
-    },
-    {
-      id: 2,
-      nom: 'Mamadou Sow',
-      prenom: 'Mamadou',
-      role: 'Vice-Président',
-      telephone: '+221 76 234 56 78',
-      email: 'mamadou.sow@gmail.com',
-      dateAdhesion: '2024-01-20',
-      cotisation: 25000,
-      statut: 'Actif',
-      avatar: null
-    },
-    {
-      id: 3,
-      nom: 'Fatou Ba',
-      prenom: 'Fatou',
-      role: 'Trésorière',
-      telephone: '+221 75 345 67 89',
-      email: 'fatou.ba@gmail.com',
-      dateAdhesion: '2024-02-01',
-      cotisation: 25000,
-      statut: 'Actif',
-      avatar: null
-    },
-    {
-      id: 4,
-      nom: 'Ousmane Ndiaye',
-      prenom: 'Ousmane',
-      role: 'Secrétaire',
-      telephone: '+221 74 456 78 90',
-      email: 'ousmane.ndiaye@gmail.com',
-      dateAdhesion: '2024-02-10',
-      cotisation: 25000,
-      statut: 'Actif',
-      avatar: null
-    },
-    {
-      id: 5,
-      nom: 'Aminata Fall',
-      prenom: 'Aminata',
-      role: 'Membre',
-      telephone: '+221 73 567 89 01',
-      email: 'aminata.fall@gmail.com',
-      dateAdhesion: '2024-03-05',
-      cotisation: 20000,
-      statut: 'Actif',
-      avatar: null
-    },
-    {
-      id: 6,
-      nom: 'Ibrahima Sarr',
-      prenom: 'Ibrahima',
-      role: 'Membre',
-      telephone: '+221 72 678 90 12',
-      email: 'ibrahima.sarr@gmail.com',
-      dateAdhesion: '2024-03-15',
-      cotisation: 20000,
-      statut: 'Inactif',
-      avatar: null
     }
   ];
 
@@ -587,7 +707,7 @@ const WalletDashboard: React.FC = () => {
             <div className="mb-8">
               <div className="bg-gradient-to-r from-purple-600 to-blue-600 rounded-xl p-6 text-white">
                 <h3 className="text-2xl font-bold mb-2">Gestion des Membres</h3>
-                <p className="text-purple-100">Gérez les membres de votre GIE et leurs informations</p>
+                <p className="text-purple-100">Gérez les membres de votre GIE (max 40 membres)</p>
               </div>
             </div>
 
@@ -599,7 +719,7 @@ const WalletDashboard: React.FC = () => {
                   <Users className="w-5 h-5 text-blue-500" />
                 </div>
                 <p className="text-2xl font-bold text-gray-900">{membres.length}</p>
-                <p className="text-xs text-green-600 mt-1">+2 ce mois</p>
+                <p className="text-xs text-gray-600 mt-1">sur 40 max</p>
               </div>
 
               <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
@@ -607,19 +727,19 @@ const WalletDashboard: React.FC = () => {
                   <h4 className="text-sm font-medium text-gray-600">Membres Actifs</h4>
                   <Activity className="w-5 h-5 text-green-500" />
                 </div>
-                <p className="text-2xl font-bold text-gray-900">{membres.filter(m => m.statut === 'Actif').length}</p>
-                <p className="text-xs text-blue-600 mt-1">83% du total</p>
+                <p className="text-2xl font-bold text-gray-900">{membres.length}</p>
+                <p className="text-xs text-blue-600 mt-1">100% du total</p>
               </div>
 
               <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
                 <div className="flex items-center justify-between mb-2">
-                  <h4 className="text-sm font-medium text-gray-600">Cotisations Totales</h4>
-                  <DollarSign className="w-5 h-5 text-orange-500" />
+                  <h4 className="text-sm font-medium text-gray-600">Places Disponibles</h4>
+                  <UserPlus className="w-5 h-5 text-orange-500" />
                 </div>
-                <p className="text-2xl font-bold text-gray-900">
-                  {formatCurrency(membres.reduce((total, membre) => total + membre.cotisation, 0))}
+                <p className="text-2xl font-bold text-gray-900">{40 - membres.length}</p>
+                <p className="text-xs text-green-600 mt-1">
+                  {membres.length >= 40 ? 'Limite atteinte' : 'Places libres'}
                 </p>
-                <p className="text-xs text-green-600 mt-1">+8% ce mois</p>
               </div>
 
               <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
@@ -627,24 +747,34 @@ const WalletDashboard: React.FC = () => {
                   <h4 className="text-sm font-medium text-gray-600">Nouveaux Membres</h4>
                   <Users className="w-5 h-5 text-purple-500" />
                 </div>
-                <p className="text-2xl font-bold text-gray-900">2</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {membresStats?.dernierAjout ? '1' : '0'}
+                </p>
                 <p className="text-xs text-gray-600 mt-1">Ce mois-ci</p>
               </div>
             </div>
 
             {/* Actions rapides */}
             <div className="mb-6 flex flex-wrap gap-4">
-              <button className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors flex items-center">
-                <Users className="w-5 h-5 mr-2" />
-                Ajouter un Membre
+              <button 
+                onClick={() => setShowAddMemberModal(true)}
+                disabled={membres.length >= 40}
+                className={`px-6 py-3 rounded-lg transition-colors flex items-center ${
+                  membres.length >= 40 
+                    ? 'bg-gray-400 text-white cursor-not-allowed' 
+                    : 'bg-blue-600 text-white hover:bg-blue-700'
+                }`}
+              >
+                <Plus className="w-5 h-5 mr-2" />
+                Ajouter un Membre {membres.length >= 40 && '(Limite atteinte)'}
               </button>
-              <button className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors flex items-center">
-                <Send className="w-5 h-5 mr-2" />
-                Envoyer Notification
-              </button>
-              <button className="bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition-colors flex items-center">
-                <Package className="w-5 h-5 mr-2" />
-                Exporter Liste
+              
+              <button 
+                onClick={() => loadMembres()}
+                className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors flex items-center"
+              >
+                <Activity className="w-5 h-5 mr-2" />
+                Actualiser
               </button>
             </div>
 
@@ -1301,7 +1431,7 @@ const WalletDashboard: React.FC = () => {
 
               <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
                 <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-sm font-medium text-orange-600">Rendements</h3>
+                  <h3 className="text-sm font-medium text-orange-600">Revenus</h3>
                   <DollarSign className="w-5 h-5 text-orange-500" />
                 </div>
                 <p className="text-2xl font-bold text-gray-900">{formatCurrency(123750)}</p>

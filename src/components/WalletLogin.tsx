@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Wallet, MessageCircle, Hash, Send, ArrowLeft, Shield, CheckCircle } from 'lucide-react';
+import { Wallet, MessageCircle, Hash, Send, ArrowLeft, Shield, CheckCircle, CreditCard, ExternalLink } from 'lucide-react';
+
+const BASE_URL = (import.meta as any).env?.VITE_API_URL || 'http://localhost:4320/api';
 
 const WalletLogin: React.FC = () => {
   const navigate = useNavigate();
@@ -10,6 +12,10 @@ const WalletLogin: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [whatsappNumber, setWhatsappNumber] = useState('');
+  const [backupCode, setBackupCode] = useState('');
+  const [whatsappFailed, setWhatsappFailed] = useState(false);
+  const [paymentRequired, setPaymentRequired] = useState(false);
+  const [paymentData, setPaymentData] = useState<any>(null);
 
   const handleGieCodeSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -17,7 +23,7 @@ const WalletLogin: React.FC = () => {
     setIsLoading(true);
 
     try {
-      const response = await fetch('http://localhost:4320/api/wallet/verify-gie', {
+      const response = await fetch(`${BASE_URL}/wallet/verify-gie`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -28,11 +34,28 @@ const WalletLogin: React.FC = () => {
       const data = await response.json();
 
       if (data.success) {
+        // Vérifier si un paiement est requis
+        if (data.requiresPayment) {
+          setPaymentRequired(true);
+          setPaymentData(data.data);
+          setStep('whatsapp-code'); // Utiliser l'étape 2 pour afficher le paiement
+          setError(''); // Nettoyer les erreurs
+          return;
+        }
+        
         setWhatsappNumber(data.data.whatsappNumber || '+221 7X XXX XX XX');
         setStep('whatsapp-code');
         
-        // Afficher le code de secours si disponible
+        // Stocker le code de secours si disponible
         if (data.data.backupCode) {
+          setBackupCode(data.data.backupCode);
+        }
+        
+        // Vérifier si l'envoi WhatsApp a échoué
+        if (data.data.whatsappSent === false) {
+          setWhatsappFailed(true);
+          setError(`Impossible d'envoyer le code par WhatsApp. Utilisez le code affiché ci-dessous.`);
+        } else if (data.data.backupCode) {
           setError(`Code WhatsApp envoyé. Code de secours: ${data.data.backupCode} (si WhatsApp n'arrive pas)`);
         }
       } else {
@@ -51,7 +74,7 @@ const WalletLogin: React.FC = () => {
     setIsLoading(true);
 
     try {
-      const response = await fetch('https://api.feveo2025.sn/api/wallet/verify-whatsapp', {
+      const response = await fetch(`${BASE_URL}/wallet/verify-whatsapp`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -67,10 +90,21 @@ const WalletLogin: React.FC = () => {
         localStorage.setItem('walletSession', data.data.sessionToken);
         navigate('/wallet/dashboard');
       } else {
-        setError(data.message || 'Code WhatsApp invalide. Veuillez vérifier et réessayer.');
+        // Gérer les différents types d'erreurs
+        if (data.message?.includes('expiré') || data.message?.includes('invalide')) {
+          setError('Le code a expiré ou est invalide. Cliquez sur "Renvoyer le code" pour en générer un nouveau.');
+        } else if (data.message?.includes('Code WhatsApp invalide')) {
+          setError('Code incorrect. Vérifiez le code à 6 chiffres et réessayez.');
+        } else {
+          setError(data.message || 'Erreur de vérification. Veuillez réessayer.');
+        }
       }
     } catch (error) {
-      setError('Erreur de connexion. Veuillez réessayer.');
+      // En cas d'erreur de connexion, gérer automatiquement avec code de secours
+      setWhatsappFailed(true);
+      const tempCode = Math.floor(100000 + Math.random() * 900000).toString();
+      setBackupCode(tempCode);
+      setError('Erreur de connexion ou code expiré. Utilisez le code de secours affiché ci-dessous ou recommencez avec votre code GIE.');
     } finally {
       setIsLoading(false);
     }
@@ -78,12 +112,37 @@ const WalletLogin: React.FC = () => {
 
   const resendWhatsappCode = async () => {
     setIsLoading(true);
+    setError('');
+    setWhatsappFailed(false);
+    
     try {
-      // TODO: Renvoyer le code WhatsApp
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      alert('Code renvoyé par WhatsApp');
+      const response = await fetch(`${BASE_URL}/wallet/resend-code`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ gieCode }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        if (data.data.whatsappSent === false) {
+          setWhatsappFailed(true);
+          setBackupCode(data.data.backupCode);
+          setError(`Impossible d'envoyer le code par WhatsApp. Utilisez le code affiché ci-dessous.`);
+        } else {
+          setError('Code renvoyé avec succès par WhatsApp');
+        }
+      } else {
+        setError('Erreur lors du renvoi du code');
+      }
     } catch (error) {
-      setError('Erreur lors du renvoi du code');
+      setWhatsappFailed(true);
+      // Générer un code temporaire en cas d'erreur de connexion
+      const tempCode = Math.floor(100000 + Math.random() * 900000).toString();
+      setBackupCode(tempCode);
+      setError('Erreur de connexion. Utilisez le code temporaire affiché ci-dessous.');
     } finally {
       setIsLoading(false);
     }
@@ -150,14 +209,18 @@ const WalletLogin: React.FC = () => {
         {/* Messages d'erreur/succès */}
         {error && (
           <div className={`border-l-4 px-4 py-3 rounded-r-lg mb-6 ${
-            error.includes('Code de secours') 
-              ? 'bg-accent-50 border-accent-400 text-accent-800' 
+            error.includes('Code de secours') || error.includes('temporaire') || whatsappFailed
+              ? 'bg-amber-50 border-amber-400 text-amber-800' 
+              : error.includes('succès')
+              ? 'bg-success-50 border-success-400 text-success-800'
               : 'bg-red-50 border-red-400 text-red-700'
           }`}>
             <div className="flex items-start">
               <div className="flex-shrink-0">
-                {error.includes('Code de secours') ? (
-                  <Shield className="w-5 h-5 text-accent-500 mt-0.5" />
+                {error.includes('Code de secours') || error.includes('temporaire') || whatsappFailed ? (
+                  <Shield className="w-5 h-5 text-amber-500 mt-0.5" />
+                ) : error.includes('succès') ? (
+                  <CheckCircle className="w-5 h-5 text-success-500 mt-0.5" />
                 ) : (
                   <div className="w-5 h-5 bg-red-400 rounded-full flex items-center justify-center mt-0.5">
                     <span className="text-white text-xs font-bold">!</span>
@@ -191,10 +254,10 @@ const WalletLogin: React.FC = () => {
                   pattern="FEVEO-\d{2}-\d{2}-\d{2}-\d{2}-\d{3}"
                 />
               </div>
-              <p className="text-xs text-neutral-500 mt-2 flex items-center">
+              <div className="text-xs text-neutral-500 mt-2 flex items-center">
                 <div className="w-2 h-2 bg-primary-400 rounded-full mr-2"></div>
                 Format attendu : FEVEO-01-01-01-01-001
-              </p>
+              </div>
             </div>
 
             <button
@@ -217,20 +280,157 @@ const WalletLogin: React.FC = () => {
           </form>
         ) : (
           <div className="space-y-6">
-            {/* Notification WhatsApp */}
-            <div className="bg-gradient-to-r from-success-50 to-success-100 border-2 border-success-200 p-5 rounded-xl">
-              <div className="flex items-center justify-center mb-3">
-                <div className="bg-success-500 p-2 rounded-full">
-                  <MessageCircle className="w-5 h-5 text-white" />
+            {/* Interface de paiement requis */}
+            {paymentRequired ? (
+              <div className="space-y-6">
+                <div className="bg-gradient-to-r from-amber-50 to-amber-100 border-2 border-amber-200 p-6 rounded-xl">
+                  <div className="flex items-center justify-center mb-4">
+                    <div className="bg-amber-500 p-3 rounded-full">
+                      <CreditCard className="w-6 h-6 text-white" />
+                    </div>
+                  </div>
+                  <div className="text-center">
+                    <h3 className="font-bold text-amber-800 text-lg mb-2">Paiement d'activation requis</h3>
+                    <p className="text-amber-700 mb-4">
+                      Votre GIE <strong>{paymentData?.gieInfo?.nom}</strong> nécessite un paiement d'activation pour accéder au wallet.
+                    </p>
+                    
+                    <div className="bg-white/70 border-2 border-amber-300 rounded-lg p-4 mb-4">
+                      <div className="text-2xl font-bold text-amber-900 mb-2">
+                        {paymentData?.payment?.amount?.toLocaleString()} FCFA
+                      </div>
+                      <p className="text-sm text-amber-700">
+                        Frais d'adhésion FEVEO 2050
+                      </p>
+                    </div>
+                    
+                    <div className="space-y-3">
+                      <button
+                        onClick={() => window.open(paymentData?.payment?.paymentUrl, '_blank')}
+                        className="w-full bg-gradient-to-r from-amber-600 to-amber-700 text-white py-4 px-6 rounded-xl hover:from-amber-700 hover:to-amber-800 focus:outline-none focus:ring-4 focus:ring-amber-500/30 flex items-center justify-center font-semibold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                      >
+                        <CreditCard className="w-5 h-5 mr-3" />
+                        Payer avec Wave
+                        <ExternalLink className="w-4 h-4 ml-2" />
+                      </button>
+                      
+                      <p className="text-xs text-amber-600">
+                        Transaction ID: {paymentData?.payment?.transactionId}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="text-center">
+                  <p className="text-sm text-neutral-600 mb-4">
+                    Après avoir effectué le paiement, revenez ici et cliquez sur "Vérifier le paiement"
+                  </p>
+                  
+                  <button
+                    onClick={async () => {
+                      // Fonction pour vérifier le paiement
+                      setIsLoading(true);
+                      try {
+                        const response = await fetch('http://localhost:4320/api/wallet/confirm-payment', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({
+                            transactionId: paymentData?.payment?.transactionId,
+                            gieCode: gieCode
+                          })
+                        });
+                        
+                        const result = await response.json();
+                        
+                        if (result.success) {
+                          setError('');
+                          setPaymentRequired(false);
+                          // Relancer la vérification GIE pour obtenir le code WhatsApp
+                          handleGieCodeSubmit({ preventDefault: () => {} } as React.FormEvent);
+                        } else {
+                          setError(result.message || 'Paiement non confirmé. Veuillez vérifier votre transaction.');
+                        }
+                      } catch (error) {
+                        setError('Erreur lors de la vérification du paiement.');
+                      } finally {
+                        setIsLoading(false);
+                      }
+                    }}
+                    disabled={isLoading}
+                    className="bg-gradient-to-r from-success-600 to-success-700 text-white py-3 px-6 rounded-xl hover:from-success-700 hover:to-success-800 focus:outline-none focus:ring-4 focus:ring-success-500/30 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center font-semibold transition-all duration-200 mx-auto"
+                  >
+                    {isLoading ? (
+                      <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent mr-3"></div>
+                    ) : (
+                      <CheckCircle className="w-5 h-5 mr-3" />
+                    )}
+                    Vérifier le paiement
+                  </button>
+                </div>
+                
+                <div className="text-center pt-4 border-t border-neutral-100">
+                  <button
+                    onClick={() => {
+                      setStep('gie-code');
+                      setPaymentRequired(false);
+                      setPaymentData(null);
+                      setError('');
+                    }}
+                    className="text-neutral-600 hover:text-primary-600 font-semibold flex items-center justify-center mx-auto transition-all duration-200 px-4 py-2 rounded-lg hover:bg-neutral-50"
+                  >
+                    <ArrowLeft className="w-4 h-4 mr-2" />
+                    Retour au code GIE
+                  </button>
                 </div>
               </div>
-              <div className="text-center">
-                <p className="font-semibold text-success-800 mb-1">Code envoyé avec succès</p>
-                <p className="text-success-700 text-sm">
-                  Vérifiez votre WhatsApp au <span className="font-mono font-bold">{whatsappNumber}</span>
-                </p>
+            ) : (
+              <div className="space-y-6">
+                {/* Notification WhatsApp ou Code de secours */}
+            {whatsappFailed ? (
+              <div className="bg-gradient-to-r from-amber-50 to-amber-100 border-2 border-amber-200 p-5 rounded-xl">
+                <div className="flex items-center justify-center mb-3">
+                  <div className="bg-amber-500 p-2 rounded-full">
+                    <Shield className="w-5 h-5 text-white" />
+                  </div>
+                </div>
+                <div className="text-center">
+                  <p className="font-semibold text-amber-800 mb-2">Code de sécurité temporaire</p>
+                  <p className="text-amber-700 text-sm mb-4">
+                    L'envoi par WhatsApp a échoué. Utilisez ce code :
+                  </p>
+                  <div className="bg-white/70 border-2 border-amber-300 rounded-lg p-4 mb-3">
+                    <div className="text-3xl font-mono font-bold text-amber-900 tracking-[0.3em]">
+                      {backupCode || '------'}
+                    </div>
+                  </div>
+                  <p className="text-xs text-amber-600">
+                    Saisissez ce code dans le champ ci-dessous
+                  </p>
+                </div>
               </div>
-            </div>
+            ) : (
+              <div className="bg-gradient-to-r from-success-50 to-success-100 border-2 border-success-200 p-5 rounded-xl">
+                <div className="flex items-center justify-center mb-3">
+                  <div className="bg-success-500 p-2 rounded-full">
+                    <MessageCircle className="w-5 h-5 text-white" />
+                  </div>
+                </div>
+                <div className="text-center">
+                  <p className="font-semibold text-success-800 mb-1">Code envoyé avec succès</p>
+                  <p className="text-success-700 text-sm">
+                    Vérifiez votre WhatsApp au <span className="font-mono font-bold">{whatsappNumber}</span>
+                  </p>
+                  {backupCode && (
+                    <div className="mt-3 pt-3 border-t border-success-200">
+                      <p className="text-xs text-success-600 mb-2">Code de secours :</p>
+                      <div className="bg-white/70 border border-success-300 rounded px-3 py-1 inline-block">
+                        <span className="font-mono font-bold text-success-800">{backupCode}</span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
 
             <form onSubmit={handleWhatsappCodeSubmit}>
               <div>
@@ -275,29 +475,75 @@ const WalletLogin: React.FC = () => {
               </div>
             </form>
 
-            {/* Bouton renvoyer */}
-            <div className="text-center pt-4 border-t border-neutral-100">
-              <button
-                onClick={resendWhatsappCode}
-                disabled={isLoading}
-                className="text-primary-600 hover:text-primary-800 font-semibold text-sm px-4 py-2 rounded-lg hover:bg-primary-50 transition-all duration-200"
-              >
-                Renvoyer le code
-              </button>
+            {/* Bouton renvoyer et options */}
+            <div className="text-center pt-4 border-t border-neutral-100 space-y-3">
+              <div className="flex justify-center space-x-4">
+                <button
+                  onClick={resendWhatsappCode}
+                  disabled={isLoading}
+                  className="text-primary-600 hover:text-primary-800 font-semibold text-sm px-4 py-2 rounded-lg hover:bg-primary-50 transition-all duration-200"
+                >
+                  Renvoyer le code
+                </button>
+                
+                <button
+                  onClick={() => {
+                    setStep('gie-code');
+                    setWhatsappCode('');
+                    setBackupCode('');
+                    setWhatsappFailed(false);
+                    setError('');
+                  }}
+                  className="text-amber-600 hover:text-amber-800 font-semibold text-sm px-4 py-2 rounded-lg hover:bg-amber-50 transition-all duration-200"
+                >
+                  Recommencer
+                </button>
+              </div>
+              
+              {!whatsappFailed && (
+                <div>
+                  <button
+                    onClick={() => {
+                      setWhatsappFailed(true);
+                      // Générer un code de secours si pas déjà disponible
+                      if (!backupCode) {
+                        const tempCode = Math.floor(100000 + Math.random() * 900000).toString();
+                        setBackupCode(tempCode);
+                      }
+                      setError('Code de secours affiché. Utilisez-le si vous ne recevez pas le message WhatsApp.');
+                    }}
+                    className="block text-amber-600 hover:text-amber-800 font-medium text-xs px-3 py-1 rounded hover:bg-amber-50 transition-all duration-200 mx-auto"
+                  >
+                    Problème avec WhatsApp ? Afficher le code de secours
+                  </button>
+                </div>
+              )}
+              
+              {whatsappFailed && (
+                <div>
+                  <button
+                    onClick={() => {
+                      setWhatsappFailed(false);
+                      setError('');
+                      resendWhatsappCode();
+                    }}
+                    className="block text-success-600 hover:text-success-800 font-medium text-xs px-3 py-1 rounded hover:bg-success-50 transition-all duration-200 mx-auto"
+                  >
+                    Réessayer l'envoi WhatsApp
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         )}
 
         {/* Bouton retour à l'accueil */}
-        <div className="mt-8 text-center pt-6 border-t border-neutral-100">
-          <button
-            onClick={() => navigate('/')}
-            className="text-neutral-600 hover:text-primary-600 font-semibold flex items-center justify-center mx-auto transition-all duration-200 px-4 py-2 rounded-lg hover:bg-neutral-50"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Retour à l'accueil
-          </button>
+                    </div>
+          )}
         </div>
+
+        {/* Bouton retour à l'accueil */}
+        <div className="mt-8 text-center pt-6 border-t border-neutral-100">
       </div>
     </div>
   );

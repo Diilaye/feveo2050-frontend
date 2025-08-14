@@ -9,6 +9,8 @@ import GIEDashboard from '../components/GIEDashboard';
 import Investir from '../Investir';
 import Adhesion from '../Adhesion';
 import About from '../About';
+import EnregistrementPage from '../pages/EnregistrementPage';
+import GaleriePage from '../pages/GaleriePage';
 
 const AppRoutes: React.FC = () => {
   return (
@@ -28,7 +30,9 @@ const AppRoutes: React.FC = () => {
       <Route path="/dashboard" element={<GIEDashboard />} />
       <Route path="/investir" element={<Investir />} />
       <Route path="/adhesion" element={<Adhesion />} />
+      <Route path="/enregistrement-gie" element={<EnregistrementPage />} />
       <Route path="/about" element={<About />} />
+      <Route path="/galerie" element={<GaleriePage />} />
       
       {/* Route 404 - redirection vers l'accueil */}
       <Route path="*" element={<Home />} />

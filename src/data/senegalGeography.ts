@@ -2,604 +2,1984 @@
 // Structure : Régions > Départements > Arrondissements > Communes
 
 export const SENEGAL_GEOGRAPHIC_DATA = {
+
   "DAKAR": {
     nom: "Dakar",
-    code: "DK",
+    code: "01",
     departements: {
       "DAKAR": {
         nom: "Dakar",
-        code: "DK-DK",
-        arrondissements: {
-          "ALMADIES": {
-            nom: "Almadies",
-            communes: ["Ngor", "Ouakam", "Mermoz-Sacré-Cœur", "Yoff"]
+        code: "01",
+        arrondissements: [
+          {
+            nom: "GOREE",
+            code: "01",
+            communes: [{
+              code : "01",
+              nom: "Gorée"
+            }]
           },
-          "DAKAR_PLATEAU": {
-            nom: "Dakar-Plateau",
-            communes: ["Dakar-Plateau", "Gueule Tapée-Fass-Colobane", "Fann-Point E-Amitié", "Médina"]
-          },
-          "GRAND_DAKAR": {
-            nom: "Grand Dakar",
-            communes: ["Biscuiterie", "Dieuppeul-Derklé", "Grand Dakar", "Hann Bel-Air"]
-          },
-          "PARCELLES_ASSAINIES": {
-            nom: "Parcelles Assainies",
-            communes: ["Parcelles Assainies", "Patte d'Oie"]
+          {
+            nom: "VILLE DE DAKAR",
+            code: "02",
+            communes: [
+            {
+              code: "01",
+              nom: "DAKAR-PLATEAU"
+            },
+            {
+              code: "02",
+              nom: "MEDINA"
+            },
+            {
+              code: "03",
+              nom: "GEULE TAPEE FASS COLOBANE"
+            },
+            {
+              code: "04",
+              nom: "FANN POINT E AMITIE"
+            },
+            {
+              code: "05",
+              nom: "GRAND DAKAR"
+            },
+            {
+              code: "06",
+              nom: "BISCUTERIE"
+            },
+            {
+              code: "07",
+              nom: "HLM"
+            },
+            {
+              code: "08",
+              nom: "HANN-BEL AIR"
+            },
+            {
+              code: "09",
+              nom: "SICAP-LIBERTE"
+            },
+            {
+              code: "10",
+              nom: "DIEUPPEUL-DERKLE"
+            },
+            {
+              code: "11",
+              nom: "OUAKAM"
+            },
+            {
+              code: "12",
+              nom: "NGOR"
+            },
+            {
+              code: "13",
+              nom: "YOFF"
+            },
+            {
+              code: "14",
+              nom: "MERMOZ SACRE COEUR"
+            },
+            {
+              code: "15",
+              nom: "GRAND YOFF"
+            },
+            {
+              code: "16",
+              nom: "PATTE D'OIE"
+            },
+            {
+              code: "17",
+              nom: "PARCELLES ASSAINIES"
+            },
+            {
+              code: "18",
+              nom: "CAMBERENE"
+            }
+          ]
           }
-        }
-      },
-      "GUEDIAWAYE": {
-        nom: "Guédiawaye",
-        code: "DK-GD",
-        arrondissements: {
-          "GUEDIAWAYE": {
-            nom: "Guédiawaye",
-            communes: ["Guédiawaye", "Golf Sud", "Médina Gounass", "Ndiarème Limamoulaye", "Wakhinane Nimzatt"]
-          }
-        }
+        ]
       },
       "PIKINE": {
         nom: "Pikine",
-        code: "DK-PK",
-        arrondissements: {
-          "DAGOUDANE": {
-            nom: "Dagoudane",
-            communes: ["Dagoudane", "Yeumbeul Nord", "Yeumbeul Sud"]
-          },
-          "NIAYES": {
-            nom: "Niayes",
-            communes: ["Keur Massar", "Malika", "Tivaouane Diacksao"]
-          },
-          "PIKINE": {
-            nom: "Pikine",
-            communes: ["Dalifort", "Djiddah Thiaroye Kao", "Guinaw Rail Nord", "Guinaw Rail Sud", "Pikine Est", "Pikine Nord", "Pikine Ouest", "Thiaroye Gare", "Thiaroye sur Mer"]
+        code: "02",
+        arrondissements: [
+          {
+            nom : "VILLE DE PIKINE",
+            code: "01",
+            communes: [
+              { code: "01", nom: "PIKINE OUEST" },
+              { code: "02", nom: "PIKINE EST" },
+              { code: "03", nom: "PIKINE NORD" },
+              { code: "04", nom: "DALIFORT" },
+              { code: "05", nom: "DJIDAH THIAROYE KAO" },
+              { code: "06", nom: "GUINAW RAIL NORD" },
+              { code: "07", nom: "GUINAW RAIL SUD" },
+              { code: "08", nom: "THIAROYE SUR MER " },
+              { code: "09", nom: "TIVAOUANE DIACKSA" },
+              { code: "10", nom: "DIAMAGEUNE SICAP MBAO" },
+              { code: "11", nom: "THIAROYE GARE" },
+              { code: "12", nom: "MBAO" }
+            ]
           }
-        }
+        ]
       },
-      "RUFISQUE": {
+       "RUFISQUE": {
         nom: "Rufisque",
-        code: "DK-RF",
-        arrondissements: {
-          "BAMBILOR": {
-            nom: "Bambilor",
-            communes: ["Bambilor", "Sébikotane"]
+        code: "03",
+        arrondissements: [
+          {
+            nom: "BARGNY",
+            code: "01",
+            communes: [
+              {
+              code: "01",
+              nom: "BARGNY"
+            }
+          ]
           },
-          "RUFISQUE": {
-            nom: "Rufisque",
-            communes: ["Rufisque Est", "Rufisque Nord", "Rufisque Ouest", "Sangalkam"]
+          {
+            nom: "SENDOU",
+            code: "02",
+            communes: [
+              { code: "01", nom: "SENDOU" }
+            ]
           },
-          "SANGALKAM": {
-            nom: "Sangalkam",
-            communes: ["Jaxaay-Parcelles-Niakoul Rap", "Yène"]
-          }
-        }
-      }
-    }
-  },
+          {
+            nom: "SANGALKAM",
+            code: "03",
+            communes: [
+              { code: "01", nom: "BAMBILOR" },
+              { code: "02", nom: "SANGALKAM" },
+              { code: "03", nom: "TIVAOUNE PEULH NIAGHA" }
+            ]
+          },
+          {
+            nom: "DIAMNIADIO",
+            code: "04",
+            communes: [
+              {
+              code: "01",
+              nom: "YENE"
+            },
+              {
+              code: "02",
+              nom: "SEBIKOTANE"
+            },
+            {
+              code: "03",
+              nom: "DIAMNIADIO"
+            }
 
-  "THIES": {
-    nom: "Thiès",
-    code: "TH",
-    departements: {
-      "MBOUR": {
-        nom: "Mbour",
-        code: "TH-MB",
-        arrondissements: {
-          "FISSEL": {
-            nom: "Fissel",
-            communes: ["Fissel", "Ndiaganiao", "Sindia"]
+          ]
           },
-          "MBOUR": {
-            nom: "Mbour",
-            communes: ["Mbour", "Ngaparou", "Saly", "Somone"]
-          },
-          "SESSENE": {
-            nom: "Sessène",
-            communes: ["Malicounda", "Nguékhokh", "Popenguine", "Sessène"]
+          {
+            nom: "VILLE DE RUFISQUE",
+            code: "05",
+            communes: [
+              {
+              code: "01",
+              nom: "RUFISQUE EST"
+            },
+            {
+              code: "02",
+              nom: "RUFISQUE NORD"
+            },
+            {
+              code: "03",
+              nom: "RUFISQUE OUEST"
+            }
+          ]
           }
-        }
+        ]
       },
-      "THIES": {
-        nom: "Thiès",
-        code: "TH-TH",
-        arrondissements: {
-          "FANDENE": {
-            nom: "Fandène",
-            communes: ["Fandène", "Thiénaba"]
-          },
-          "THIES_EST": {
-            nom: "Thiès Est",
-            communes: ["Thiès Est"]
-          },
-          "THIES_NORD": {
-            nom: "Thiès Nord",
-            communes: ["Thiès Nord"]
-          },
-          "THIES_OUEST": {
-            nom: "Thiès Ouest",
-            communes: ["Thiès Ouest"]
+      "GUEDIAWAYE": {
+        nom: "Guédiawaye",
+        code: "04",
+        arrondissements: [
+          {
+            nom: "VILLE DE GUEDIAWAYE",
+            code: "01",
+            communes: [
+              { code: "01", nom: "GOLF SUD" },
+              { code: "02", nom: "SAM NOTAIRE" },
+              { code: "03", nom: "MEDINA GOUNASS" },
+              { code: "04", nom: "NDIARAME LIMAMOULAYE" },
+              { code: "05", nom: "WAKHINANE NIMZATT" }
+            ]
           }
-        }
+        ]
       },
-      "TIVAOUANE": {
-        nom: "Tivaouane",
-        code: "TH-TV",
-        arrondissements: {
-          "KOUL": {
-            nom: "Koul",
-            communes: ["Koul", "Mérina Dakhar", "Pire"]
+      "KEUR_MASSAR": {
+        nom: "Keur Massar",
+        code: "05",
+        arrondissements: [
+          {
+            nom: "YEUMBEUL",
+            code: "01",
+            communes: [
+              { code: "01", nom: "YEUMBEUL NORD" },
+              { code: "02", nom: "YEUMBEUL SUD" }
+            ]
           },
-          "MBORO": {
-            nom: "Mboro",
-            communes: ["Mboro", "Taiba Ndiaye"]
+          {
+            nom: "MALIKA",
+            code: "02",
+            communes: [
+              { code: "01", nom: "KEUR MASSAR NORD" },
+              { code: "02", nom: "MALIKA" }
+            ]
           },
-          "TIVAOUANE": {
-            nom: "Tivaouane",
-            communes: ["Tivaouane", "Méouane", "Pambal"]
+          {
+            nom: "JAXAAY",
+            code: "03",
+            communes: [
+              { code: "01", nom: "JAXAAY PARCELLES" },
+              { code: "02", nom: "KEUR MASSAR SUD" }
+            ]
           }
-        }
-      }
-    }
-  },
-
-  "SAINT_LOUIS": {
-    nom: "Saint-Louis",
-    code: "SL",
-    departements: {
-      "DAGANA": {
-        nom: "Dagana",
-        code: "SL-DG",
-        arrondissements: {
-          "DAGANA": {
-            nom: "Dagana",
-            communes: ["Dagana", "Richard-Toll"]
-          },
-          "GAE": {
-            nom: "Gaé",
-            communes: ["Gaé", "Mbane"]
-          },
-          "ROSS_BETHIO": {
-            nom: "Ross-Béthio",
-            communes: ["Ross-Béthio"]
-          }
-        }
-      },
-      "PODOR": {
-        nom: "Podor",
-        code: "SL-PD",
-        arrondissements: {
-          "AERETOU_LAO": {
-            nom: "Aéré-Lao",
-            communes: ["Aéré-Lao", "Gamadji-Saré"]
-          },
-          "GOLERE": {
-            nom: "Golèré",
-            communes: ["Golèré", "Ndioum"]
-          },
-          "PODOR": {
-            nom: "Podor",
-            communes: ["Podor", "Mboumba", "Ndiayène Pendao"]
-          }
-        }
-      },
-      "SAINT_LOUIS": {
-        nom: "Saint-Louis",
-        code: "SL-SL",
-        arrondissements: {
-          "SAINT_LOUIS": {
-            nom: "Saint-Louis",
-            communes: ["Saint-Louis"]
-          }
-        }
+        ]
       }
     }
   },
 
   "DIOURBEL": {
     nom: "Diourbel",
-    code: "DB",
+    code: "02",
     departements: {
       "BAMBEY": {
         nom: "Bambey",
-        code: "DB-BB",
-        arrondissements: {
-          "BAMBEY": {
-            nom: "Bambey",
-            communes: ["Bambey", "Baba Garage", "Dinguiraye", "Gawane", "Lambaye", "Ngoye", "Refane"]
+        code: "01",
+        arrondissements: [
+          {
+            nom:"BAMBEY",
+            code: "01",
+            communes: [
+              { code: "01", nom: "BAMBEY" }
+            ]
+          },
+          {
+            nom: "BABA GARAGE",
+            code: "02",
+            communes: [
+              { code: "01", nom: "BABA GARAGE" },
+              { code: "02", nom: "DINGUIRAYE" },
+              { code: "03", nom: "KEUR SAMBA KANE" }
+            ]
+          },
+          {
+            nom: "LAMBAYE",
+            code: "03",
+            communes: [
+              { code: "01", nom: "GAWANE" },
+              { code: "02", nom: "LAMBAYE" },
+              { code: "03", nom: "NGOGOM" },
+              { code: "04", nom: "REFANE" }
+            ]
+          },
+          {
+            nom: "NGOYE",
+            code: "04",
+            communes: [
+              { code: "01", nom: "NDANGALMA" },
+              { code: "02", nom: "NDONDOL" },
+              { code: "03", nom: "NGOYE" },
+              { code: "04", nom: "THIAKHAR" }
+            ]
           }
-        }
+        ]
       },
       "DIOURBEL": {
         nom: "Diourbel",
-        code: "DB-DB",
-        arrondissements: {
-          "DIOURBEL": {
-            nom: "Diourbel",
-            communes: ["Diourbel", "Ndoulo", "Pattar", "Touba Mosquée"]
+        code: "02",
+        arrondissements: [
+          {
+            nom: "DIOURBEL",
+            code: "01",
+            communes: [
+              { code: "01", nom: "DIOURBEL" }
+            ]
+          },
+          {
+            nom: "NDINDY",
+            code: "02",
+            communes: [
+              { code: "01", nom: "NDANKH SENE" },
+              { code: "02", nom: "GADE ESCALE" },
+              { code: "03", nom: "NDINDY" },
+              { code: "04", nom: "KEUR NGALGOU" },
+              { code: "05", nom: "TAIBA MOUTOUPHA" },
+              { code: "06", nom: "TOUBA LAPPE" }
+            ]
+          },
+          {
+            nom: "NDOULO",
+            code: "03",
+            communes: [
+              { code: "01", nom: "NDOULO" },
+              { code: "02", nom: "NGOHE" },
+              { code: "03", nom: "PATTAR" },
+              { code: "04", nom: "TOCKY GARE" },
+              { code: "05", nom: "TOURE MBONDE" }
+
+            ]
           }
-        }
+        ]
       },
       "MBACKE": {
-        nom: "Mbacké",
-        code: "DB-MB",
-        arrondissements: {
-          "MBACKE": {
-            nom: "Mbacké",
-            communes: ["Mbacké", "Kael", "Ndame", "Taif"]
-          },
-          "TOUBA": {
-            nom: "Touba",
-            communes: ["Touba", "Darou Rahmane"]
-          }
-        }
-      }
-    }
-  },
+        nom: "M'backé",
+        code: "03",
+        arrondissements: [
+          {
+            nom: "MBACKE",
+            code: "01",
+            communes: [
+              { code: "01", nom: "MBACKE" },
 
-  "LOUGA": {
-    nom: "Louga",
-    code: "LG",
-    departements: {
-      "KEBEMER": {
-        nom: "Kébémer",
-        code: "LG-KB",
-        arrondissements: {
-          "KEBEMER": {
-            nom: "Kébémer",
-            communes: ["Kébémer", "Dahra", "Gueoul"]
+            ]
+          },
+          {
+            nom: "KAEL",
+            code: "02",
+            communes: [
+              { code: "01", nom: "TAIBA NDIAYE" },
+              { code: "02", nom: "DAROU KHOUDOSS" },
+              { code: "03", nom: "KAEL" }
+            ]
+          },
+          {
+            nom: "NDAME",
+            code: "03",
+            communes: [
+              { code: "01", nom: "DAROU MOUSTY" },
+              { code: "02", nom: "TOUBA MOSQUEE" },
+              { code: "03", nom: "NDAME" }
+            ]
+          },
+          {
+            nom: "TAIF",
+            code: "04",
+            communes: [
+              { code: "01", nom: "TAIBA NDIAYE" },
+              { code: "02", nom: "DAROU MOUSTY" },
+              { code: "03", nom: "TOUBA KHALY" }
+            ]
           }
-        }
-      },
-      "LINGUERE": {
-        nom: "Linguère",
-        code: "LG-LG",
-        arrondissements: {
-          "LINGUERE": {
-            nom: "Linguère",
-            communes: ["Linguère", "Barkédji", "Dodji", "Sagatta Djoloff", "Yang-Yang"]
-          }
-        }
-      },
-      "LOUGA": {
-        nom: "Louga",
-        code: "LG-LG",
-        arrondissements: {
-          "LOUGA": {
-            nom: "Louga",
-            communes: ["Louga", "Coki", "Keur Momar Sarr", "Niomré", "Sakal"]
-          }
-        }
+        ]
       }
     }
   },
 
   "FATICK": {
     nom: "Fatick",
-    code: "FK",
+    code: "03",
     departements: {
       "FATICK": {
         nom: "Fatick",
-        code: "FK-FK",
-        arrondissements: {
-          "DIAKHAO": {
-            nom: "Diakhao",
-            communes: ["Diakhao", "Passy", "Tattaguine"]
+        code: "01",
+        arrondissements: [
+          {
+            nom: "FATICK",
+            code: "01",
+            communes: [
+              { code: "01", nom: "FATICK" }
+            ]
           },
-          "FATICK": {
-            nom: "Fatick",
-            communes: ["Fatick", "Dioffior", "Palmarin"]
+          {
+            nom: "DIOFFIOR",
+            code: "02",
+            communes: [
+              { code: "01", nom: "DIOFFIOR" }
+            ]
+          },
+          {
+            nom: "NDIOP",
+            code: "03",
+            communes: [
+              { code: "01", nom: "DIAOULE" },
+              { code: "02", nom: "MBELLACADIAO" },
+              { code: "03", nom: "NDIOP" },
+              { code: "04", nom: "THIARE NDIALGUI" },
+              { code: "05", nom: "DIAKHAO" }
+            ]
+          },
+          {
+            nom: "FIMELA",
+            code: "04",
+            communes: [
+              { code: "01", nom: "FIMELA" },
+              { code: "02", nom: "LOUL SESSENE" },
+              { code: "03", nom: "PALMARIN FACAO" },
+              { code: "04", nom: "DJILASSE" }
+            ]
+          },
+          {
+            nom: "NIAKHAR",
+            code: "05",
+            communes: [
+              { code: "01", nom: "NGAYOKHEME" },
+              { code: "02", nom: "NIAKHAR" },
+              { code: "03", nom: "PATAR" },
+
+            ]
+          },
+          {
+            nom: "TATTAGUINE",
+            code: "06",
+            communes: [
+              { code: "01", nom: "DIARRERE" },
+              { code: "02", nom: "DIOUROUP" },
+              { code: "03", nom: "TATTAGUINE" }
+            ]
           }
-        }
+        ]
       },
       "FOUNDIOUGNE": {
         nom: "Foundiougne",
-        code: "FK-FD",
-        arrondissements: {
-          "DJILOR": {
-            nom: "Djilor",
-            communes: ["Djilor", "Niodior", "Dionewar"]
+        code: "02",
+        arrondissements: [
+          {
+            nom: "FOUNDIOUGNE",
+            code: "01",
+            communes: [
+              { code: "01", nom: "FOUNDIOUGNE" },
+              { code: "02", nom: "NIODIOR" },
+              { code: "03", nom: "TOUBACOUTA" }
+            ]
           },
-          "FOUNDIOUGNE": {
-            nom: "Foundiougne",
-            communes: ["Foundiougne", "Karang", "Toubacouta"]
-          },
-          "SOKONE": {
-            nom: "Sokone",
-            communes: ["Sokone", "Bassoul"]
+          {
+            nom: "SOKONE",
+            code: "02",
+            communes: [
+              { code: "01", nom: "SOKONE" },
+              { code: "02", nom: "DJILOR" },
+              { code: "03", nom: "DIOSSONG" }
+            ]
           }
-        }
+        ]
       },
       "GOSSAS": {
         nom: "Gossas",
-        code: "FK-GS",
-        arrondissements: {
-          "GOSSAS": {
-            nom: "Gossas",
-            communes: ["Gossas", "Colobane", "Ouadiour"]
+        code: "03",
+        arrondissements: [
+          {
+            nom: "GOSSAS",
+            code: "01",
+            communes: [
+              { code: "01", nom: "GOSSAS" },
+              { code: "02", nom: "COLOBANE" },
+              { code: "03", nom: "PASSY" }
+            ]
+          },
+          {
+            nom: "OUADIOUR",
+            code: "02",
+            communes: [
+              { code: "01", nom: "OUADIOUR" },
+              { code: "02", nom: "NDIENNÉ LAGANE" }
+            ]
           }
-        }
-      }
-    }
-  },
-
-  "KAOLACK": {
-    nom: "Kaolack",
-    code: "KL",
-    departements: {
-      "GUINGUINEO": {
-        nom: "Guinguinéo",
-        code: "KL-GG",
-        arrondissements: {
-          "GUINGUINEO": {
-            nom: "Guinguinéo",
-            communes: ["Guinguinéo", "Fimela", "Ngayokheme"]
-          }
-        }
-      },
-      "KAOLACK": {
-        nom: "Kaolack",
-        code: "KL-KL",
-        arrondissements: {
-          "KAOLACK": {
-            nom: "Kaolack",
-            communes: ["Kaolack", "Gandiaye", "Kahone", "Keur Socé", "Latmingué", "Ndoffane", "Sibassor"]
-          }
-        }
-      },
-      "NIORO": {
-        nom: "Nioro du Rip",
-        code: "KL-NR",
-        arrondissements: {
-          "NIORO": {
-            nom: "Nioro du Rip",
-            communes: ["Nioro du Rip", "Médina Sabakh", "Ngathie Naoudé", "Paoskoto", "Wack Ngouna"]
-          }
-        }
+        ]
       }
     }
   },
 
   "KAFFRINE": {
     nom: "Kaffrine",
-    code: "KF",
+    code: "04",
     departements: {
-      "BIRKELANE": {
-        nom: "Birkelane",
-        code: "KF-BK",
-        arrondissements: {
-          "BIRKELANE": {
-            nom: "Birkelane",
-            communes: ["Birkelane", "Keur Mboucki", "Mabo"]
-          }
-        }
-      },
       "KAFFRINE": {
         nom: "Kaffrine",
-        code: "KF-KF",
-        arrondissements: {
-          "KAFFRINE": {
-            nom: "Kaffrine",
-            communes: ["Kaffrine", "Diamagadio", "Gniby", "Kathiotte"]
+        code: "01",
+        arrondissements: [
+          {
+            nom: "KAFFRINE",
+            code: "01",
+            communes: [
+              { code: "01", nom: "KAFFRINE" }
+            ]
+          },
+          {
+            nom: "GNIBY",
+            code: "02",
+            communes: [
+              { code: "01", nom: "BOULEL" },
+              { code: "02", nom: "GNIBY" },
+              { code: "03", nom: "KAHI" }
+            ]
+          },
+          {
+            nom: "KATAKEL",
+            code: "03",
+            communes: [
+              { code: "01", nom: "DIOKOUL BELBOUCK" },
+              { code: "02", nom: "KATHIOTTE" },
+              { code: "03", nom: "MEDINATOUL SALAM 2" },
+              { code: "04", nom: "DIAMAGADIO" },
+              { code: "05", nom: "NGANDA" }
+            ]
           }
-        }
+        ]
+      },
+      "BIRKELANE": {
+        nom: "BIRKELANE",
+        code: "01",
+        arrondissements: [
+          {
+            nom: "BIRKELANE",
+            code: "01",
+            communes: [
+              { code: "01", nom: "BIRKELANE" }
+            ]
+          },
+          {
+            nom: "KEUR MBOUCKI",
+            code: "02",
+            communes: [
+              { code: "01", nom: "KEUR MBOUCKI" },
+              { code: "02", nom: "TOUBA MBELLA" },
+              { code: "03", nom: "DIAMAL" },
+
+            ]
+          },
+          {
+            nom: "MABO",
+            code: "03",
+            communes: [
+              { code: "01", nom: "MABO" },
+              { code: "02", nom: "NDIOGNICK" },
+              { code: "03", nom: "MBEULEUP" },
+              { code: "04", nom: "SEGRE GATTA" }
+            ]
+          }
+        ]
       },
       "KOUNGHEUL": {
         nom: "Koungheul",
-        code: "KF-KG",
-        arrondissements: {
-          "KOUNGHEUL": {
-            nom: "Koungheul",
-            communes: ["Koungheul", "Ida Mouride", "Lour Escale", "Missirah Wadène"]
+        code: "03",
+        arrondissements: [
+          {
+            nom: "KOUNGHEUL",
+            code: "831",
+            communes: [
+              { code: "8311", nom: "KOUNGHEUL" }
+            ]
+          },
+          {
+            nom: "IDA MOURIDE",
+            code: "832",
+            communes: [
+              { code: "8321", nom: "SALY ESCALE" },
+              { code: "8322", nom: "FASS THIEKENE" },
+              { code: "8323", nom: "IDA MOURIDE" }
+            ]
+          },
+          {
+            nom: "LOUR ESCALE",
+            code: "833",
+            communes: [
+              { code: "8331", nom: "LOUR ESCALE" },
+              { code: "8332", nom: "RIBOT ESCALE" },
+              { code: "8333", nom: "KAYES KOUNGHEUL" }
+            ]
+          },
+          {
+            nom: "MISSIRAH WADENE",
+            code: "834",
+            communes: [
+              { code: "8341", nom: "NGAINTHE PATHE" },
+              { code: "8342", nom: "MAKA YOP" },
+              { code: "8343", nom: "MISSIRAH WADENE" }
+            ]
           }
-        }
+        ]
       },
-      "MALEM_HODAR": {
-        nom: "Malem-Hodar",
-        code: "KF-MH",
-        arrondissements: {
-          "MALEM_HODAR": {
-            nom: "Malem-Hodar",
-            communes: ["Malem-Hodar", "Darou Minam", "Kahi", "Ndioum Ngainth"]
+      "MALEM HODAR": {
+        nom: "Malem Hodar",
+        code: "04",
+        arrondissements: [
+          {
+            nom: "Darou Minam II",
+            code: "01",
+            communes: [
+              { code: "01", nom: "Darou Minam II" },
+              { code: "02", nom: "Ndioum Ngainth" },
+              { code: "03", nom: "Khelcom" },
+              { code: "04", nom: "Ndiobene Samba Lamo" }
+            ]
+          },
+          {
+            nom: "SAGNA",
+            code: "02",
+            communes: [
+              { code: "01", nom: "Dianke Souf" },
+              { code: "02", nom: "Sagna" }
+            ]
           }
-        }
+        ]
       }
     }
   },
 
-  "TAMBACOUNDA": {
-    nom: "Tambacounda",
-    code: "TC",
+
+  "KAOLACK": {
+    nom: "Kaolack",
+    code: "05",
     departements: {
-      "BAKEL": {
-        nom: "Bakel",
-        code: "TC-BK",
-        arrondissements: {
-          "BAKEL": {
-            nom: "Bakel",
-            communes: ["Bakel", "Diawara", "Goudiry", "Kidira", "Madina Gounass", "Moudéry"]
+      "KAOLACK": {
+        nom: "Kaolack",
+        code: "01",
+        arrondissements: [
+          {
+            nom: "VILLE DE KAOLACK",
+            code: "01",
+            communes: [
+              { code: "01", nom: "KAOLACK" }
+            ]
+          },
+          {
+            nom: "KAHONE",
+            code: "02",
+            communes: [
+              { code: "01", nom: "KAHONE" }
+            ]
+          },
+          {
+            nom: "NDIEDIENG",
+            code: "03",
+            communes: [
+              { code: "01", nom: "KEUR SOCE" },
+              { code: "02", nom: "NDIAFFATE" },
+              { code: "03", nom: "NDIEDIENG" }
+            ]
+          },
+          {
+            nom: "KOUMBAL",
+            code: "04",
+            communes: [
+              { code: "01", nom: "LATMINGUE" },
+              { code: "02", nom: "KEUR BAKA" },
+              { code: "03", nom: "NDOFFANE" },
+            ]
+          },
+          {
+            nom: "NGOTHIE",
+            code: "05",
+            communes: [
+              { code: "01", nom: "DYA" },
+              { code: "02", nom: "NDIEBEL" },
+              { code: "03", nom: "THIOMBY" },
+              { code: "04", nom: "GANDIAYE" },
+              { code: "05", nom: "SIBASSOR" },
+
+            ]
           }
-        }
+        ]
       },
-      "GOUDIRY": {
-        nom: "Goudiry",
-        code: "TC-GD",
-        arrondissements: {
-          "GOUDIRY": {
-            nom: "Goudiry",
-            communes: ["Goudiry", "Bélé", "Dougou", "Koumpentoum"]
+      "GUINGUINEO": {
+        nom: "Guinguinéo",
+        code: "02",
+        arrondissements: [
+          {
+            nom: "GUINGUINEO",
+            code: "01",
+            communes: [
+              { code: "01", nom: "GUINGUINEO" }
+            ]
+          },
+          {
+            nom: "MBADAKHOUNE",
+            code: "02",
+            communes: [
+              { code: "01", nom: "MBADAKHOUNE" },
+              { code: "02", nom: "NDIAGO" },
+              { code: "03", nom: "NGATHIE NAOUDE" },
+              { code: "04", nom: "KHELCOM BIRAME" },
+              { code: "05", nom: "FASS" }
+            ]
+          },
+          {
+            nom: "NGUELOU",
+            code: "03",
+            communes: [
+              { code: "01", nom: "GAGNICK" },
+              { code: "02", nom: "NGUELOU" },
+              { code: "03", nom: "OUROUR" },
+              { code: "04", nom: "DARA MBOSS" },
+              { code: "05", nom: "PANAL OUOLOF" },
+              { code: "06", nom: "MBOSS" }
+            ]
           }
-        }
+
+        ]
       },
-      "KOUMPENTOUM": {
-        nom: "Koumpentoum",
-        code: "TC-KP",
-        arrondissements: {
-          "KOUMPENTOUM": {
-            nom: "Koumpentoum",
-            communes: ["Koumpentoum", "Bantè Karantaba", "Makacoulibantang", "Payar"]
+      "NIORO": {
+        nom: "Nioro du Rip",
+        code: "03",
+        arrondissements: [
+          {
+            nom: "NIORO",
+            code: "01",
+            communes: [
+              { code: "01", nom: "NIORO" },
+              { code: "02", nom: "TAIBA NIASSENE" },
+              { code: "03", nom: "DABALY" }
+            ]
+          },
+          {
+            nom: "MEDINA-SABAKH",
+            code: "02",
+            communes: [
+              { code: "01", nom: "KAYEMOR" },
+              { code: "02", nom: "MEDINA-SABAKH" },
+              { code: "03", nom: "NGAYENE" }
+            ]
+          },
+          {
+            nom: "PAOSKOTO",
+            code: "03",
+            communes: [
+              { code: "01", nom: "GAINTE KAYE" },
+              { code: "02", nom: "PAOSKOTO" },
+              { code: "03", nom: "POROKHANE" },
+              { code: "04", nom: "TAÏBA NIASSENE" },
+              { code: "05", nom: "DABALY" },
+              { code: "06", nom: "DAROU SALAM" }
+            ]
+          },
+          {
+            nom: "WACK-NGOUNA",
+            code: "04",
+            communes: [
+              { code: "01", nom: "KEUR MABA DIAKHOU" },
+              { code: "02", nom: "NDRAME ESCALE" },
+              { code: "03", nom: "WACK NGOUNA" },
+              { code: "04", nom: "KEUR MANDONGO" },
+              { code: "05", nom: "KEUR MADIABEL" }
+            ]
           }
-        }
-      },
-      "TAMBACOUNDA": {
-        nom: "Tambacounda",
-        code: "TC-TC",
-        arrondissements: {
-          "TAMBACOUNDA": {
-            nom: "Tambacounda",
-            communes: ["Tambacounda", "Dialacoto", "Koussanar", "Makacolibantang", "Missirah"]
-          }
-        }
+        ]
       }
     }
   },
 
   "KEDOUGOU": {
     nom: "Kédougou",
-    code: "KD",
+    code: "06",
     departements: {
       "KEDOUGOU": {
         nom: "Kédougou",
-        code: "KD-KD",
-        arrondissements: {
-          "KEDOUGOU": {
-            nom: "Kédougou",
-            communes: ["Kédougou", "Bandafassi", "Dindefello", "Fongolimbi"]
+        code: "01",
+        arrondissements: [
+          {
+            nom: "KEDOUGOU",
+            code: "01",
+            communes: [
+              { code: "01", nom: "KEDOUGOU" }
+            ]
+          },
+          {
+            nom: "BANDAFASSI",
+            code: "02",
+            communes: [
+              { code: "01", nom: "BANDAFASSI" },
+              { code: "02", nom: "TOMBORONKOTO" },
+              { code: "03", nom: "DINDIFELO" },
+              { code: "04", nom: "NINEFECHA" }
+            ]
+          },
+          {
+            nom: "FONGOLEMBI",
+            code: "03",
+            communes: [
+              { code: "01", nom: "DIMBOLI" },
+              { code: "02", nom: "FONGOLEMBI" }
+            ]
           }
-        }
+        ]
       },
-      "SALEMATATA": {
-        nom: "Salématata",
-        code: "KD-SM",
-        arrondissements: {
-          "SALEMATATA": {
-            nom: "Salématata",
-            communes: ["Salématata", "Dakately", "Ethiolo", "Tomboronkoto"]
+      "SALEMATA": {
+        nom: "Salemata",
+        code: "02",
+        arrondissements: [
+          {
+            nom: "SALEMATA",
+            code: "01",
+            communes: [
+              { code: "01", nom: "SALEMATA" },
+              { code: "02", nom: "BEMBOU" },
+              { code: "03", nom: "KHOSSANTO" }
+            ]
+          },
+          {
+            nom: "DAKATELI",
+            code: "02",
+            communes: [
+              { code: "01", nom: "DAKATELI" },
+              { code: "02", nom: "KEVOYE" }
+            ]
+          },
+          {
+            nom: "DAR SALAM",
+            code: "03",
+            communes: [
+              { code: "01", nom: "DAR SALAM" },
+              { code: "02", nom: "ETHIOLO" },
+              { code: "03", nom: "OUBADJI" }
+            ]
           }
-        }
+        ]
       },
       "SARAYA": {
         nom: "Saraya",
-        code: "KD-SR",
-        arrondissements: {
-          "SARAYA": {
-            nom: "Saraya",
-            communes: ["Saraya", "Bembou", "Khossanto", "Sabodala"]
+        code: "03",
+        arrondissements: [
+          {
+            nom: "SARAYA",
+            code: "01",
+            communes: [
+              { code: "01", nom: "SARAYA" },
+              { code: "02", nom: "DAKATELIA" },
+              { code: "03", nom: "ETHIOLO" }
+            ]
+          },
+          {
+            nom: "BEMBOU",
+            code: "02",
+            communes: [
+              { code: "01", nom: "MEDINA BAFFE" },
+              { code: "02", nom: "BEMBOU" }
+            ]
+          },
+          {
+            nom: "SABODOLA",
+            code: "03",
+            communes: [
+              { code: "01", nom: "KHOSSANTO" },
+              { code: "02", nom: "MISSIRAH SIRIMANA" },
+              { code: "03", nom: "SABODALA" }
+            ]
           }
-        }
+        ]
       }
     }
   },
 
-  "KOLDA": {
-    nom: "Kolda",
-    code: "KD",
+ "KOLDA": {
+  nom: "Kolda",
+  code: "07",
+  departements: {
+    "KOLDA": {
+      nom: "Kolda",
+      code: "01",
+      arrondissements: [
+        {
+          nom: "KOLDA",
+          code: "01",
+          communes: [
+            { code: "01", nom: "KOLDA" }
+          ]
+        },
+        {
+          nom: "DIOULACOLON",
+          code: "02",
+          communes: [
+            { code: "01", nom: "DIOULACOLON" },
+            { code: "02", nom: "MEDINA EL HADJI" },
+            { code: "03", nom: "TANKANTO ESCALE" },
+            { code: "04", nom: "GUIRO YERO BOCAR" },
+            { code: "05", nom: "SALIKEGNE" },
+            { code: "06", nom: "SARE YOBA DIEGA" }
+          ]
+        },
+        {
+          nom: "MAMPATIM",
+          code: "03",
+          communes: [
+            { code: "01", nom: "BAGADADJI" },
+            { code: "02", nom: "COUMBACARA" },
+            { code: "03", nom: "MAMPATIM" },
+            { code: "04", nom: "DIALAMBERE" },
+            { code: "05", nom: "MEDINA CHERIF" },
+            { code: "06", nom: "DABO" }
+          ]
+        },
+        {
+          nom: "SARE BIDJI",
+          code: "04",
+          communes: [
+            { code: "01", nom: "SARE BIDJI" },
+            { code: "02", nom: "THIETTY" }
+          ]
+        }
+      ]
+    },
+    "VELINGARA": {
+      nom: "Vélingara",
+      code: "02",
+      arrondissements: [
+        {
+          nom: "VELINGARA",
+          code: "01",
+          communes: [
+            { code: "01", nom: "VELINGARA" }
+          ]
+        },
+        {
+          nom: "BONCONTO",
+          code: "02",
+          communes: [
+            { code: "01", nom: "BONCONTO" },
+            { code: "02", nom: "LINKERING" },
+            { code: "03", nom: "MEDINA GOUNASS" },
+            { code: "04", nom: "SINTHIANG KOUNDARA" }
+          ]
+        },
+        {
+          nom: "PAKOUR",
+          code: "03",
+          communes: [
+            { code: "01", nom: "OUASSADOU" },
+            { code: "02", nom: "PAROUMBA" },
+            { code: "03", nom: "PAKOUR" }
+          ]
+        },
+        {
+          nom: "SARE COLY SALLE",
+          code: "04",
+          communes: [
+            { code: "01", nom: "KANDIA" },
+            { code: "02", nom: "SARE COLY SALLE" },
+            { code: "03", nom: "NEMATABA" },
+            { code: "04", nom: "KANDIAYE" },
+            { code: "05", nom: "DIAOUBE- KABENDOU" },
+            { code: "06", nom: "KOUNKANE" }
+          ]
+        }
+      ]
+    },
+    "MEDINA_YORO_FOULAH": {
+      nom: "Médina Yoro Foulah",
+      code: "03",
+      arrondissements: [
+        {
+          nom: "MEDINA YORO FOULAH",
+          code: "01",
+          communes: [
+            { code: "01", nom: "MEDINA YORO FOULAH" }
+          ]
+        },
+        {
+          nom: "FAFACOUROU",
+          code: "01",
+          communes: [
+            { code: "01", nom: "FAFACOUROU" },
+            { code: "02", nom: "BADION" }
+          ]
+        },
+        {
+          nom: "NDORNA",
+          code: "02",
+          communes: [
+            { code: "01", nom: "NDORNA" },
+            { code: "02", nom: "BIGNARABE" },
+            { code: "03", nom: "BOUROUCO" },
+            { code: "04", nom: "KOULINTO" }
+          ]
+        },
+        {
+          nom: "NIAMING",
+          code: "03",
+          communes: [
+            { code: "01", nom: "DINGUIRAYE" },
+            { code: "02", nom: "KEREWANE" },
+            { code: "03", nom: "NIAMING" },
+            { code: "04", nom: "PATA" }
+          ]
+        }
+      ]
+    }
+  }
+  },
+
+  "LOUGA": {
+    nom: "Louga",
+    code: "08",
     departements: {
-      "KOLDA": {
-        nom: "Kolda",
-        code: "KD-KD",
-        arrondissements: {
-          "KOLDA": {
-            nom: "Kolda",
-            communes: ["Kolda", "Bagadadji", "Dialambéré", "Guiro Yero Bocar", "Médina El Hadji", "Salikégné", "Thiétty"]
+      "KEBEMER": {
+        nom: "Kébémer",
+        code: "01",
+        arrondissements: [
+          {
+            nom: "KEBEMER",
+            code: "01",
+            communes: [
+              { code: "01", nom: "KEBEMER" }
+            ]
+          },
+          {
+            nom: "DAROU MOUSTY",
+            code: "02",
+            communes: [
+              { code: "01", nom: "DAROU MARNANE" },
+              { code: "02", nom: "DAROU MOUSTY" },
+              { code: "03", nom: "MBADIANE" },
+              { code: "04", nom: "NDOYENE" },
+              { code: "05", nom: "SAM YABAL" },
+              { code: "06", nom: "TOUBA MERINA" },
+              { code: "07", nom: "MBACKE CADIOR" }
+            ]
+          },
+          {
+            nom: "NDANDE",
+            code: "03",
+            communes: [
+              { code: "01", nom: "BADEGNE OUOLOF" },
+              { code: "02", nom: "DIOKOUL DIAWRIGNE" },
+              { code: "03", nom: "KAB GAYE" },
+              { code: "04", nom: "NDANDE" },
+              { code: "05", nom: "THIEPPE" },
+              { code: "06", nom: "GUEOUL" }
+            ]
+          },
+          {
+            nom: "SAGATTA GUETH",
+            code: "04",
+            communes: [
+              { code: "01", nom: "KANENE NDIOB" },
+              { code: "02", nom: "LORO" },
+              { code: "03", nom: "SAGATTA GUETH" },
+              { code: "04", nom: "THIOLOM FALL" },
+              { code: "05", nom: "NGOURANE OUOLOF" }
+            ]
           }
-        }
+        ]
       },
-      "MEDINA_YORO_FOULAH": {
-        nom: "Médina Yoro Foulah",
-        code: "KD-MY",
-        arrondissements: {
-          "MEDINA_YORO_FOULAH": {
-            nom: "Médina Yoro Foulah",
-            communes: ["Médina Yoro Foulah", "Bignarabé", "Pata", "Tankanto Escale"]
+      "LINGUERE": {
+        nom: "Linguère",
+        code: "02",
+        arrondissements: [
+          {
+            nom: "LINGUERE",
+            code: "01",
+            communes: [
+              { code: "01", nom: "LINGUERE" }
+            ]
+          },
+          {
+            nom: "DAHRA",
+            code: "02",
+            communes: [
+              { code: "01", nom: "DAHRA" }
+            ]
+          },
+          {
+            nom: "BARKEDJI",
+            code: "03",
+            communes: [
+              { code: "01", nom: "BARKEDJI" },
+              { code: "02", nom: "GASSANE" },
+              { code: "03", nom: "THIARGNY" },
+              { code: "04", nom: "THIEL" }
+            ]
+          },
+          {
+            nom: "DODJI",
+            code: "04",
+            communes: [
+              { code: "01", nom: "DODJI" },
+              { code: "02", nom: "LABGAR" },
+              { code: "03", nom: "OUARKHOH" }
+            ]
+          },
+          {
+            nom: "YANG YANG",
+            code: "05",
+            communes: [
+              { code: "01", nom: "KAMB" },
+              { code: "02", nom: "MBOULA" },
+              { code: "03", nom: "TESSEKRE FORAGE" },
+              { code: "04", nom: "YANG YANG" },
+              { code: "05", nom: "MBEULEUKHE" }
+            ]
+          },
+          {
+            nom: "SAGATTA DJOLOF",
+            code: "06",
+            communes: [
+              { code: "01", nom: "BOULAL" },
+              { code: "02", nom: "DEALI" },
+              { code: "03", nom: "SAGATTA DJOLOF" },
+              { code: "04", nom: "THIAMENE DJOLOF" },
+              { code: "05", nom: "AFFE DJOLOFF" }
+            ]
           }
-        }
+        ]
       },
-      "VELINGARA": {
-        nom: "Vélingara",
-        code: "KD-VL",
-        arrondissements: {
-          "VELINGARA": {
-            nom: "Vélingara",
-            communes: ["Vélingara", "Bonconto", "Kounkané", "Linkering", "Ouassadou", "Pakour", "Paroumba"]
+      "LOUGA": {
+        nom: "Louga",
+        code: "03",
+        arrondissements: [
+          {
+            nom: "LOUGA",
+            code: "01",
+            communes: [
+              { code: "01", nom: "LOUGA" }
+            ]
+          },
+          {
+            nom: "COKI",
+            code: "02",
+            communes: [
+              { code: "01", nom: "COKI" },
+              { code: "02", nom: "PETE OUARACK" },
+              { code: "03", nom: "THIAMENE CAYOR" },
+              { code: "04", nom: "GUET ARDO" },
+              { code: "05", nom: "NDIAGNE" }
+            ]
+          },
+          {
+            nom: "KEUR MOMAR SARR",
+            code: "03",
+            communes: [
+              { code: "01", nom: "GANDE" },
+              { code: "02", nom: "KEUR MOMAR SARR" },
+              { code: "03", nom: "NGUER MALAL" },
+              { code: "04", nom: "SYER" }
+            ]
+          },
+          {
+            nom: "MBEDIENE",
+            code: "04",
+            communes: [
+              { code: "01", nom: "KELLE GUEYE" },
+              { code: "02", nom: "MBEDIENE" },
+              { code: "03", nom: "NGUIDILE" },
+              { code: "04", nom: "NIOMRE" }
+            ]
+          },
+          {
+            nom: "SAKAL",
+            code: "05",
+            communes: [
+              { code: "01", nom: "LEONA" },
+              { code: "02", nom: "NGUEUNE SARR" },
+              { code: "03", nom: "SAKAL" }
+            ]
           }
-        }
+        ]
       }
     }
   },
 
-  "ZIGUINCHOR": {
-    nom: "Ziguinchor",
-    code: "ZG",
+  "MATAM": {
+    nom: "Matam",
+    code: "09",
     departements: {
-      "BIGNONA": {
-        nom: "Bignona",
-        code: "ZG-BG",
-        arrondissements: {
-          "BIGNONA": {
-            nom: "Bignona",
-            communes: ["Bignona", "Diouloulou", "Kataba 1", "Sindian", "Tendouck", "Thionck-Essyl"]
+      "MATAM": {
+        nom: "Matam",
+        code: "01",
+        arrondissements: [
+          {
+            nom: "MATAM",
+            code: "01",
+            communes: [
+              { code: "01", nom: "MATAM" }
+            ]
+          },
+          {
+            nom: "OUROSSOGUI",
+            code: "02",
+            communes: [
+              { code: "01", nom: "OUROSSOGUI" }
+            ]
+          },
+          {
+            nom: "AGNAM-CIVOL",
+            code: "03",
+            communes: [
+              { code: "01", nom: "AGNAM-CIVOL" },
+              { code: "02", nom: "OREFONDE" },
+              { code: "03", nom: "DABIA" },
+              { code: "04", nom: "NGUIDILOGNE" },
+              { code: "05", nom: "THILOGNE" }
+            ]
+          },
+          {
+            nom: "OGO",
+            code: "04",
+            communes: [
+              { code: "01", nom: "BOKIDIAWE" },
+              { code: "02", nom: "NABADJI-CIVOL" },
+              { code: "03", nom: "OGO" }
+            ]
           }
-        }
+        ]
       },
-      "OUSSOUYE": {
-        nom: "Oussouye",
-        code: "ZG-OS",
-        arrondissements: {
-          "OUSSOUYE": {
-            nom: "Oussouye",
-            communes: ["Oussouye", "Diembéring", "Santhiaba-Manjacque"]
+      "KANEL": {
+        nom: "Kanel",
+        code: "02",
+        arrondissements: [
+          {
+            nom: "KANEL",
+            code: "01",
+            communes: [
+              { code: "01", nom: "KANEL" }
+            ]
+          },
+          {
+            nom: "ORKADIERE",
+            code: "02",
+            communes: [
+              { code: "01", nom: "BOKILADJI" },
+              { code: "02", nom: "ORKADIERE" },
+              { code: "03", nom: "AOURE" },
+              { code: "04", nom: "DEMBANCANE" },
+              { code: "05", nom: "ODOBERE" },
+              { code: "06", nom: "SEMME" },
+              { code: "07", nom: "WAOUNDE" }
+            ]
+          },
+          {
+            nom: "OURO SIDY",
+            code: "03",
+            communes: [
+              { code: "01", nom: "NDENDORY" },
+              { code: "02", nom: "OURO SIDY" },
+              { code: "03", nom: "HAMADY OUNARE" },
+              { code: "04", nom: "SINTHIOU BAMANBE-BANADJI" }
+            ]
           }
-        }
+        ]
       },
-      "ZIGUINCHOR": {
-        nom: "Ziguinchor",
-        code: "ZG-ZG",
-        arrondissements: {
-          "ZIGUINCHOR": {
-            nom: "Ziguinchor",
-            communes: ["Ziguinchor", "Adéane", "Boutoupa-Camaracounda", "Enampore", "Nyassia"]
+      "RANEROU_FERLO": {
+        nom: "Ranérou Ferlo",
+        code: "03",
+        arrondissements: [
+          {
+            nom: "RANEROU",
+            code: "01",
+            communes: [
+              { code: "01", nom: "RANEROU" }
+            ]
+          },
+          {
+            nom: "VELINGARA",
+            code: "02",
+            communes: [
+              { code: "01", nom: "LOUGRE-THIOLY" },
+              { code: "02", nom: "VELINGARA" },
+              { code: "03", nom: "OUDALAYE" }
+            ]
           }
-        }
+        ]
+      }
+    }
+  },
+
+  "SAINT-LOUIS": {
+    nom: "Saint‑Louis",
+    code: "10",
+    departements: {
+      "DAGANA": {
+        nom: "Dagana",
+        code: "01",
+        arrondissements: [
+          {
+            nom: "DAGANA",
+            code: "01",
+            communes: [
+              { code: "01", nom: "DAGANA" }
+            ]
+          },
+          {
+            nom: "RICHARD-TOLL",
+            code: "02",
+            communes: [
+              { code: "01", nom: "RICHARD-TOLL" }
+            ]
+          },
+          {
+            nom: "MBANE",
+            code: "03",
+            communes: [
+              { code: "01", nom: "MBANE" },
+              { code: "02", nom: "BOKHOL" },
+              { code: "03", nom: "GAE" },
+              { code: "04", nom: "NDOMBO SANDJIRY" }
+            ]
+          },
+          {
+            nom: "NDIAYE",
+            code: "04",
+            communes: [
+              { code: "01", nom: "DIAMA" },
+              { code: "02", nom: "NGNITH" },
+              { code: "03", nom: "RONKH" },
+              { code: "04", nom: "ROSS-BETHIO" },
+              { code: "05", nom: "ROSSO-SENEGAL" }
+            ]
+          }
+        ]
+      },
+      "PODOR": {
+        nom: "Podor",
+        code: "02",
+        arrondissements: [
+          {
+            nom: "PODOR",
+            code: "01",
+            communes: [
+              { code: "01", nom: "PODOR" }
+            ]
+          },
+          {
+            nom: "NDIOUM",
+            code: "02",
+            communes: [
+              { code: "01", nom: "NDIOUM" }
+            ]
+          },
+          {
+            nom: "CAS-CAS",
+            code: "03",
+            communes: [
+              { code: "01", nom: "MEDINA NDIATHBE" },
+              { code: "02", nom: "DOUNGA-LAO" },
+              { code: "03", nom: "MERY" },
+              { code: "04", nom: "AERE LAO" },
+              { code: "05", nom: "GOLLERE" },
+              { code: "06", nom: "MBOUMBA" },
+              { code: "07", nom: "WALALDE" }
+            ]
+          },
+          {
+            nom: "SALDE",
+            code: "04",
+            communes: [
+              { code: "01", nom: "BOKE DIALLOUBE" },
+              { code: "02", nom: "MBOLO BIRANE" },
+              { code: "03", nom: "GALOYA TOUCOULEUR" },
+              { code: "04", nom: "PETE" }
+            ]
+          },
+          {
+            nom: "THILLE BOU B A CAR", code: "05",
+            communes: [
+              { code: "01", nom: "FANAYE" },
+              { code: "02", nom: "NDIAYENE PENDAO" },
+              { code: "03", nom: "NDIANDANE" }
+            ]
+          },
+          {
+            nom: "GAMADJI SARE",
+            code: "06",
+            communes: [
+              { code: "01", nom: "DODEL" },
+              { code: "02", nom: "GAMADJI SARE" },
+              { code: "03", nom: "GUEDE VILLAGE" },
+              { code: "04", nom: "BODE LAO" },
+              { code: "05", nom: "DEMETTE" },
+              { code: "06", nom: "GUEDE CHANTIER" }
+            ]
+          }
+        ]
+      },
+      "SAINT-LOUIS": {
+        nom: "Saint‑Louis",
+        code: "03",
+        arrondissements: [
+          {
+            nom: "SAINT‑LOUIS",
+            code: "01",
+            communes: [
+              { code: "01", nom: "SAINT‑LOUIS" }
+            ]
+          },
+          {
+            nom: "RAO",
+            code: "02",
+            communes: [
+              { code: "01", nom: "GANDON" },
+              { code: "02", nom: "FASS NGOM" },
+              { code: "03", nom: "N’DIEBENE GANDIOLE" },
+              { code: "04", nom: "M’PAL" }
+            ]
+          }
+        ]
       }
     }
   },
 
   "SEDHIOU": {
     nom: "Sédhiou",
-    code: "SD",
+    code: "11",
     departements: {
+      "SEDHIOU": {
+        nom: "Sédhiou",
+        code: "01",
+        arrondissements: [
+          {
+            nom: "SEDHIOU",
+            code: "01",
+            communes: [
+              { code: "01", nom: "SEDHIOU" },
+              { code: "02", nom: "" }
+            ]
+          },
+          {
+            nom: "MARSASSOUM",
+            code: "02",
+            communes: [
+              { code: "01", nom: "MARSASSOUM" }
+            ]
+          },
+          {
+            nom: "DIENDE",
+            code: "03",
+            communes: [
+              { code: "01", nom: "BAMBALI" }
+            ]
+          },
+          {
+            nom: "DJIREDJI",
+            code: "04",
+            communes: [
+              { code: "01", nom: "DJIREDJI" }
+            ]
+          }
+        ]
+      },
       "BOUNKILING": {
         nom: "Bounkiling",
-        code: "SD-BK",
-        arrondissements: {
-          "BOUNKILING": {
-            nom: "Bounkiling",
-            communes: ["Bounkiling", "Diaroumé", "Tankon"]
+        code: "02",
+        arrondissements: [
+          {
+            nom: "BOUNKILING",
+            code: "01",
+            communes: [
+              { code: "01", nom: "BOUNKILING" }
+            ]
+          },
+          {
+            nom: "BOGHAL",
+            code: "02",
+            communes: [
+              { code: "01", nom: "BOGHAL" },
+              { code: "02", nom: "TANKON" },
+              { code: "03", nom: "DJINANY" },
+              { code: "04", nom: "NDIAMALATHIEL" },
+              { code: "05", nom: "NDIAMACOUTA" }
+            ]
+          },
+          {
+            nom: "BONA",
+            code: "03",
+            communes: [
+              { code: "01", nom: "BONA" },
+              { code: "02", nom: "DIACOUNDA" },
+              { code: "03", nom: "INOR" },
+              { code: "04", nom: "KANDION MANGANA" }
+            ]
+          },
+          {
+            nom: "DIAROUME",
+            code: "04",
+            communes: [
+              { code: "01", nom: "DIAROUME" },
+              { code: "02", nom: "DIAMBATY" },
+              { code: "03", nom: "FAOUNE" },
+              { code: "04", nom: "MADINA WANDIFA" }
+            ]
           }
-        }
+        ]
       },
       "GOUDOMP": {
         nom: "Goudomp",
-        code: "SD-GD",
-        arrondissements: {
-          "GOUDOMP": {
-            nom: "Goudomp",
-            communes: ["Goudomp", "Djiredji", "Karantaba", "Samine"]
+        code: "03",
+        arrondissements: [
+          {
+            nom: "GOUDOMP",
+            code: "01",
+            communes: [
+              { code: "01", nom: "GOUDOMP" }
+            ]
+          },
+          {
+            nom: "DJIBANAR",
+            code: "02",
+            communes: [
+              { code: "01", nom: "DJIBANAR" },
+              { code: "02", nom: "KAOUR" },
+              { code: "03", nom: "MANGAROUNGOU SANTO" },
+              { code: "04", nom: "SIMBADI BALANTE" },
+              { code: "05", nom: "YARANG BALANTE" },
+              { code: "06", nom: "DIATTACOUNDA" },
+              { code: "07", nom: "SAMINE" }
+            ]
+          },
+          {
+            nom: "KARANTABA",
+            code: "03",
+            communes: [
+              { code: "01", nom: "KARANTABA" },
+              { code: "02", nom: "KOLIBANTANG" }
+            ]
+          },
+          {
+            nom: "SIMBANDI BRASSOU",
+            code: "04",
+            communes: [
+              { code: "01", nom: "NIAGHA" },
+              { code: "02", nom: "SIMBANDI BRASSOU" },
+              { code: "03", nom: "BAGHERE" },
+              { code: "04", nom: "DIOUBOUDOU" },
+              { code: "05", nom: "TANAFF" }
+            ]
           }
-        }
-      },
-      "SEDHIOU": {
-        nom: "Sédhiou",
-        code: "SD-SD",
-        arrondissements: {
-          "SEDHIOU": {
-            nom: "Sédhiou",
-            communes: ["Sédhiou", "Bambali", "Diandoume", "Marsassoum"]
-          }
-        }
+        ]
       }
     }
-  }
+  },
+
+
+  "TAMBACOUNDA": {
+    nom: "Tambacounda",
+    code: "12",
+    departements: {
+      "BAKEL": {
+        nom: "Bakel",
+        code: "01",
+        arrondissements: [
+          {
+            nom: "BAKEL",
+            code: "01",
+            communes: [
+              { code: "01", nom: "BAKEL" }
+            ]
+          },
+          {
+            nom: "BELÉ",
+            code: "02",
+            communes: [
+              { code: "01", nom: "BELÉ" }
+            ]
+          },
+          {
+            nom: "KÉNIABA",
+            code: "03",
+            communes: [
+              { code: "01", nom: "GATHIARY" },
+              { code: "02", nom: "MADINA FOULBÉ" },
+              { code: "03", nom: "SADATOU" },
+              { code: "04", nom: "TOUMBOURA" }
+            ]
+          },
+          {
+            nom: "MOUDÉRY",
+            code: "04",
+            communes: [
+              { code: "01", nom: "BALLOU" },
+              { code: "02", nom: "GABOU" },
+              { code: "03", nom: "MOUDÉRY" }
+            ]
+          }
+        ]
+      },
+      "TAMBACOUNDA": {
+        nom: "Tambacounda",
+        code: "02",
+        arrondissements: [
+          {
+            nom: "KOUSSANAR",
+            code: "01",
+            communes: [
+              { code: "01", nom: "KOUSSANAR" },
+              { code: "02", nom: "SINTHIOU MALÈME" }
+            ]
+          },
+          {
+            nom: "MAKACOULIBANTANG",
+            code: "02",
+            communes: [
+              { code: "01", nom: "MAKACOULIBANTANG" },
+              { code: "02", nom: "N'DOGA BABACAR" },
+              { code: "03", nom: "NIANI TOUCOULEUR" }
+            ]
+          },
+          {
+            nom: "MISSIRAH",
+            code: "03",
+            communes: [
+              { code: "01", nom: "DIALACOTO" },
+              { code: "02", nom: "MISSIRAH" },
+              { code: "03", nom: "NETTE BOULOU" }
+            ]
+          }
+        ]
+      },
+      "GOUDIRY": {
+        nom: "Goudiry",
+        code: "03",
+        arrondissements: [
+          {
+            nom: "BALA",
+            code: "01",
+            communes: [
+              { code: "01", nom: "BALA" },
+              { code: "02", nom: "GOUMBAYEL" },
+              { code: "03", nom: "KOAR" }
+            ]
+          },
+          {
+            nom: "BOYNGUEL BAMBA",
+            code: "02",
+            communes: [
+              { code: "01", nom: "DOUGUÉ" },
+              { code: "02", nom: "BOYNGUEL BAMBA" },
+              { code: "03", nom: "KOUSSAN" },
+              { code: "04", nom: "SINTHIOU MAMADOU BOUBOU" }
+            ]
+          },
+          {
+            nom: "DIANKÉ MAKHA",
+            code: "03",
+            communes: [
+              { code: "01", nom: "BANI ISRAËL" },
+              { code: "02", nom: "BOUTOUCOUFARA" },
+              { code: "03", nom: "DIANKÉ MAKHA" },
+              { code: "04", nom: "KOMOTI" }
+            ]
+          },
+          {
+            nom: "KOULOR",
+            code: "04",
+            communes: [
+              { code: "01", nom: "KOULOR" },
+              { code: "02", nom: "SINTHIOU BOCAR ALI" },
+              { code: "03", nom: "KOTHIARY" }
+            ]
+          }
+        ]
+      },
+      "KOUMPENTOUM": {
+        nom: "Koumpentoum",
+        code: "04",
+        arrondissements: [
+          {
+            nom: "BAMBA THIALÈNE",
+            code: "01",
+            communes: [
+              { code: "01", nom: "BAMBA THIALÈNE" },
+              { code: "02", nom: "KAHÈNÉ" },
+              { code: "03", nom: "MÉRÈTO" },
+              { code: "04", nom: "N'DAME" }
+            ]
+          },
+          {
+            nom: "KOUTHIABA WOLOF",
+            code: "02",
+            communes: [
+              { code: "01", nom: "KOUTHIA GAYDI" },
+              { code: "02", nom: "KOUTHIABA WOLOF" },
+              { code: "03", nom: "PASS KOTO" },
+              { code: "04", nom: "PAYAR" },
+              { code: "05", nom: "MALÈM NIANI" }
+            ]
+          }
+        ]
+      }
+    }
+  },
+
+  "THIES": {
+    nom: "Thiès",
+    code: "13" ,
+    departements: {
+      "MBOUR": {
+        nom: "Mbour",
+        code: "01",
+        arrondissements: [
+          {
+            nom: "FISSEL",
+            code: "01",
+            communes: [
+              { code: "01", nom: "FISSEL" },
+              { code: "02", nom: "N’DIAGANIAO" }
+            ]
+          },
+          {
+            nom: "SESSENE",
+            code: "02",
+            communes: [
+              { code: "01", nom: "SANDIARA" },
+              { code: "02", nom: "N’GUENIENE" },
+              { code: "03", nom: "SESSENE" },
+              { code: "04", nom: "THIADIAYE" }
+            ]
+          },
+          {
+            nom: "SINDIA",
+            code: "03",
+            communes: [
+              { code: "01", nom: "MALICOUNDA" },
+              { code: "02", nom: "DIASS" },
+              { code: "03", nom: "SINDIA" },
+              { code: "04", nom: "NGUEKOKH" },
+              { code: "05", nom: "NGAPAROU" },
+              { code: "06", nom: "POPENGUINE" },
+              { code: "07", nom: "SALY PORTUDAL" },
+              { code: "08", nom: "SOMONE" }
+            ]
+          },
+          {
+            nom: "MBOUR",
+            code: "00",
+            communes: [
+              { code: "01", nom: "M’BOUR" }
+            ]
+          },
+          {
+            nom: "JOAL-FADIOUTH",
+            code: "00",
+            communes: [
+              { code: "01", nom: "JOAL-FADIOUTH" }
+            ]
+          }
+        ]
+      },
+      "THIES": {
+        nom: "Thiès",
+        code: "02",
+        arrondissements: [
+          {
+            nom: "THIES NORD",
+            code: "01",
+            communes: [
+              { code: "01", nom: "THIES NORD" }
+            ]
+          },
+          {
+            nom: "THIES SUD",
+            code: "02",
+            communes: [
+              { code: "01", nom: "THIES EST" },
+              { code: "02", nom: "THIES OUEST" }
+            ]
+          },
+          {
+            nom: "NOTTO",
+            code: "03",
+            communes: [
+              { code: "01", nom: "NOTTO" },
+              { code: "02", nom: "TASSETTE" }
+            ]
+          },
+          {
+            nom: "THIENABA",
+            code: "04",
+            communes: [
+              { code: "01", nom: "N’DIEYENE SIRAKH" },
+              { code: "02", nom: "N’GOUNDIANE" },
+              { code: "03", nom: "THIENABA" },
+              { code: "04", nom: "TOUBA TOUL" }
+            ]
+          },
+          {
+            nom: "KEUR MOUSSA",
+            code: "05",
+            communes: [
+              { code: "01", nom: "KEUR MOUSSA" },
+              { code: "02", nom: "FANDÈNE" },
+              { code: "03", nom: "DIENDER GUEDJI" },
+              { code: "04", nom: "CAYAR" }
+            ]
+          },
+          {
+            nom: "KHOMBOLE",
+            code: "06",
+            communes: [
+              { code: "01", nom: "KHOMBOLE" }
+            ]
+          },
+          {
+            nom: "POUT",
+            code: "07",
+            communes: [
+              { code: "01", nom: "POUT" }
+            ]
+          }
+        ]
+      },
+      "TIVAOUANE": {
+        nom: "Tivaouane",
+        code: "03",
+        arrondissements: [
+          {
+            nom: "MÉOUANE",
+            code: "01",
+            communes: [
+              { code: "01", nom: "MÉOUANE" },
+              { code: "02", nom: "TAÏBA N’DIAYE" },
+              { code: "03", nom: "DAROU KHOUDOSS" },
+              { code: "04", nom: "M’BORO" }
+            ]
+          },
+          {
+            nom: "MÉRINA‑DAKHAR",
+            code: "02",
+            communes: [
+              { code: "01", nom: "MÉRINA DAKHAR" },
+              { code: "02", nom: "KOUL" },
+              { code: "03", nom: "PÉKÈSSE" }
+            ]
+          },
+          {
+            nom: "NIAKHÈNE",
+            code: "03",
+            communes: [
+              { code: "01", nom: "NIAKHÈNE" },
+              { code: "02", nom: "M’BAYÈNE" },
+              { code: "03", nom: "N’GANDIOUF" },
+              { code: "04", nom: "THILMAKHA" }
+            ]
+          },
+          {
+            nom: "PAMBAL",
+            code: "04",
+            communes: [
+              { code: "01", nom: "PAMBAL" },
+              { code: "02", nom: "NOTTO GOUYE DIAMA" },
+              { code: "03", nom: "MONT‑ROLLAND" },
+              { code: "04", nom: "CHÉRIF LÖ" },
+              { code: "05", nom: "PIRE GOURÈYE" }
+            ]
+          }
+        ]
+      }
+    }
+  },
+
+  "ZIGUINCHOR": {
+    nom: "Ziguinchor",
+    code: "14",
+    departements: {
+      "BIGNONA": {
+        nom: "Bignona",
+        code: "01",
+        arrondissements: [
+          {
+            nom: "BIGNONA",
+            code: "01",
+            communes: [
+              { code: "01", nom: "BIGNONA" }
+            ]
+          },
+          {
+            nom: "SINDIAN",
+            code: "02",
+            communes: [
+              { code: "01", nom: "DJIBIDIONE" },
+              { code: "02", nom: "OULAMPANE" },
+              { code: "03", nom: "SINDIAN" },
+              { code: "04", nom: "SUELLE" }
+            ]
+          },
+          {
+            nom: "TENDOUCK",
+            code: "03",
+            communes: [
+              { code: "01", nom: "BALINGORE" },
+              { code: "02", nom: "DIEGOUNE" },
+              { code: "03", nom: "KARTHIACK" },
+              { code: "04", nom: "MANGAGOULACK" },
+              { code: "05", nom: "MLOMP" }
+            ]
+          },
+          {
+            nom: "TENGHORY",
+            code: "04",
+            communes: [
+              { code: "01", nom: "COUBALAN" },
+              { code: "02", nom: "NIAMONE" },
+              { code: "03", nom: "OUONCK" },
+              { code: "04", nom: "TENGHORY" }
+            ]
+          },
+          {
+            nom: "KATABA I",
+            code: "05",
+            communes: [
+              { code: "01", nom: "DJINAKI" },
+              { code: "02", nom: "KAFOUNTINE" },
+              { code: "03", nom: "KATABA I" },
+              { code: "04", nom: "DIOULOULOU" }
+            ]
+          }
+        ]
+      },
+      "OUSSOUYE": {
+        nom: "Oussouye",
+        code: "02",
+        arrondissements: [
+          {
+            nom: "OUSSOUYE",
+            code: "01",
+            communes: [
+              { code: "01", nom: "OUSSOUYE" }
+            ]
+          },
+          {
+            nom: "CABROUSSE",
+            code: "02",
+            communes: [
+              { code: "01", nom: "DJEMBERING" },
+              { code: "02", nom: "SANTHIABA MANJACQUE" }
+            ]
+          },
+          {
+            nom: "LOUDIA OUOLOF",
+            code: "03",
+            communes: [
+              { code: "01", nom: "MLOMP" },
+              { code: "02", nom: "OUKOUT" }
+            ]
+          }
+        ]
+      },
+      "ZIGUINCHOR": {
+        nom: "Ziguinchor",
+        code: "03",
+        arrondissements: [
+          {
+            nom: "ZIGUINCHOR",
+            code: "01",
+            communes: [
+              { code: "01", nom: "ZIGUINCHOR" }
+            ]
+          },
+          {
+            nom: "NIAGUIS",
+            code: "02",
+            communes: [
+              { code: "01", nom: "ADEANE" },
+              { code: "02", nom: "BOUTOUPA CAMARACOUNDA" },
+              { code: "03", nom: "NIAGUIS" }
+            ]
+          },
+          {
+            nom: "NYASSIA",
+            code: "03",
+            communes: [
+              { code: "01", nom: "ENAMPORE" },
+              { code: "02", nom: "NYASSIA" }
+            ]
+          }
+        ]
+      }
+    }
+  },
+
+  
 };
 
 // Fonction utilitaire pour obtenir toutes les régions
@@ -629,9 +2009,9 @@ export const getArrondissements = (regionCode, departementCode) => {
   const departement = region.departements[departementCode];
   if (!departement) return [];
   
-  return Object.keys(departement.arrondissements).map(key => ({
-    code: key,
-    nom: departement.arrondissements[key].nom
+  return departement.arrondissements.map(arr => ({
+    code: arr.code,
+    nom: arr.nom
   }));
 };
 
@@ -643,11 +2023,12 @@ export const getCommunes = (regionCode, departementCode, arrondissementCode) => 
   const departement = region.departements[departementCode];
   if (!departement) return [];
   
-  const arrondissement = departement.arrondissements[arrondissementCode];
+  const arrondissement = departement.arrondissements.find(arr => arr.code === arrondissementCode);
   if (!arrondissement) return [];
   
   return arrondissement.communes.map(commune => ({
-    nom: commune
+    code: commune.code,
+    nom: commune.nom
   }));
 };
 
@@ -659,8 +2040,8 @@ export const validateGeographicLocation = (region, departement, arrondissement, 
   const departementData = regionData.departements[departement];
   if (!departementData) return false;
   
-  const arrondissementData = departementData.arrondissements[arrondissement];
+  const arrondissementData = departementData.arrondissements.find(arr => arr.code === arrondissement);
   if (!arrondissementData) return false;
   
-  return arrondissementData.communes.includes(commune);
+  return arrondissementData.communes.some(c => c.code === commune);
 };

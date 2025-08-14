@@ -56,7 +56,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onNavigate }) => {
     },
     { 
       icon: Calendar, 
-      value: isLoadingStats ? '...' : (stats?.joursInvestissement?.toLocaleString() || '1 826'), 
+      value:  '1 826', 
       label: 'Nbre jours d\'invest', 
       color: 'text-accent-500' 
     },
@@ -137,7 +137,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onNavigate }) => {
                 Découvrir la plateforme
               </button>
               <button 
-                onClick={() => setShowVideo(true)}
+                onClick={() => onNavigate?.('galerie')}
                 className="btn-secondary bg-neutral-50/10 border-neutral-50/20 text-neutral-50 hover:bg-neutral-50/20 text-lg px-8 py-4 hover:scale-105 transform transition-all duration-200"
               >
                 Voir la gallery
@@ -219,21 +219,36 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onNavigate }) => {
             </button>
             
             <div className="bg-neutral-50 rounded-xl overflow-hidden shadow-2xl">
-              <div className="aspect-video bg-neutral-900 flex items-center justify-center">
-                <div className="text-center text-neutral-50">
-                  <Play className="w-16 h-16 mx-auto mb-4 opacity-50" />
-                  <h3 className="text-xl font-semibold mb-2">Vidéo Tutoriel FEVEO 2050</h3>
-                  <p className="text-neutral-300 max-w-md mx-auto">
-                    Découvrez notre plateforme d'investissement en économie organique, 
-                    le parcours d'adhésion et la souscription aux parts sociales.
-                  </p>
-                  <button 
-                    onClick={() => setShowVideo(false)}
-                    className="mt-6 btn-accent"
-                  >
-                    Fermer la vidéo
-                  </button>
+              <div className="aspect-video bg-neutral-900 flex items-center justify-center relative">
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="absolute inset-0 w-full h-full object-cover"
+          >
+            <source src="/videos/feveo2050.mp4" type="video/mp4" />
+            <source src="/videos/feveo2050.mov" type="video/quicktime" />
+            Votre navigateur ne prend pas en charge la lecture vidéo.
+          </video>                {/* Overlay avec contrôles personnalisés si nécessaire */}
+                <div className="absolute inset-0 bg-gradient-to-t from-neutral-900/50 to-transparent pointer-events-none">
+                  <div className="absolute bottom-4 left-4 text-neutral-50">
+                    <h3 className="text-lg font-semibold">Vidéo Tutoriel FEVEO 2050</h3>
+                    <p className="text-sm text-neutral-300">
+                      Découvrez notre plateforme d'investissement en économie organique
+                    </p>
+                  </div>
                 </div>
+              </div>
+              
+              {/* Bouton de fermeture sous la vidéo */}
+              <div className="p-4 bg-neutral-50 text-center">
+                <button 
+                  onClick={() => setShowVideo(false)}
+                  className="btn-accent px-6 py-2"
+                >
+                  Fermer la vidéo
+                </button>
               </div>
             </div>
           </div>

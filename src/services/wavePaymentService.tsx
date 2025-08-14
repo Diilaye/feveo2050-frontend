@@ -2,11 +2,9 @@
 // /src/services/wavePaymentService.tsx
 
 export interface PaymentRequest {
-  amount: number;
-  period: string;
+  montant: number;
   gieCode: string;
-  giePhone?: string;
-  description?: string;
+  typePaiement?: string;
 }
 
 export interface WavePaymentResponse {
@@ -18,27 +16,22 @@ export interface WavePaymentResponse {
 }
 
 class WavePaymentService {
-  private baseUrl = import.meta.env.VITE_API_URL || 'https://api.feveo2025.sn/api';
-  private waveToken = import.meta.env.VITE_WAVE_API_TOKEN || 'wave_sn_prod_FIdhHNGkeoAFnuGNxuh8WD3L9XjEBqjRCKx2zEZ87H7LWSwHs2v2aA_5q_ZJGwaLfphltYSRawKP-voVugCpwWB2FMH3ZTtC0w';
+  private baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:4320/api';
 
   /**
    * Génère un lien de paiement Wave avec les informations du GIE
    */
   async generatePaymentLink(paymentRequest: PaymentRequest): Promise<WavePaymentResponse> {
     try {
-      const response = await fetch(`${this.baseUrl}/payments/wave/generate`, {
+      const response = await fetch(`${this.baseUrl}/paiements`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${this.waveToken}`
         },
         body: JSON.stringify({
-          amount: paymentRequest.amount,
-          period: paymentRequest.period,
+          montant: paymentRequest.montant,
           gieCode: paymentRequest.gieCode,
-          giePhone: paymentRequest.giePhone,
-          description: paymentRequest.description || `Investissement FEVEO 2050 - ${paymentRequest.gieCode}`,
-          currency: 'XOF' // Franc CFA
+          typePaiement: 'investissement',
         })
       });
 
@@ -77,7 +70,6 @@ class WavePaymentService {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${this.waveToken}`
         },
         body: JSON.stringify({
           amount: amount,
@@ -133,7 +125,6 @@ class WavePaymentService {
       const response = await fetch(`${this.baseUrl}/payments/wave/status/${transactionId}`, {
         method: 'GET',
         headers: {
-          'Authorization': `Bearer ${this.waveToken}`
         }
       });
 

@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
-import { Wallet, Store, Leaf, Settings, Play, Volume2, Globe, ChevronRight, Target, Users, TrendingUp, Award } from 'lucide-react';
+import { Wallet, Store, Leaf, Settings, Play, Volume2, Globe, ChevronRight, Target, Users, TrendingUp, Award, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const ProgramSection = () => {
    const navigate = useNavigate();
   const [currentLanguage, setCurrentLanguage] = useState('fr');
   const [playingAudio, setPlayingAudio] = useState(null);
+  const [showVideoF, setShowVideoF] = useState(false);
+  const [showVideoW, setShowVideoW] = useState(false);
 
   const pillars = [
     {
@@ -73,7 +75,7 @@ const ProgramSection = () => {
       programTitle: "Programme Projets FEVEO 2050",
       programSubtitle: "Quatre piliers stratégiques pour transformer l'économie africaine",
       programDescription: "Notre programme intégré combine financement, distribution, production et transformation pour créer un écosystème complet d'autonomisation économique. Chaque pilier est conçu pour renforcer les autres et maximiser l'impact collectif.",
-      listenAudio: "Écouter en wolof",
+      listenAudio: "Vidéo en français",
       stopAudio: "Arrêter l'audio"
     },
     wo: {
@@ -138,7 +140,7 @@ const ProgramSection = () => {
             </p>
             <div className="flex items-center justify-center gap-4 mb-6">
               <button
-                onClick={() => handleAudioPlay('platform')}
+                onClick={() => currentLanguage === 'fr' ? setShowVideoF(true) : setShowVideoW(true)}
                 className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-all duration-200 ${
                   playingAudio === 'platform'
                     ? 'bg-success-500 text-neutral-50 border-success-500'
@@ -263,7 +265,101 @@ const ProgramSection = () => {
           </button>
         </div>
       </div>
+
+       {/* Video Modal */}
+      {showVideoF && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-neutral-900/80 backdrop-blur-sm">
+          <div className="relative w-full max-w-4xl mx-4">
+            <button
+              onClick={() => setShowVideoF(false)}
+              className="absolute -top-12 right-0 text-neutral-50 hover:text-neutral-300 transition-colors duration-200"
+            >
+              <X className="w-8 h-8" />
+            </button>
+            
+            <div className="bg-neutral-50 rounded-xl overflow-hidden shadow-2xl">
+              <div className="aspect-video bg-neutral-900 flex items-center justify-center relative">
+          <video
+            autoPlay
+            loop
+            playsInline
+            className="absolute inset-0 w-full h-full object-cover"
+          >
+            <source src="/videos/feveo2050.mp4" type="video/mp4" />
+            <source src="/videos/feveo2050.mov" type="video/quicktime" />
+            Votre navigateur ne prend pas en charge la lecture vidéo.
+          </video>                {/* Overlay avec contrôles personnalisés si nécessaire */}
+                <div className="absolute inset-0 bg-gradient-to-t from-neutral-900/50 to-transparent pointer-events-none">
+                  <div className="absolute bottom-4 left-4 text-neutral-50">
+                    <h3 className="text-lg font-semibold">Vidéo Tutoriel FEVEO 2050</h3>
+                    <p className="text-sm text-neutral-300">
+                      Découvrez notre plateforme d'investissement en économie organique
+                    </p>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Bouton de fermeture sous la vidéo */}
+              <div className="p-4 bg-neutral-50 text-center">
+                <button 
+                  onClick={() => setShowVideoF(false)}
+                  className="btn-accent px-6 py-2"
+                >
+                  Fermer la vidéo
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Video Modal */}
+      {showVideoW && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-neutral-900/80 backdrop-blur-sm">
+          <div className="relative w-full max-w-4xl mx-4">
+            <button
+              onClick={() => setShowVideoW(false)}
+              className="absolute -top-12 right-0 text-neutral-50 hover:text-neutral-300 transition-colors duration-200"
+            >
+              <X className="w-8 h-8" />
+            </button>
+            
+            <div className="bg-neutral-50 rounded-xl overflow-hidden shadow-2xl">
+              <div className="aspect-video bg-neutral-900 flex items-center justify-center relative">
+          <video
+            autoPlay
+            loop
+            playsInline
+            className="absolute inset-0 w-full h-full object-cover"
+          >
+            <source src="/videos/feveo2050W.mp4" type="video/mp4" />
+            Votre navigateur ne prend pas en charge la lecture vidéo.
+          </video>                {/* Overlay avec contrôles personnalisés si nécessaire */}
+                <div className="absolute inset-0 bg-gradient-to-t from-neutral-900/50 to-transparent pointer-events-none">
+                  <div className="absolute bottom-4 left-4 text-neutral-50">
+                    <h3 className="text-lg font-semibold">Vidéo Tutoriel FEVEO 2050</h3>
+                    <p className="text-sm text-neutral-300">
+                      Découvrez notre plateforme d'investissement en économie organique
+                    </p>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Bouton de fermeture sous la vidéo */}
+              <div className="p-4 bg-neutral-50 text-center">
+                <button 
+                  onClick={() => setShowVideoW(false)}
+                  className="btn-accent px-6 py-2"
+                >
+                  Fermer la vidéo
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
+    
   );
 };
 
