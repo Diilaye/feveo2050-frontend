@@ -15,87 +15,107 @@ export const SENEGAL_GEOGRAPHIC_DATA = {
             nom: "GOREE",
             code: "01",
             communes: [{
-              code : "01",
-              nom: "Gorée"
+              code: "01",
+              nom: "GOREE"
             }]
           },
           {
-            nom: "VILLE DE DAKAR",
+            nom: "DAKAR-PLATEAU",
             code: "02",
             communes: [
-            {
-              code: "01",
-              nom: "DAKAR-PLATEAU"
-            },
-            {
-              code: "02",
-              nom: "MEDINA"
-            },
-            {
-              code: "03",
-              nom: "GEULE TAPEE FASS COLOBANE"
-            },
-            {
-              code: "04",
-              nom: "FANN POINT E AMITIE"
-            },
-            {
-              code: "05",
-              nom: "GRAND DAKAR"
-            },
-            {
-              code: "06",
-              nom: "BISCUTERIE"
-            },
-            {
-              code: "07",
-              nom: "HLM"
-            },
-            {
-              code: "08",
-              nom: "HANN-BEL AIR"
-            },
-            {
-              code: "09",
-              nom: "SICAP-LIBERTE"
-            },
-            {
-              code: "10",
-              nom: "DIEUPPEUL-DERKLE"
-            },
-            {
-              code: "11",
-              nom: "OUAKAM"
-            },
-            {
-              code: "12",
-              nom: "NGOR"
-            },
-            {
-              code: "13",
-              nom: "YOFF"
-            },
-            {
-              code: "14",
-              nom: "MERMOZ SACRE COEUR"
-            },
-            {
-              code: "15",
-              nom: "GRAND YOFF"
-            },
-            {
-              code: "16",
-              nom: "PATTE D'OIE"
-            },
-            {
-              code: "17",
-              nom: "PARCELLES ASSAINIES"
-            },
-            {
-              code: "18",
-              nom: "CAMBERENE"
-            }
-          ]
+              {
+                code: "01",
+                nom: "DAKAR-PLATEAU"
+              },
+              {
+                code: "02",
+                nom: "MEDINA"
+              },
+              {
+                code: "03",
+                nom: "GEULE TAPEE FASS COLOBANE"
+              },
+              {
+                code: "04",
+                nom: "FANN POINT E AMITIE"
+              }
+            ]
+          },
+          {
+            nom: "GRAND-DAKAR",
+            code: "03",
+            communes: [
+
+              {
+                code: "01",
+                nom: "GRAND DAKAR"
+              },
+              {
+                code: "02",
+                nom: "BISCUTERIE"
+              },
+              {
+                code: "03",
+                nom: "HLM"
+              },
+              {
+                code: "04",
+                nom: "HANN-BEL AIR"
+              },
+              {
+                code: "05",
+                nom: "SICAP-LIBERTE"
+              },
+              {
+                code: "06",
+                nom: "DIEUPPEUL-DERKLE"
+              }
+            ]
+          },
+          {
+            nom: "ALMADIES",
+            code: "04",
+            communes: [
+              {
+                code: "01",
+                nom: "OUAKAM"
+              },
+              {
+                code: "02",
+                nom: "NGOR"
+              },
+              {
+                code: "03",
+                nom: "YOFF"
+              },
+              {
+                code: "04",
+                nom: "MERMOZ SACRE COEUR"
+              }
+
+            ]
+          },
+          {
+            nom: "PARCELLES ASSAINIES",
+            code: "05",
+            communes: [
+              {
+                code: "01",
+                nom: "GRAND YOFF"
+              },
+              {
+                code: "02",
+                nom: "PATTE D'OIE"
+              },
+              {
+                code: "03",
+                nom: "PARCELLES ASSAINIES"
+              },
+              {
+                code: "04",
+                nom: "CAMBERENE"
+              }
+            ]
           }
         ]
       },
@@ -104,7 +124,7 @@ export const SENEGAL_GEOGRAPHIC_DATA = {
         code: "02",
         arrondissements: [
           {
-            nom : "VILLE DE PIKINE",
+            nom: "VILLE DE PIKINE",
             code: "01",
             communes: [
               { code: "01", nom: "PIKINE OUEST" },
@@ -123,7 +143,7 @@ export const SENEGAL_GEOGRAPHIC_DATA = {
           }
         ]
       },
-       "RUFISQUE": {
+      "RUFISQUE": {
         nom: "Rufisque",
         code: "03",
         arrondissements: [
@@ -132,16 +152,20 @@ export const SENEGAL_GEOGRAPHIC_DATA = {
             code: "01",
             communes: [
               {
-              code: "01",
-              nom: "BARGNY"
-            }
-          ]
+                code: "01",
+                nom: "BARGNY"
+              }
+            ]
           },
           {
             nom: "SENDOU",
             code: "02",
             communes: [
-              { code: "01", nom: "SENDOU" }
+              {
+                code: "01",
+                nom: "SENDOU"
+              },
+
             ]
           },
           {
@@ -158,40 +182,42 @@ export const SENEGAL_GEOGRAPHIC_DATA = {
             code: "04",
             communes: [
               {
-              code: "01",
-              nom: "YENE"
-            },
+                code: "01",
+                nom: "YENE"
+              },
               {
-              code: "02",
-              nom: "SEBIKOTANE"
-            },
-            {
-              code: "03",
-              nom: "DIAMNIADIO"
-            }
+                code: "02",
+                nom: "SEBIKOTANE"
+              },
+              {
+                code: "03",
+                nom: "DIAMNIADIO"
+              }
 
-          ]
+            ]
           },
           {
             nom: "VILLE DE RUFISQUE",
             code: "05",
             communes: [
               {
-              code: "01",
-              nom: "RUFISQUE EST"
-            },
-            {
-              code: "02",
-              nom: "RUFISQUE NORD"
-            },
-            {
-              code: "03",
-              nom: "RUFISQUE OUEST"
-            }
-          ]
+                code: "01",
+                nom: "RUFISQUE EST"
+              },
+              {
+                code: "02",
+                nom: "RUFISQUE NORD"
+              },
+              {
+                code: "03",
+                nom: "RUFISQUE OUEST"
+              }
+            ]
           }
+
         ]
       },
+
       "GUEDIAWAYE": {
         nom: "Guédiawaye",
         code: "04",
@@ -214,7 +240,7 @@ export const SENEGAL_GEOGRAPHIC_DATA = {
         code: "05",
         arrondissements: [
           {
-            nom: "YEUMBEUL",
+            nom: "YEUMBEUL NORD",
             code: "01",
             communes: [
               { code: "01", nom: "YEUMBEUL NORD" },
@@ -251,7 +277,7 @@ export const SENEGAL_GEOGRAPHIC_DATA = {
         code: "01",
         arrondissements: [
           {
-            nom:"BAMBEY",
+            nom: "BAMBEY",
             code: "01",
             communes: [
               { code: "01", nom: "BAMBEY" }
@@ -326,7 +352,7 @@ export const SENEGAL_GEOGRAPHIC_DATA = {
         ]
       },
       "MBACKE": {
-        nom: "M'backé",
+        nom: "MBACKE",
         code: "03",
         arrondissements: [
           {
@@ -341,27 +367,33 @@ export const SENEGAL_GEOGRAPHIC_DATA = {
             nom: "KAEL",
             code: "02",
             communes: [
-              { code: "01", nom: "TAIBA NDIAYE" },
-              { code: "02", nom: "DAROU KHOUDOSS" },
-              { code: "03", nom: "KAEL" }
+              { code: "01", nom: "DENDEYE GOUYE GUI" },
+              { code: "02", nom: "DAROU SALAM TYP" },
+              { code: "03", nom: "KAEL" },
+              { code: "04", nom: "MADINA" },
+              { code: "05", nom: "N’DIOUMANE T. THIEKENE" },
+              { code: "06", nom: "TOUBA M’BOUL" },
+              { code: "07", nom: "DAROU NAHIM" },
+              { code : "08", nom: "TAIBA TIECKENE" }
             ]
           },
           {
             nom: "NDAME",
             code: "03",
             communes: [
-              { code: "01", nom: "DAROU MOUSTY" },
-              { code: "02", nom: "TOUBA MOSQUEE" },
-              { code: "03", nom: "NDAME" }
+              { code: "01", nom: "DALLA N’GABOU" },
+              { code: "02", nom: "MISSIRAH" },
+              { code: "03", nom: "N’GHAYE" },
+              { code: "04", nom: "TOUBA FALL" },
+              { code: "05", nom: "TOUBA MOSQUEE" }
             ]
           },
           {
             nom: "TAIF",
             code: "04",
             communes: [
-              { code: "01", nom: "TAIBA NDIAYE" },
-              { code: "02", nom: "DAROU MOUSTY" },
-              { code: "03", nom: "TOUBA KHALY" }
+              { code: "01", nom: "SADIO" },
+              { code: "02", nom: "TAÏF" }
             ]
           }
         ]
@@ -441,18 +473,41 @@ export const SENEGAL_GEOGRAPHIC_DATA = {
             nom: "FOUNDIOUGNE",
             code: "01",
             communes: [
-              { code: "01", nom: "FOUNDIOUGNE" },
-              { code: "02", nom: "NIODIOR" },
-              { code: "03", nom: "TOUBACOUTA" }
+              { code: "01", nom: "FOUNDIOUGNE" }
             ]
           },
           {
             nom: "SOKONE",
             code: "02",
             communes: [
-              { code: "01", nom: "SOKONE" },
-              { code: "02", nom: "DJILOR" },
-              { code: "03", nom: "DIOSSONG" }
+              { code: "01", nom: "SOKONE" }
+            ]
+          },
+          {
+            nom: "DJILOR",
+            code: "03",
+            communes: [
+              { code: "01", nom: "DJILOR" },
+              { code: "02", nom: "DIOSSONG" },
+              { code: "03", nom: "DIAGANE BARKA" },
+              { code: "04", nom: "MBAM" },
+              { code: "05", nom: "PASSY" },
+              { code: "06", nom: "SOUM" }
+
+            ]
+          },
+          {
+            nom: "NIODIOR",
+            code: "04",
+            communes: [
+              { code: "01", nom: "BASSOUL" },
+              { code: "02", nom: "DIONEWAR" },
+              { code: "03", nom: "DJIRNDA" },
+              { code: "04", nom: "KEUR SALOUM DIANE" },
+              { code: "05", nom: "KEUR SAMBA GUEYE" },
+              { code: "06", nom: "NIORO ALASSANE TALL" },
+              { code: "07", nom: "TOUBACOUTA" },
+              { code: "08", nom: "KARANG POSTE" }
             ]
           }
         ]
@@ -466,16 +521,23 @@ export const SENEGAL_GEOGRAPHIC_DATA = {
             code: "01",
             communes: [
               { code: "01", nom: "GOSSAS" },
-              { code: "02", nom: "COLOBANE" },
-              { code: "03", nom: "PASSY" }
+            ]
+          },
+          {
+            nom: "COLOBANE",
+            code: "02",
+            communes: [
+              { code: "01", nom: "COLOBANE" },
+              { code: "02", nom: "MBAR" }
             ]
           },
           {
             nom: "OUADIOUR",
-            code: "02",
+            code: "03",
             communes: [
-              { code: "01", nom: "OUADIOUR" },
-              { code: "02", nom: "NDIENNÉ LAGANE" }
+              { code: "01", nom: "NDIENE LAGANE" },
+              { code: "02", nom: "OUADIOUR" },
+              { code: "03", nom: "PATAR LIA" }
             ]
           }
         ]
@@ -559,36 +621,35 @@ export const SENEGAL_GEOGRAPHIC_DATA = {
         arrondissements: [
           {
             nom: "KOUNGHEUL",
-            code: "831",
+            code: "01",
             communes: [
-              { code: "8311", nom: "KOUNGHEUL" }
+              { code: "01", nom: "KOUNGHEUL" }
             ]
           },
           {
             nom: "IDA MOURIDE",
-            code: "832",
+            code: "02",
             communes: [
-              { code: "8321", nom: "SALY ESCALE" },
-              { code: "8322", nom: "FASS THIEKENE" },
-              { code: "8323", nom: "IDA MOURIDE" }
+              { code: "01", nom: "SALY ESCALE" },
+              { code: "02", nom: "FASS THIEKENE" },
+              { code: "03", nom: "IDA MOURIDE" }
             ]
           },
           {
             nom: "LOUR ESCALE",
-            code: "833",
+            code: "03",
             communes: [
-              { code: "8331", nom: "LOUR ESCALE" },
-              { code: "8332", nom: "RIBOT ESCALE" },
-              { code: "8333", nom: "KAYES KOUNGHEUL" }
+              { code: "01", nom: "LOUR ESCALE" },
+              { code: "02", nom: "RIBOT ESCALE" },
             ]
           },
           {
             nom: "MISSIRAH WADENE",
-            code: "834",
+            code: "04",
             communes: [
-              { code: "8341", nom: "NGAINTHE PATHE" },
-              { code: "8342", nom: "MAKA YOP" },
-              { code: "8343", nom: "MISSIRAH WADENE" }
+              { code: "01", nom: "NGAINTHE PATHE" },
+              { code: "02", nom: "MAKA YOP" },
+              { code: "03", nom: "MISSIRAH WADENE" }
             ]
           }
         ]
@@ -597,6 +658,13 @@ export const SENEGAL_GEOGRAPHIC_DATA = {
         nom: "Malem Hodar",
         code: "04",
         arrondissements: [
+          {
+            nom: "MALEM HODAR",
+            code: "01",
+            communes: [
+              { code: "01", nom: "MALEM HODAR"}
+            ]
+          },
           {
             nom: "Darou Minam II",
             code: "01",
@@ -659,6 +727,7 @@ export const SENEGAL_GEOGRAPHIC_DATA = {
               { code: "01", nom: "LATMINGUE" },
               { code: "02", nom: "KEUR BAKA" },
               { code: "03", nom: "NDOFFANE" },
+              { code: "04", nom: "THIARE" }
             ]
           },
           {
@@ -721,8 +790,6 @@ export const SENEGAL_GEOGRAPHIC_DATA = {
             code: "01",
             communes: [
               { code: "01", nom: "NIORO" },
-              { code: "02", nom: "TAIBA NIASSENE" },
-              { code: "03", nom: "DABALY" }
             ]
           },
           {
@@ -805,9 +872,7 @@ export const SENEGAL_GEOGRAPHIC_DATA = {
             nom: "SALEMATA",
             code: "01",
             communes: [
-              { code: "01", nom: "SALEMATA" },
-              { code: "02", nom: "BEMBOU" },
-              { code: "03", nom: "KHOSSANTO" }
+              { code: "01", nom: "SALEMATA" }
             ]
           },
           {
@@ -837,9 +902,7 @@ export const SENEGAL_GEOGRAPHIC_DATA = {
             nom: "SARAYA",
             code: "01",
             communes: [
-              { code: "01", nom: "SARAYA" },
-              { code: "02", nom: "DAKATELIA" },
-              { code: "03", nom: "ETHIOLO" }
+              { code: "01", nom: "SARAYA" }
             ]
           },
           {
@@ -864,141 +927,141 @@ export const SENEGAL_GEOGRAPHIC_DATA = {
     }
   },
 
- "KOLDA": {
-  nom: "Kolda",
-  code: "07",
-  departements: {
-    "KOLDA": {
-      nom: "Kolda",
-      code: "01",
-      arrondissements: [
-        {
-          nom: "KOLDA",
-          code: "01",
-          communes: [
-            { code: "01", nom: "KOLDA" }
-          ]
-        },
-        {
-          nom: "DIOULACOLON",
-          code: "02",
-          communes: [
-            { code: "01", nom: "DIOULACOLON" },
-            { code: "02", nom: "MEDINA EL HADJI" },
-            { code: "03", nom: "TANKANTO ESCALE" },
-            { code: "04", nom: "GUIRO YERO BOCAR" },
-            { code: "05", nom: "SALIKEGNE" },
-            { code: "06", nom: "SARE YOBA DIEGA" }
-          ]
-        },
-        {
-          nom: "MAMPATIM",
-          code: "03",
-          communes: [
-            { code: "01", nom: "BAGADADJI" },
-            { code: "02", nom: "COUMBACARA" },
-            { code: "03", nom: "MAMPATIM" },
-            { code: "04", nom: "DIALAMBERE" },
-            { code: "05", nom: "MEDINA CHERIF" },
-            { code: "06", nom: "DABO" }
-          ]
-        },
-        {
-          nom: "SARE BIDJI",
-          code: "04",
-          communes: [
-            { code: "01", nom: "SARE BIDJI" },
-            { code: "02", nom: "THIETTY" }
-          ]
-        }
-      ]
-    },
-    "VELINGARA": {
-      nom: "Vélingara",
-      code: "02",
-      arrondissements: [
-        {
-          nom: "VELINGARA",
-          code: "01",
-          communes: [
-            { code: "01", nom: "VELINGARA" }
-          ]
-        },
-        {
-          nom: "BONCONTO",
-          code: "02",
-          communes: [
-            { code: "01", nom: "BONCONTO" },
-            { code: "02", nom: "LINKERING" },
-            { code: "03", nom: "MEDINA GOUNASS" },
-            { code: "04", nom: "SINTHIANG KOUNDARA" }
-          ]
-        },
-        {
-          nom: "PAKOUR",
-          code: "03",
-          communes: [
-            { code: "01", nom: "OUASSADOU" },
-            { code: "02", nom: "PAROUMBA" },
-            { code: "03", nom: "PAKOUR" }
-          ]
-        },
-        {
-          nom: "SARE COLY SALLE",
-          code: "04",
-          communes: [
-            { code: "01", nom: "KANDIA" },
-            { code: "02", nom: "SARE COLY SALLE" },
-            { code: "03", nom: "NEMATABA" },
-            { code: "04", nom: "KANDIAYE" },
-            { code: "05", nom: "DIAOUBE- KABENDOU" },
-            { code: "06", nom: "KOUNKANE" }
-          ]
-        }
-      ]
-    },
-    "MEDINA_YORO_FOULAH": {
-      nom: "Médina Yoro Foulah",
-      code: "03",
-      arrondissements: [
-        {
-          nom: "MEDINA YORO FOULAH",
-          code: "01",
-          communes: [
-            { code: "01", nom: "MEDINA YORO FOULAH" }
-          ]
-        },
-        {
-          nom: "FAFACOUROU",
-          code: "01",
-          communes: [
-            { code: "01", nom: "FAFACOUROU" },
-            { code: "02", nom: "BADION" }
-          ]
-        },
-        {
-          nom: "NDORNA",
-          code: "02",
-          communes: [
-            { code: "01", nom: "NDORNA" },
-            { code: "02", nom: "BIGNARABE" },
-            { code: "03", nom: "BOUROUCO" },
-            { code: "04", nom: "KOULINTO" }
-          ]
-        },
-        {
-          nom: "NIAMING",
-          code: "03",
-          communes: [
-            { code: "01", nom: "DINGUIRAYE" },
-            { code: "02", nom: "KEREWANE" },
-            { code: "03", nom: "NIAMING" },
-            { code: "04", nom: "PATA" }
-          ]
-        }
-      ]
+  "KOLDA": {
+    nom: "Kolda",
+    code: "07",
+    departements: {
+      "KOLDA": {
+        nom: "Kolda",
+        code: "01",
+        arrondissements: [
+          {
+            nom: "KOLDA",
+            code: "01",
+            communes: [
+              { code: "01", nom: "KOLDA" }
+            ]
+          },
+          {
+            nom: "DIOULACOLON",
+            code: "02",
+            communes: [
+              { code: "01", nom: "DIOULACOLON" },
+              { code: "02", nom: "MEDINA EL HADJI" },
+              { code: "03", nom: "TANKANTO ESCALE" },
+              { code: "04", nom: "GUIRO YERO BOCAR" },
+              { code: "05", nom: "SALIKEGNE" },
+              { code: "06", nom: "SARE YOBA DIEGA" }
+            ]
+          },
+          {
+            nom: "MAMPATIM",
+            code: "03",
+            communes: [
+              { code: "01", nom: "BAGADADJI" },
+              { code: "02", nom: "COUMBACARA" },
+              { code: "03", nom: "MAMPATIM" },
+              { code: "04", nom: "DIALAMBERE" },
+              { code: "05", nom: "MEDINA CHERIF" },
+              { code: "06", nom: "DABO" }
+            ]
+          },
+          {
+            nom: "SARE BIDJI",
+            code: "04",
+            communes: [
+              { code: "01", nom: "SARE BIDJI" },
+              { code: "02", nom: "THIETTY" }
+            ]
+          }
+        ]
+      },
+      "VELINGARA": {
+        nom: "Vélingara",
+        code: "02",
+        arrondissements: [
+          {
+            nom: "VELINGARA",
+            code: "01",
+            communes: [
+              { code: "01", nom: "VELINGARA" }
+            ]
+          },
+          {
+            nom: "BONCONTO",
+            code: "02",
+            communes: [
+              { code: "01", nom: "BONCONTO" },
+              { code: "02", nom: "LINKERING" },
+              { code: "03", nom: "MEDINA GOUNASS" },
+              { code: "04", nom: "SINTHIANG KOUNDARA" }
+            ]
+          },
+          {
+            nom: "PAKOUR",
+            code: "03",
+            communes: [
+              { code: "01", nom: "OUASSADOU" },
+              { code: "02", nom: "PAROUMBA" },
+              { code: "03", nom: "PAKOUR" }
+            ]
+          },
+          {
+            nom: "SARE COLY SALLE",
+            code: "04",
+            communes: [
+              { code: "01", nom: "KANDIA" },
+              { code: "02", nom: "SARE COLY SALLE" },
+              { code: "03", nom: "NEMATABA" },
+              { code: "04", nom: "KANDIAYE" },
+              { code: "05", nom: "DIAOUBE- KABENDOU" },
+              { code: "06", nom: "KOUNKANE" }
+            ]
+          }
+        ]
+      },
+      "MEDINA_YORO_FOULAH": {
+        nom: "Médina Yoro Foulah",
+        code: "03",
+        arrondissements: [
+          {
+            nom: "MEDINA YORO FOULAH",
+            code: "01",
+            communes: [
+              { code: "01", nom: "MEDINA YORO FOULAH" }
+            ]
+          },
+          {
+            nom: "FAFACOUROU",
+            code: "02",
+            communes: [
+              { code: "01", nom: "FAFACOUROU" },
+              { code: "02", nom: "BADION" }
+            ]
+          },
+          {
+            nom: "NDORNA",
+            code: "03",
+            communes: [
+              { code: "01", nom: "NDORNA" },
+              { code: "02", nom: "BIGNARABE" },
+              { code: "03", nom: "BOUROUCO" },
+              { code: "04", nom: "KOULINTO" }
+            ]
+          },
+          {
+            nom: "NIAMING",
+            code: "04",
+            communes: [
+              { code: "01", nom: "DINGUIRAYE" },
+              { code: "02", nom: "KEREWANE" },
+              { code: "03", nom: "NIAMING" },
+              { code: "04", nom: "PATA" }
+            ]
+          }
+        ]
+      }
     }
-  }
   },
 
   "LOUGA": {
@@ -1277,7 +1340,7 @@ export const SENEGAL_GEOGRAPHIC_DATA = {
   },
 
   "SAINT-LOUIS": {
-    nom: "Saint‑Louis",
+    nom: "Saint-Louis",
     code: "10",
     departements: {
       "DAGANA": {
@@ -1363,7 +1426,8 @@ export const SENEGAL_GEOGRAPHIC_DATA = {
             ]
           },
           {
-            nom: "THILLE BOU B A CAR", code: "05",
+            nom: "THILLE BOUBACAR", 
+            code: "05",
             communes: [
               { code: "01", nom: "FANAYE" },
               { code: "02", nom: "NDIAYENE PENDAO" },
@@ -1385,14 +1449,14 @@ export const SENEGAL_GEOGRAPHIC_DATA = {
         ]
       },
       "SAINT-LOUIS": {
-        nom: "Saint‑Louis",
+        nom: "Saint-Louis",
         code: "03",
         arrondissements: [
           {
-            nom: "SAINT‑LOUIS",
+            nom: "SAINT-LOUIS",
             code: "01",
             communes: [
-              { code: "01", nom: "SAINT‑LOUIS" }
+              { code: "01", nom: "SAINT-LOUIS" }
             ]
           },
           {
@@ -1437,14 +1501,30 @@ export const SENEGAL_GEOGRAPHIC_DATA = {
             nom: "DIENDE",
             code: "03",
             communes: [
-              { code: "01", nom: "BAMBALI" }
+              { code: "01", nom: "DIENDE" },
+              { code: "02", nom: "SAKAR" },
+              { code: "03", nom: "DIANNAH BA" },
+              { code: "04", nom: "KOUSSY" },
+              { code: "05", nom: "OUDOUCAR" },
+              { code: "06", nom: "SAMA KANTA PEULH" },
+              { code: "07", nom: "DIANAH MALARY" }
+            ]
+          },
+          {
+            nom: "DJIBABOUYA",
+            code: "04",
+            communes: [
+              { code: "01", nom: "BENET-BIJINI" },
+              { code: "02", nom: "SANSAMBA" },
+              { code: "03", nom: "DJIBABOUYA" }
             ]
           },
           {
             nom: "DJIREDJI",
             code: "04",
             communes: [
-              { code: "01", nom: "DJIREDJI" }
+              { code: "01", nom: "DJIREDJI" },
+              { code: "02", nom: "BAMBALI" }
             ]
           }
         ]
@@ -1547,7 +1627,7 @@ export const SENEGAL_GEOGRAPHIC_DATA = {
     code: "12",
     departements: {
       "BAKEL": {
-        nom: "Bakel",
+        nom: "BAKEL",
         code: "01",
         arrondissements: [
           {
@@ -1561,7 +1641,9 @@ export const SENEGAL_GEOGRAPHIC_DATA = {
             nom: "BELÉ",
             code: "02",
             communes: [
-              { code: "01", nom: "BELÉ" }
+              { code: "01", nom: "BELÉ" },
+              { code: "02", nom: "SINTHIOU-FISSA" },
+              { code: "03", nom: "KIDIRA" }
             ]
           },
           {
@@ -1580,7 +1662,8 @@ export const SENEGAL_GEOGRAPHIC_DATA = {
             communes: [
               { code: "01", nom: "BALLOU" },
               { code: "02", nom: "GABOU" },
-              { code: "03", nom: "MOUDÉRY" }
+              { code: "03", nom: "MOUDÉRY" },
+              { code: "04", nom: "DIAWARA" }
             ]
           }
         ]
@@ -1590,8 +1673,15 @@ export const SENEGAL_GEOGRAPHIC_DATA = {
         code: "02",
         arrondissements: [
           {
-            nom: "KOUSSANAR",
+            nom: "TAMBACOUNDA",
             code: "01",
+            communes: [
+              { code: "01", nom: "TAMBACOUNDA" }
+            ]
+          },
+          {
+            nom: "KOUSSANAR",
+            code: "02",
             communes: [
               { code: "01", nom: "KOUSSANAR" },
               { code: "02", nom: "SINTHIOU MALÈME" }
@@ -1599,7 +1689,7 @@ export const SENEGAL_GEOGRAPHIC_DATA = {
           },
           {
             nom: "MAKACOULIBANTANG",
-            code: "02",
+            code: "03",
             communes: [
               { code: "01", nom: "MAKACOULIBANTANG" },
               { code: "02", nom: "N'DOGA BABACAR" },
@@ -1608,7 +1698,7 @@ export const SENEGAL_GEOGRAPHIC_DATA = {
           },
           {
             nom: "MISSIRAH",
-            code: "03",
+            code: "04",
             communes: [
               { code: "01", nom: "DIALACOTO" },
               { code: "02", nom: "MISSIRAH" },
@@ -1622,8 +1712,15 @@ export const SENEGAL_GEOGRAPHIC_DATA = {
         code: "03",
         arrondissements: [
           {
-            nom: "BALA",
+            nom : "Goudiry",
             code: "01",
+            communes: [
+              { code: "01", nom: "Goudiry" }
+            ]
+          },
+          {
+            nom: "BALA",
+            code: "02",
             communes: [
               { code: "01", nom: "BALA" },
               { code: "02", nom: "GOUMBAYEL" },
@@ -1632,7 +1729,7 @@ export const SENEGAL_GEOGRAPHIC_DATA = {
           },
           {
             nom: "BOYNGUEL BAMBA",
-            code: "02",
+            code: "03",
             communes: [
               { code: "01", nom: "DOUGUÉ" },
               { code: "02", nom: "BOYNGUEL BAMBA" },
@@ -1666,8 +1763,15 @@ export const SENEGAL_GEOGRAPHIC_DATA = {
         code: "04",
         arrondissements: [
           {
-            nom: "BAMBA THIALÈNE",
+            nom: "KOUMPENTOUM",
             code: "01",
+            communes: [
+              { code: "01", nom: "KOUMPENTOUM" }
+            ]
+          },
+          {
+            nom: "BAMBA THIALÈNE",
+            code: "02",
             communes: [
               { code: "01", nom: "BAMBA THIALÈNE" },
               { code: "02", nom: "KAHÈNÉ" },
@@ -1677,7 +1781,7 @@ export const SENEGAL_GEOGRAPHIC_DATA = {
           },
           {
             nom: "KOUTHIABA WOLOF",
-            code: "02",
+            code: "03",
             communes: [
               { code: "01", nom: "KOUTHIA GAYDI" },
               { code: "02", nom: "KOUTHIABA WOLOF" },
@@ -1693,7 +1797,7 @@ export const SENEGAL_GEOGRAPHIC_DATA = {
 
   "THIES": {
     nom: "Thiès",
-    code: "13" ,
+    code: "13",
     departements: {
       "MBOUR": {
         nom: "Mbour",
@@ -1733,14 +1837,14 @@ export const SENEGAL_GEOGRAPHIC_DATA = {
           },
           {
             nom: "MBOUR",
-            code: "00",
+            code: "04",
             communes: [
               { code: "01", nom: "M’BOUR" }
             ]
           },
           {
             nom: "JOAL-FADIOUTH",
-            code: "00",
+            code: "05",
             communes: [
               { code: "01", nom: "JOAL-FADIOUTH" }
             ]
@@ -1815,8 +1919,23 @@ export const SENEGAL_GEOGRAPHIC_DATA = {
         code: "03",
         arrondissements: [
           {
-            nom: "MÉOUANE",
+            nom: "TIVAOUANE",
             code: "01",
+            communes: [
+              { code: "01", nom: "TIVAOUANE" }
+            ]
+          },
+          {
+            nom: "MEKHE",
+            code: "02",
+            communes: [
+              { code: "01", nom: "MEKHE" }
+            ]
+          },
+
+          {
+            nom: "MÉOUANE",
+            code: "03",
             communes: [
               { code: "01", nom: "MÉOUANE" },
               { code: "02", nom: "TAÏBA N’DIAYE" },
@@ -1825,17 +1944,17 @@ export const SENEGAL_GEOGRAPHIC_DATA = {
             ]
           },
           {
-            nom: "MÉRINA‑DAKHAR",
-            code: "02",
+            nom: "MÉRINA-DAKHAR",
+            code: "04",
             communes: [
-              { code: "01", nom: "MÉRINA DAKHAR" },
+              { code: "01", nom: "MÉRINA-DAKHAR" },
               { code: "02", nom: "KOUL" },
               { code: "03", nom: "PÉKÈSSE" }
             ]
           },
           {
             nom: "NIAKHÈNE",
-            code: "03",
+            code: "05",
             communes: [
               { code: "01", nom: "NIAKHÈNE" },
               { code: "02", nom: "M’BAYÈNE" },
@@ -1845,7 +1964,7 @@ export const SENEGAL_GEOGRAPHIC_DATA = {
           },
           {
             nom: "PAMBAL",
-            code: "04",
+            code: "06",
             communes: [
               { code: "01", nom: "PAMBAL" },
               { code: "02", nom: "NOTTO GOUYE DIAMA" },
@@ -1914,6 +2033,13 @@ export const SENEGAL_GEOGRAPHIC_DATA = {
               { code: "03", nom: "KATABA I" },
               { code: "04", nom: "DIOULOULOU" }
             ]
+          },
+          {
+            nom: "THIONCK-ESSYL",
+            code: "06",
+            communes: [
+              { code: "01", nom: "THIONCK-ESSYL" }
+            ]
           }
         ]
       },
@@ -1979,7 +2105,7 @@ export const SENEGAL_GEOGRAPHIC_DATA = {
     }
   },
 
-  
+
 };
 
 // Fonction utilitaire pour obtenir toutes les régions
@@ -1994,7 +2120,7 @@ export const getRegions = () => {
 export const getDepartements = (regionCode) => {
   const region = SENEGAL_GEOGRAPHIC_DATA[regionCode];
   if (!region) return [];
-  
+
   return Object.keys(region.departements).map(key => ({
     code: key,
     nom: region.departements[key].nom
@@ -2005,10 +2131,10 @@ export const getDepartements = (regionCode) => {
 export const getArrondissements = (regionCode, departementCode) => {
   const region = SENEGAL_GEOGRAPHIC_DATA[regionCode];
   if (!region) return [];
-  
+
   const departement = region.departements[departementCode];
   if (!departement) return [];
-  
+
   return departement.arrondissements.map(arr => ({
     code: arr.code,
     nom: arr.nom
@@ -2019,13 +2145,13 @@ export const getArrondissements = (regionCode, departementCode) => {
 export const getCommunes = (regionCode, departementCode, arrondissementCode) => {
   const region = SENEGAL_GEOGRAPHIC_DATA[regionCode];
   if (!region) return [];
-  
+
   const departement = region.departements[departementCode];
   if (!departement) return [];
-  
+
   const arrondissement = departement.arrondissements.find(arr => arr.code === arrondissementCode);
   if (!arrondissement) return [];
-  
+
   return arrondissement.communes.map(commune => ({
     code: commune.code,
     nom: commune.nom
@@ -2036,12 +2162,12 @@ export const getCommunes = (regionCode, departementCode, arrondissementCode) => 
 export const validateGeographicLocation = (region, departement, arrondissement, commune) => {
   const regionData = SENEGAL_GEOGRAPHIC_DATA[region];
   if (!regionData) return false;
-  
+
   const departementData = regionData.departements[departement];
   if (!departementData) return false;
-  
+
   const arrondissementData = departementData.arrondissements.find(arr => arr.code === arrondissement);
   if (!arrondissementData) return false;
-  
+
   return arrondissementData.communes.some(c => c.code === commune);
 };

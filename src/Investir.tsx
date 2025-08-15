@@ -484,7 +484,7 @@ const Investir = () => {
                                 ? 'border-green-300' 
                                 : 'border-neutral-300'
                           }`}
-                          placeholder="Ex: GIE2024001"
+                          placeholder="Ex: FEVEO-XX-XX-XX-XXX"
                           maxLength={100}
                         />
                         {errors.codeGIE && <p className="text-red-500 text-sm mt-1">{errors.codeGIE}</p>}

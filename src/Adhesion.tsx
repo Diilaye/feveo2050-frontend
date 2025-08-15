@@ -204,7 +204,7 @@ const Adhesion: React.FC = () => {
             onCancel={() => setShowDocumentWorkflow(false)}
           />
         </div>
-        <Footer />
+        <Footer />handleSubmit
       </div>
     );
   }

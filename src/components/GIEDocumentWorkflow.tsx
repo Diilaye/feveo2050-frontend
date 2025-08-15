@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { 
   FileText, 
   Download, 
@@ -24,6 +25,7 @@ import {
 import { gieService, EnregistrementGIEData } from '../services/gieService';
 import jsPDF from 'jspdf';
 
+const API_BASE_URL = (import.meta as any).env?.VITE_API_URL || 'http://localhost:3051/api';
 interface GIEData {
   // Informations de base
   nomGIE: string;
@@ -72,36 +74,7 @@ interface DocumentWorkflowProps {
   onCancel?: () => void;
 }
 
-const GIEDocumentWorkflow: React.FC<DocumentWorkflowProps> = ({ 
-  initialData = {}, 
-  onComplete, 
-  onCancel 
-}) => {
-  // Fonction pour obtenir le prochain numéro de GIE pour une commune spécifique
-  const getNextGIENumber = (codeRegion, codeDepartement, codeArrondissement, codeCommune) => {
-    const communeKey = `${codeRegion}-${codeDepartement}-${codeArrondissement}-${codeCommune}`;
-    const lastGIENumber = localStorage.getItem(`lastGIENumber_${communeKey}`) || '000';
-    const nextNumber = (parseInt(lastGIENumber) + 1).toString().padStart(3, '0');
-    localStorage.setItem(`lastGIENumber_${communeKey}`, nextNumber);
-    return nextNumber;
-  };
-
-  // Fonction pour obtenir le prochain numéro de GIE sans l'incrémenter (pour prévisualisation)
-  const previewNextGIENumber = (codeRegion, codeDepartement, codeArrondissement, codeCommune) => {
-    const communeKey = `${codeRegion}-${codeDepartement}-${codeArrondissement}-${codeCommune}`;
-    const lastGIENumber = localStorage.getItem(`lastGIENumber_${communeKey}`) || '000';
-    const nextNumber = (parseInt(lastGIENumber) + 1).toString().padStart(3, '0');
-    return nextNumber;
-  };
-
-  // Génération du nom du GIE avec le nouveau format
-  const generateGIEName = (codeRegion, codeDepartement, codeArrondissement, codeCommune, numeroGIE = null) => {
-    // Utiliser le numéro fourni ou générer le suivant
-    const gieNumber = numeroGIE || previewNextGIENumber(codeRegion, codeDepartement, codeArrondissement, codeCommune);
-    
-    return `FEVEO-${codeRegion}-${codeDepartement}-${codeArrondissement}-${codeCommune}-${gieNumber}`;
-  };
-
+const GIEDocumentWorkflow: React.FC<DocumentWorkflowProps> = ({ initialData = {}, onComplete, onCancel }) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [gieData, setGieData] = useState<GIEData>({
     nomGIE: '',
@@ -128,6 +101,120 @@ const GIEDocumentWorkflow: React.FC<DocumentWorkflowProps> = ({
     dateConstitution: new Date().toISOString().split('T')[0],
     ...initialData
   });
+
+  // Appel API pour obtenir le prochain numéro de protocole pour la commune sélectionnée
+  interface NextProtocolResponse {
+    success: boolean;
+    data?: { nextNumeroProtocole: string };
+    message?: string;
+  }
+  const fetchNextNumeroProtocole = async (codeCommune: string) => {
+    if (!codeCommune) return '';
+    try {
+      const res = await axios.get<NextProtocolResponse>(`${API_BASE_URL}/gie/next-protocol/${codeCommune}`);
+      if (res.data && res.data.success && res.data.data && res.data.data.nextNumeroProtocole) {
+        return res.data.data.nextNumeroProtocole;
+      }
+      return '';
+    } catch (err) {
+      return '';
+    }
+  };
+
+
+  // Génération du nom du GIE avec le nouveau format (utilise le numéro de protocole fourni)
+  const generateGIEName = (codeRegion, codeDepartement, codeArrondissement, codeCommune, numeroProtocole) => {
+    if (!codeRegion || !codeDepartement || !codeArrondissement || !codeCommune || !numeroProtocole) return '';
+    return `FEVEO-${codeRegion}-${codeDepartement}-${codeArrondissement}-${codeCommune}-${numeroProtocole}`;
+  };
+  // Met à jour automatiquement le numéro de protocole et l'identifiant GIE à chaque changement de codeCommune
+  useEffect(() => {
+    const updateNumeroAndIdentifiant = async () => {
+      if (
+        gieData.codeRegion &&
+        gieData.codeDepartement &&
+        gieData.codeArrondissement &&
+        gieData.codeCommune
+      ) {
+        const numeroProtocole = await fetchNextNumeroProtocole(gieData.codeCommune);
+        const identifiant = generateGIEName(
+          gieData.codeRegion,
+          gieData.codeDepartement,
+          gieData.codeArrondissement,
+          gieData.codeCommune,
+          numeroProtocole
+        );
+        setGieData(prev => ({
+          ...prev,
+          numeroGIE: numeroProtocole,
+          identifiantGIE: identifiant,
+          nomGIE: identifiant
+        }));
+      }
+    };
+    updateNumeroAndIdentifiant();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gieData.codeRegion, gieData.codeDepartement, gieData.codeArrondissement, gieData.codeCommune]);
+
+
+  // Met à jour automatiquement le numéro de protocole et l'identifiant GIE à chaque changement de codeCommune
+  useEffect(() => {
+    const updateNumeroAndIdentifiant = async () => {
+      if (
+        gieData.codeRegion &&
+        gieData.codeDepartement &&
+        gieData.codeArrondissement &&
+        gieData.codeCommune
+      ) {
+        const numeroProtocole = await fetchNextNumeroProtocole(gieData.codeCommune);
+        const identifiant = generateGIEName(
+          gieData.codeRegion,
+          gieData.codeDepartement,
+          gieData.codeArrondissement,
+          gieData.codeCommune,
+          numeroProtocole
+        );
+        setGieData(prev => ({
+          ...prev,
+          numeroGIE: numeroProtocole,
+          identifiantGIE: identifiant,
+          nomGIE: identifiant
+        }));
+      }
+    };
+    updateNumeroAndIdentifiant();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gieData.codeRegion, gieData.codeDepartement, gieData.codeArrondissement, gieData.codeCommune]);
+  // (supprimé : déclaration en double de currentStep)
+  
+  // Met à jour automatiquement le numéro de protocole et l'identifiant GIE à chaque changement de codeCommune
+  useEffect(() => {
+    const updateNumeroAndIdentifiant = async () => {
+      if (
+        gieData.codeRegion &&
+        gieData.codeDepartement &&
+        gieData.codeArrondissement &&
+        gieData.codeCommune
+      ) {
+        const numeroProtocole = await fetchNextNumeroProtocole(gieData.codeCommune);
+        const identifiant = generateGIEName(
+          gieData.codeRegion,
+          gieData.codeDepartement,
+          gieData.codeArrondissement,
+          gieData.codeCommune,
+          numeroProtocole
+        );
+        setGieData(prev => ({
+          ...prev,
+          numeroGIE: numeroProtocole,
+          identifiantGIE: identifiant,
+          nomGIE: identifiant
+        }));
+      }
+    };
+    updateNumeroAndIdentifiant();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gieData.codeRegion, gieData.codeDepartement, gieData.codeArrondissement, gieData.codeCommune]);
 
   const [generatedDocuments, setGeneratedDocuments] = useState<{
     statuts: boolean;
@@ -189,23 +276,7 @@ const GIEDocumentWorkflow: React.FC<DocumentWorkflowProps> = ({
   ];
 
   // Génération de l'identifiant GIE
-  const generateGIEIdentifier = () => {
-    if (!gieData.region || !gieData.departement || !gieData.arrondissement || !gieData.commune) {
-      return '';
-    }
-    
-    // Obtenir les indices basés sur les positions dans les listes
-    const arrondissements = getArrondissements(gieData.region, gieData.departement);
-    const arrIndex = arrondissements.findIndex(arr => arr.code === gieData.arrondissement) + 1;
-    
-    const communes = getCommunes(gieData.region, gieData.departement, gieData.arrondissement);
-    const commIndex = communes.findIndex(comm => comm.nom === gieData.commune) + 1;
-    
-    const numeroGIE = getNextGIENumber(gieData.codeRegion, gieData.codeDepartement, gieData.codeArrondissement, gieData.codeCommune);
-    const identifiant = generateGIEName(gieData.codeRegion, gieData.codeDepartement, gieData.codeArrondissement, gieData.codeCommune, numeroGIE);
-    
-    return identifiant;
-  };
+  // La génération d'identifiant est désormais gérée par useEffect
 
   // Génération des documents
   const generateDocument = (type: string) => {
@@ -243,6 +314,36 @@ const GIEDocumentWorkflow: React.FC<DocumentWorkflowProps> = ({
       const arr = arrondissements.find(a => a.code === gieData.arrondissement);
       return arr ? arr.nom : gieData.arrondissement;
     };
+      const [currentStep, setCurrentStep] = useState(1);
+  
+      // Met à jour automatiquement le numéro de protocole et l'identifiant GIE à chaque changement de codeCommune
+      useEffect(() => {
+        const updateNumeroAndIdentifiant = async () => {
+          if (
+            gieData.codeRegion &&
+            gieData.codeDepartement &&
+            gieData.codeArrondissement &&
+            gieData.codeCommune
+          ) {
+            const numeroProtocole = await fetchNextNumeroProtocole(gieData.codeCommune);
+            const identifiant = generateGIEName(
+              gieData.codeRegion,
+              gieData.codeDepartement,
+              gieData.codeArrondissement,
+              gieData.codeCommune,
+              numeroProtocole
+            );
+            setGieData(prev => ({
+              ...prev,
+              numeroGIE: numeroProtocole,
+              identifiantGIE: identifiant,
+              nomGIE: identifiant
+            }));
+          }
+        };
+        updateNumeroAndIdentifiant();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+      }, [gieData.codeRegion, gieData.codeDepartement, gieData.codeArrondissement, gieData.codeCommune]);
 
     const getNomCommune = () => {
       if (!gieData.region || !gieData.departement || !gieData.arrondissement || !gieData.commune) return gieData.commune;
@@ -729,21 +830,7 @@ ${gieData.presidentePrenom} ${gieData.presidenteNom}
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleGenerateIdentifier = () => {
-    if (!gieData.codeRegion || !gieData.codeDepartement || !gieData.codeArrondissement || !gieData.codeCommune) return;
-    
-    const identifier = generateGIEIdentifier();
-    const numeroGIE = identifier.split('-').pop(); // Récupérer le numéro de GIE depuis l'identifiant
-    
-    setGieData(prev => ({
-      ...prev,
-      identifiantGIE: identifier,
-      numeroGIE: numeroGIE,
-      nomGIE: identifier // Le nom du GIE est identique à l'identifiant
-    }));
-    
-    setGeneratedDocuments(prev => ({ ...prev, statuts: true }));
-  };
+  // (supprimé : la génération d'identifiant est automatique via useEffect)
 
   const downloadDocument = (type: string, filename: string) => {
     if (type === 'statuts') {
@@ -2173,35 +2260,33 @@ Les comptes sont vérifiés trimestriellement par un membre désigné par l'asse
                 <select
                   value={gieData.commune}
                   disabled={!gieData.arrondissement}
-                  onChange={(e) => {
+                  onChange={async (e) => {
                     const selectedCommune = e.target.value;
                     console.log('🏘️ Commune sélectionnée:', selectedCommune);
-                    
                     if (selectedCommune) {
                       // Utiliser directement le code de la commune sélectionnée
                       console.log('🔑 Code commune:', selectedCommune);
-                      
                       // Mettre à jour la commune et son code (stocker le code dans commune pour la sélection)
                       const updatedData = { 
                         ...gieData, 
                         commune: selectedCommune,
                         codeCommune: selectedCommune
                       };
-                      
-                      // Régénérer le nom GIE si tous les codes sont maintenant disponibles
-                      if (updatedData.codeRegion && updatedData.codeDepartement && 
-                          updatedData.codeArrondissement && updatedData.codeCommune) {
-                        
+                      // Appeler l'API pour obtenir le prochain numéro de protocole
+                      if (updatedData.codeRegion && updatedData.codeDepartement && updatedData.codeArrondissement && updatedData.codeCommune) {
+                        const nextNumero = await fetchNextNumeroProtocole(updatedData.codeCommune);
                         const newName = generateGIEName(
                           updatedData.codeRegion,
                           updatedData.codeDepartement,
                           updatedData.codeArrondissement,
-                          updatedData.codeCommune
+                          updatedData.codeCommune,
+                          nextNumero
                         );
                         updatedData.nomGIE = newName;
+                        updatedData.numeroGIE = nextNumero;
+                        updatedData.identifiantGIE = newName;
                         console.log(`✅ Nom GIE complet généré: ${newName}`);
                       }
-                      
                       setGieData(updatedData);
                       console.log('📊 Données commune mises à jour:', updatedData);
                     } else {
@@ -2475,23 +2560,15 @@ Les comptes sont vérifiés trimestriellement par un membre désigné par l'asse
                   </p>
                 </div>
 
-                {!gieData.identifiantGIE ? (
-                  <button
-                    onClick={handleGenerateIdentifier}
-                    className="btn-accent"
-                  >
-                    Générer l'identifiant FEVEO
-                  </button>
-                ) : (
-                  <div>
-                    <p className="text-sm text-neutral-600 mb-2">Identifiant généré :</p>
-                    <p className="font-mono text-lg font-bold text-accent-600 mb-4 p-2 bg-white rounded border">
-                      {gieData.identifiantGIE}
-                    </p>
-                    
-                    {/* Aperçu des statuts */}
-                    <div className="mb-6 p-4 bg-white rounded-lg border border-neutral-200">
-                      <h4 className="font-semibold text-neutral-900 mb-3 flex items-center gap-2">
+                <div>
+                  <p className="text-sm text-neutral-600 mb-2">Identifiant généré :</p>
+                  <p className="font-mono text-lg font-bold text-accent-600 mb-4 p-2 bg-white rounded border">
+                    {gieData.identifiantGIE}
+                  </p>
+                  
+                  {/* Aperçu des statuts */}
+                  <div className="mb-6 p-4 bg-white rounded-lg border border-neutral-200">
+                    <h4 className="font-semibold text-neutral-900 mb-3 flex items-center gap-2">
                         <FileText className="w-5 h-5 text-accent-500" />
                         Aperçu du document PDF
                       </h4>
@@ -2543,7 +2620,7 @@ Les comptes sont vérifiés trimestriellement par un membre désigné par l'asse
                       )}
                     </div>
                   </div>
-                )}
+                
               </div>
             )}
 
