@@ -21,6 +21,11 @@ const EnregistrementGIE: React.FC<EnregistrementGIEProps> = ({ onSuccess, onErro
     departement: '',
     arrondissement: '',
     commune: '',
+    // Ajout des codes manquants requis par le type EnregistrementGIEData
+    codeRegion: '',
+    codeDepartement: '',
+    codeArrondissement: '',
+    codeCommune: '',
     secteurPrincipal: '',
     objectifs: '', // String au lieu d'array
     activites: [],
@@ -63,10 +68,29 @@ const EnregistrementGIE: React.FC<EnregistrementGIEProps> = ({ onSuccess, onErro
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    
+    // Mise à jour standard du champ
+    setFormData(prev => {
+      const updatedData = {
+        ...prev,
+        [name]: value
+      };
+      
+      // Si un des champs d'adresse administratifs est modifié, mettre à jour le code correspondant
+      // Note: Cette logique est simplifiée - idéalement, vous devriez récupérer les vrais codes
+      // à partir d'une API ou d'une liste prédéfinie basée sur la sélection
+      if (name === 'region') {
+        updatedData.codeRegion = value.substring(0, 2); // exemple simple: utilise les 2 premiers caractères
+      } else if (name === 'departement') {
+        updatedData.codeDepartement = value.substring(0, 2); // exemple simple
+      } else if (name === 'arrondissement') {
+        updatedData.codeArrondissement = value.substring(0, 2); // exemple simple
+      } else if (name === 'commune') {
+        updatedData.codeCommune = value.substring(0, 3); // exemple simple
+      }
+      
+      return updatedData;
+    });
     
     // Effacer l'erreur du champ modifié
     if (errors[name]) {
@@ -141,6 +165,11 @@ const EnregistrementGIE: React.FC<EnregistrementGIEProps> = ({ onSuccess, onErro
         departement: '',
         arrondissement: '',
         commune: '',
+        // Ajout des codes manquants requis par le type EnregistrementGIEData
+        codeRegion: '',
+        codeDepartement: '',
+        codeArrondissement: '',
+        codeCommune: '',
         secteurPrincipal: '',
         objectifs: '',
         activites: [],

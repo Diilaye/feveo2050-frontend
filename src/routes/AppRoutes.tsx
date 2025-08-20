@@ -11,6 +11,8 @@ import Adhesion from '../Adhesion';
 import About from '../About';
 import EnregistrementPage from '../pages/EnregistrementPage';
 import GaleriePage from '../pages/GaleriePage';
+import PaymentSuccessPage from '../pages/PaymentSuccessPage';
+import PaymentErrorPage from '../pages/PaymentErrorPage';
 
 const AppRoutes: React.FC = () => {
   return (
@@ -33,6 +35,8 @@ const AppRoutes: React.FC = () => {
       <Route path="/enregistrement-gie" element={<EnregistrementPage />} />
       <Route path="/about" element={<About />} />
       <Route path="/galerie" element={<GaleriePage />} />
+      <Route path="/payment/success" element={<PaymentSuccessPage />} />
+      <Route path="/payment/error" element={<PaymentErrorPage />} />
       
       {/* Route 404 - redirection vers l'accueil */}
       <Route path="*" element={<Home />} />

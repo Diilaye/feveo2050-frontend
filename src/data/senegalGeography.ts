@@ -1521,7 +1521,7 @@ export const SENEGAL_GEOGRAPHIC_DATA = {
           },
           {
             nom: "DJIREDJI",
-            code: "04",
+            code: "05",
             communes: [
               { code: "01", nom: "DJIREDJI" },
               { code: "02", nom: "BAMBALI" }

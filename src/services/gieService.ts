@@ -80,6 +80,10 @@ export interface EnregistrementGIEData {
   departement: string;
   arrondissement: string;
   commune: string;
+  codeRegion: string;
+  codeDepartement: string;
+  codeArrondissement: string;
+  codeCommune: string;
   secteurPrincipal: string;
   objectifs: string;
   activites: string[];
@@ -211,7 +215,13 @@ export const gieService = {
     }
 
     const result = await response.json();
-    
+
+    console.log('Enregistrement GIE result success:', result.success);
+
+    console.log('Enregistrement GIE result message:', result.message);
+
+    console.log('Enregistrement GIE result data:', result.data);
+
     if (!result.success) {
       throw new Error(result.message || 'Erreur lors de l\'enregistrement du GIE');
     }

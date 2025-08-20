@@ -17,6 +17,8 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onNavigate }) => {
       try {
         setIsLoadingStats(true);
         const statsData = await gieService.getStatsPubliques();
+        console.log('statsData:', statsData);
+
         setStats(statsData);
       } catch (error) {
         console.error('Erreur lors du chargement des statistiques:', error);
@@ -38,7 +40,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onNavigate }) => {
     },
     { 
       icon: Users, 
-      value: isLoadingStats ? '...' : (stats?.estimations?.femmes?.toLocaleString() || '691 250'), 
+      value: isLoadingStats ? '...' : (stats?.estimations?.femmes + stats?.totalGIEs || '691 250'), 
       label: 'Nbre min. de femmes', 
       color: 'text-success-500' 
     },

@@ -24,7 +24,8 @@ import {
   Trash2,
   X,
   Save,
-  UserPlus
+  UserPlus,
+  FileText
 } from 'lucide-react';
 
 const WalletDashboard: React.FC = () => {
@@ -388,63 +389,49 @@ const WalletDashboard: React.FC = () => {
       amount: 6000,
       frequency: 'Quotidien',
       duration: '60 jours',
-      expectedReturn: '7%',
+      expectedReturn: '0%',
       isActive: true,
       totalInvested: walletData.cycleInfo.currentDay * 6000,
       remainingDays: walletData.cycleInfo.totalDays - walletData.cycleInfo.currentDay
     },
     {
       id: 2,
-      name: 'Plan Hebdomadaire',
-      description: 'Investissement hebdomadaire de 42 000 FCFA',
-      amount: 42000,
-      frequency: 'Hebdomadaire',
-      duration: '8 semaines',
-      expectedReturn: '8%',
+      name: 'Plan 10 Jours',
+      description: 'Investissement de 60 000 FCFA tous les 10 jours',
+      amount: 60000,
+      frequency: '10 Jours',
+      duration: '10 jours',
+      expectedReturn: '0%',
       isActive: false,
       totalInvested: 0,
       remainingDays: 0
     },
     {
       id: 3,
-      name: 'Plan Mensuel',
-      description: 'Investissement mensuel de 180 000 FCFA',
+      name: 'Plan 15 Jours',
+      description: 'Investissement de 90 000 FCFA tous les 15 jours',
+      amount: 90000,
+      frequency: '15 Jours',
+      duration: '15 jours',
+      expectedReturn: '0%',
+      isActive: false,
+      totalInvested: 0,
+      remainingDays: 0
+    },
+    {
+      id: 4,
+      name: 'Plan 30 Jours',
+      description: 'Investissement de 180 000 FCFA tous les 30 jours',
       amount: 180000,
-      frequency: 'Mensuel',
-      duration: '2 mois',
-      expectedReturn: '10%',
+      frequency: '30 Jours',
+      duration: '30 jours',
+      expectedReturn: '0%',
       isActive: false,
       totalInvested: 0,
       remainingDays: 0
     }
   ];
 
-  const upcomingInvestments = [
-    {
-      date: '2025-07-29',
-      amount: 6000,
-      type: 'Plan Quotidien',
-      status: 'Programmé'
-    },
-    {
-      date: '2025-07-30',
-      amount: 6000,
-      type: 'Plan Quotidien',
-      status: 'Programmé'
-    },
-    {
-      date: '2025-07-31',
-      amount: 6000,
-      type: 'Plan Quotidien',
-      status: 'Programmé'
-    },
-    {
-      date: '2025-08-01',
-      amount: 6000,
-      type: 'Plan Quotidien',
-      status: 'Programmé'
-    }
-  ];
 
   // Fonction pour rendre le contenu selon l'onglet actif
   const renderContent = () => {
@@ -485,8 +472,7 @@ const WalletDashboard: React.FC = () => {
                   <h4 className="text-sm font-medium text-gray-600">Retours Générés</h4>
                   <DollarSign className="w-5 h-5 text-orange-500" />
                 </div>
-                <p className="text-2xl font-bold text-gray-900">{formatCurrency(walletData.balance.returns)}</p>
-                <p className="text-xs text-green-600 mt-1">+14% ROI</p>
+                <p className="text-2xl font-bold text-gray-900">{formatCurrency(walletData.balance.returns)}</p> <p className="text-xs text-green-600 mt-1">+14% ROI</p>
               </div>
 
               <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
@@ -504,7 +490,7 @@ const WalletDashboard: React.FC = () => {
             {/* Plans d'investissement améliorés */}
             <div className="mb-8">
               <h3 className="text-lg font-bold text-gray-900 mb-6">Plans d'Investissement Disponibles</h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                 {investmentPlans.map((plan) => (
                   <div key={plan.id} className={`rounded-2xl p-6 transition-all hover:scale-105 hover:shadow-xl ${
                     plan.isActive 
@@ -551,40 +537,7 @@ const WalletDashboard: React.FC = () => {
                         </p>
                       </div>
 
-                      <div className="grid grid-cols-2 gap-3">
-                        <div className={`text-center p-3 rounded-lg ${
-                          plan.isActive 
-                            ? 'bg-white bg-opacity-20' 
-                            : 'bg-blue-50'
-                        }`}>
-                          <p className={`text-lg font-bold ${
-                            plan.isActive ? 'text-white' : 'text-blue-600'
-                          }`}>
-                            {plan.duration}
-                          </p>
-                          <p className={`text-xs ${
-                            plan.isActive ? 'text-green-100' : 'text-gray-600'
-                          }`}>
-                            Durée
-                          </p>
-                        </div>
-                        <div className={`text-center p-3 rounded-lg ${
-                          plan.isActive 
-                            ? 'bg-white bg-opacity-20' 
-                            : 'bg-green-50'
-                        }`}>
-                          <p className={`text-lg font-bold ${
-                            plan.isActive ? 'text-white' : 'text-green-600'
-                          }`}>
-                            {plan.expectedReturn}
-                          </p>
-                          <p className={`text-xs ${
-                            plan.isActive ? 'text-green-100' : 'text-gray-600'
-                          }`}>
-                            Rendement
-                          </p>
-                        </div>
-                      </div>
+                      
                     </div>
 
                     {plan.isActive ? (
@@ -618,85 +571,7 @@ const WalletDashboard: React.FC = () => {
               </div>
             </div>
 
-            {/* Performances et Projections */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Historique des performances */}
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-                <div className="p-6 border-b border-gray-200">
-                  <h3 className="text-lg font-bold text-gray-900 flex items-center">
-                    <BarChart3 className="w-5 h-5 mr-2 text-blue-600" />
-                    Performances Mensuelles
-                  </h3>
-                </div>
-                <div className="p-6">
-                  <div className="space-y-4">
-                    {[
-                      { month: 'Juillet 2025', invested: 72000, returned: 5040, percentage: 7.0 },
-                      { month: 'Juin 2025', invested: 180000, returned: 14400, percentage: 8.0 },
-                      { month: 'Mai 2025', invested: 180000, returned: 12600, percentage: 7.0 },
-                    ].map((perf, index) => (
-                      <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                        <div>
-                          <p className="font-medium text-gray-900">{perf.month}</p>
-                          <p className="text-sm text-gray-600">Investi: {formatCurrency(perf.invested)}</p>
-                        </div>
-                        <div className="text-right">
-                          <p className="font-bold text-green-600">+{formatCurrency(perf.returned)}</p>
-                          <p className="text-sm text-green-500">+{perf.percentage}%</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              {/* Projections futures */}
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-                <div className="p-6 border-b border-gray-200">
-                  <h3 className="text-lg font-bold text-gray-900 flex items-center">
-                    <TrendingUp className="w-5 h-5 mr-2 text-green-600" />
-                    Projections Futures
-                  </h3>
-                </div>
-                <div className="p-6">
-                  <div className="space-y-6">
-                    <div className="bg-gradient-to-r from-blue-50 to-green-50 p-4 rounded-lg border border-blue-200">
-                      <h4 className="font-medium text-gray-900 mb-2">Fin du cycle actuel</h4>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <p className="text-sm text-gray-600">Investissement total</p>
-                          <p className="text-xl font-bold text-blue-600">
-                            {formatCurrency(walletData.cycleInfo.totalDays * walletData.cycleInfo.dailyInvestment)}
-                          </p>
-                        </div>
-                        <div>
-                          <p className="text-sm text-gray-600">Retour estimé</p>
-                          <p className="text-xl font-bold text-green-600">
-                            {formatCurrency(walletData.cycleInfo.totalDays * walletData.cycleInfo.dailyInvestment * 0.07)}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="space-y-3">
-                      {[
-                        { period: '3 mois', investment: 540000, returns: 37800 },
-                        { period: '6 mois', investment: 1080000, returns: 86400 },
-                        { period: '1 an', investment: 2160000, returns: 194400 }
-                      ].map((proj, index) => (
-                        <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                          <span className="font-medium text-gray-700">{proj.period}</span>
-                          <div className="text-right">
-                            <p className="text-sm text-gray-600">{formatCurrency(proj.investment)}</p>
-                            <p className="font-medium text-green-600">+{formatCurrency(proj.returns)}</p>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            
           </>
         );
 
@@ -724,7 +599,7 @@ const WalletDashboard: React.FC = () => {
 
               <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
                 <div className="flex items-center justify-between mb-2">
-                  <h4 className="text-sm font-medium text-gray-600">Membres Actifs</h4>
+                  <h4 className="text-sm font-medium text-gray-600">Membres Travailleurs</h4>
                   <Activity className="w-5 h-5 text-green-500" />
                 </div>
                 <p className="text-2xl font-bold text-gray-900">{membres.length}</p>
@@ -792,7 +667,6 @@ const WalletDashboard: React.FC = () => {
                     <select className="border border-gray-300 rounded-lg px-3 py-2 text-sm">
                       <option>Tous les rôles</option>
                       <option>Présidente</option>
-                      <option>Vice-Président</option>
                       <option>Trésorière</option>
                       <option>Secrétaire</option>
                       <option>Membre</option>
@@ -806,19 +680,22 @@ const WalletDashboard: React.FC = () => {
                   <thead className="bg-gray-50">
                     <tr>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Membre
+                        Prenom
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Rôle
+                        Nom
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Contact
+                        Role
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Cotisation
+                        Sexe
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Statut
+                        CNI
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Telephone
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Actions
@@ -918,7 +795,7 @@ const WalletDashboard: React.FC = () => {
                 </div>
                 <div className="p-6">
                   <div className="space-y-4">
-                    {['Présidente', 'Vice-Président', 'Trésorière', 'Secrétaire', 'Membre'].map((role) => {
+                    {['Présidente', 'Trésorière', 'Secrétaire', 'Membre'].map((role) => {
                       const count = membres.filter(m => m.role === role).length;
                       const percentage = Math.round((count / membres.length) * 100);
                       return (
@@ -1406,20 +1283,26 @@ const WalletDashboard: React.FC = () => {
         return (
           <>
             {/* Cartes métriques */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+             
+
               <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
                 <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-sm font-medium text-blue-600">Solde Total</h3>
-                  <Wallet className="w-5 h-5 text-blue-500" />
+                  <h3 className="text-sm font-medium text-green-600">Avec Investissements (FEVEO2050)</h3>
+                  <TrendingUp className="w-5 h-5 text-green-500" />
                 </div>
-                <p className="text-2xl font-bold text-gray-900">{formatCurrency(walletData.balance)}</p>
-                <p className="text-xs text-green-600 mt-1">+2.5% ce mois</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {formatCurrency(walletData.cycleInfo.currentDay * walletData.cycleInfo.dailyInvestment)}
+                </p>
+                <p className="text-xs text-green-600 mt-1">
+                  Jour {walletData.cycleInfo.currentDay}/{walletData.cycleInfo.totalDays}
+                </p>
               </div>
 
               <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
                 <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-sm font-medium text-green-600">Investissements</h3>
-                  <TrendingUp className="w-5 h-5 text-green-500" />
+                  <h3 className="text-sm font-medium text-blue-600">Avec GIE</h3>
+                  <TrendingUp className="w-5 h-5 text-blue-500" />
                 </div>
                 <p className="text-2xl font-bold text-gray-900">
                   {formatCurrency(walletData.cycleInfo.currentDay * walletData.cycleInfo.dailyInvestment)}
@@ -1436,6 +1319,14 @@ const WalletDashboard: React.FC = () => {
                 </div>
                 <p className="text-2xl font-bold text-gray-900">{formatCurrency(123750)}</p>
                 <p className="text-xs text-green-600 mt-1">+7.2% rendement</p>
+              </div>
+               <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="text-sm font-medium text-blue-600">Solde Total</h3>
+                  <Wallet className="w-5 h-5 text-blue-500" />
+                </div>
+                <p className="text-2xl font-bold text-gray-900">{formatCurrency(walletData.balance)}</p>
+                <p className="text-xs text-green-600 mt-1">+2.5% ce mois</p>
               </div>
             </div>
 
@@ -1549,7 +1440,7 @@ const WalletDashboard: React.FC = () => {
               {/* Transactions récentes */}
               <div className="bg-white rounded-xl shadow-sm border border-gray-200">
                 <div className="p-6 border-b border-gray-200">
-                  <h3 className="text-lg font-bold text-gray-900">Transactions récentes</h3>
+                  <h3 className="text-lg font-bold text-gray-900">Journal des operations diverses </h3>
                 </div>
                 <div className="p-6">
                   <div className="space-y-4">
@@ -1584,7 +1475,7 @@ const WalletDashboard: React.FC = () => {
                     ))}
                   </div>
                   <button className="w-full mt-4 bg-gray-100 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-200 transition-colors">
-                    Voir toutes les transactions
+                    Voir le journal
                   </button>
                 </div>
               </div>
@@ -1641,8 +1532,9 @@ const WalletDashboard: React.FC = () => {
 
             {[
               { id: 'investments', name: 'Investissements', icon: TrendingUp },
-              { id: 'cycle', name: 'Cycle Actuel', icon: BarChart3 },
+              { id: 'revenue', name: 'Revenue Activite', icon: BarChart3 },
               { id: 'membres', name: 'Membres', icon: Users },
+              { id: 'documents', name: 'Documents', icon: FileText },
               { id: 'settings', name: 'Paramètres', icon: Settings }
             ].map((item) => (
               <button

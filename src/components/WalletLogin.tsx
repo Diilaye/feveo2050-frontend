@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Wallet, MessageCircle, Hash, Send, ArrowLeft, Shield, CheckCircle, CreditCard, ExternalLink } from 'lucide-react';
 
-const BASE_URL = (import.meta as any).env?.VITE_API_URL || 'http://localhost:4320/api';
+const BASE_URL = (import.meta as any).env?.VITE_API_URL || 'http://localhost:3051/api';
 
 const WalletLogin: React.FC = () => {
   const navigate = useNavigate();
@@ -33,8 +33,55 @@ const WalletLogin: React.FC = () => {
 
       const data = await response.json();
 
+      console.log('Données GIE:', data);
+
       if (data.success) {
-        // Vérifier si un paiement est requis
+        // Vérifier si le statut d'enregistrement n'est pas validé
+        if (data.data.gieInfo && data.data.gieInfo.statutEnregistrement !== 'validee') {
+          console.log('GIE non validé, création d\'une transaction d\'adhésion');
+          
+          try {
+            // Initialisation d'une transaction d'adhésion
+            const transactionResponse = await fetch(`${BASE_URL}/transactions`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                amount:  20200, // Montant des frais d'adhésion
+                method: 'WAVE', // Méthode de paiement par défaut
+                gieCode: gieCode, // Code du GIE
+                operationType: 'ADHESION' // Type d'opération pour l'adhésion
+              })
+            });
+
+            const transactionResult = await transactionResponse.json();
+            
+            if (transactionResult.status === 'OK' && transactionResult.data) {
+              // Mettre à jour les données de paiement avec la nouvelle transaction
+              setPaymentRequired(true);
+              setPaymentData({
+                ...data.data,
+                payment: {
+                  ...data.data.payment,
+                  transactionId: transactionResult.data.reference,
+                  paymentUrl: transactionResult.data.paymentInfo?.links?.payment
+                }
+              });
+              setStep('whatsapp-code'); // Afficher l'interface de paiement
+              return;
+            } else {
+              setError(transactionResult.message || 'Erreur lors de la création de la transaction d\'adhésion');
+              setIsLoading(false);
+              return;
+            }
+          } catch (transactionError) {
+            console.error('Erreur création transaction:', transactionError);
+            setError('Erreur lors de la création de la transaction d\'adhésion. Veuillez réessayer.');
+            setIsLoading(false);
+            return;
+          }
+        }
+        
+        // Vérifier si un paiement est requis (cas standard)
         if (data.requiresPayment) {
           setPaymentRequired(true);
           setPaymentData(data.data);
@@ -295,6 +342,12 @@ const WalletLogin: React.FC = () => {
                       Votre GIE <strong>{paymentData?.gieInfo?.nom}</strong> nécessite un paiement d'activation pour accéder au wallet.
                     </p>
                     
+                    {error && (
+                      <div className="bg-red-50 border-2 border-red-200 rounded-lg p-3 mb-4">
+                        <p className="text-red-700 text-sm">{error}</p>
+                      </div>
+                    )}
+                    
                     <div className="bg-white/70 border-2 border-amber-300 rounded-lg p-4 mb-4">
                       <div className="text-2xl font-bold text-amber-900 mb-2">
                         {paymentData?.payment?.amount?.toLocaleString()} FCFA
@@ -306,10 +359,49 @@ const WalletLogin: React.FC = () => {
                     
                     <div className="space-y-3">
                       <button
-                        onClick={() => window.open(paymentData?.payment?.paymentUrl, '_blank')}
-                        className="w-full bg-gradient-to-r from-amber-600 to-amber-700 text-white py-4 px-6 rounded-xl hover:from-amber-700 hover:to-amber-800 focus:outline-none focus:ring-4 focus:ring-amber-500/30 flex items-center justify-center font-semibold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                        onClick={async () => {
+                          setIsLoading(true);
+                          setError('');
+                          try {
+                            console.log('Création de la transaction...');
+                            // Créer une transaction d'adhésion
+                            const response = await fetch(`${BASE_URL}/transactions`, {
+                              method: 'POST',
+                              headers: { 'Content-Type': 'application/json' },
+                              body: JSON.stringify({
+                                amount: 20200, // Montant des frais d'adhésion
+                                method: 'WAVE', // Méthode de paiement par défaut
+                                gieCode: gieCode, // Code du GIE
+                                operationType: 'ADHESION' // Type d'opération pour l'adhésion
+                              })
+                            });
+
+                            const result = await response.json();
+
+                            console.log('Résultat création transaction:', result);
+                            
+                            if (result.status === 'OK' && result.data) {
+                              // Mettre à jour les données de paiement
+                             const fallbackUrl = result.data.urlWave;
+                             window.open(fallbackUrl, '_blank');
+                            } else {
+                              setError(result.message || 'Erreur lors de la création de la transaction');
+                            }
+                          } catch (error) {
+                            console.error('Erreur transaction:', error);
+                            setError('Erreur de connexion. Veuillez réessayer.');
+                          } finally {
+                            setIsLoading(false);
+                          }
+                        }}
+                        disabled={isLoading}
+                        className="w-full bg-gradient-to-r from-amber-600 to-amber-700 text-white py-4 px-6 rounded-xl hover:from-amber-700 hover:to-amber-800 focus:outline-none focus:ring-4 focus:ring-amber-500/30 flex items-center justify-center font-semibold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        <CreditCard className="w-5 h-5 mr-3" />
+                        {isLoading ? (
+                          <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent mr-3"></div>
+                        ) : (
+                          <CreditCard className="w-5 h-5 mr-3" />
+                        )}
                         Payer avec Wave
                         <ExternalLink className="w-4 h-4 ml-2" />
                       </button>
@@ -331,11 +423,21 @@ const WalletLogin: React.FC = () => {
                       // Fonction pour vérifier le paiement
                       setIsLoading(true);
                       try {
-                        const response = await fetch('http://localhost:4320/api/wallet/confirm-payment', {
+                        // Vérifier si nous avons une transaction créée localement
+                        const transactionId = paymentData?.payment?.transactionId;
+                        
+                        if (!transactionId) {
+                          setError('Aucune transaction à vérifier. Veuillez créer un paiement d\'abord.');
+                          setIsLoading(false);
+                          return;
+                        }
+                        
+                        // Vérifier le statut de la transaction
+                        const response = await fetch(`${BASE_URL}/wallet/confirm-payment`, {
                           method: 'POST',
                           headers: { 'Content-Type': 'application/json' },
                           body: JSON.stringify({
-                            transactionId: paymentData?.payment?.transactionId,
+                            transactionId: transactionId,
                             gieCode: gieCode
                           })
                         });
@@ -351,6 +453,7 @@ const WalletLogin: React.FC = () => {
                           setError(result.message || 'Paiement non confirmé. Veuillez vérifier votre transaction.');
                         }
                       } catch (error) {
+                        console.error('Erreur vérification:', error);
                         setError('Erreur lors de la vérification du paiement.');
                       } finally {
                         setIsLoading(false);

@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { 
-  FileText, 
-  Download, 
-  CheckCircle, 
-  ArrowRight, 
+import {
+  FileText,
+  Download,
+  CheckCircle,
+  ArrowRight,
   ArrowLeft,
   MapPin,
   Building,
@@ -14,11 +14,11 @@ import {
   Clock,
   Shield
 } from 'lucide-react';
-import { 
-  SENEGAL_GEOGRAPHIC_DATA, 
-  getRegions, 
-  getDepartements, 
-  getArrondissements, 
+import {
+  SENEGAL_GEOGRAPHIC_DATA,
+  getRegions,
+  getDepartements,
+  getArrondissements,
   getCommunes,
   validateGeographicLocation
 } from '../data/senegalGeography';
@@ -35,7 +35,7 @@ interface GIEData {
   presidenteAdresse: string;
   presidenteTelephone: string;
   presidenteEmail: string;
-  
+
   // Localisation
   region: string;
   departement: string;
@@ -45,7 +45,7 @@ interface GIEData {
   codeDepartement: string;
   codeArrondissement: string;
   codeCommune: string;
-  
+
   // Membres
   membres: Array<{
     nom: string;
@@ -56,12 +56,12 @@ interface GIEData {
     genre: 'femme' | 'jeune' | 'homme';
     age?: number;
   }>;
-  
+
   // Activités
   secteurPrincipal: string;
   activites: string[];
   objectifs: string;
-  
+
   // Documents générés
   identifiantGIE: string;
   numeroGIE: string;
@@ -105,15 +105,17 @@ const GIEDocumentWorkflow: React.FC<DocumentWorkflowProps> = ({ initialData = {}
   // Appel API pour obtenir le prochain numéro de protocole pour la commune sélectionnée
   interface NextProtocolResponse {
     success: boolean;
-    data?: { nextNumeroProtocole: string };
+    data?: { prochainProtocole: string };
     message?: string;
   }
-  const fetchNextNumeroProtocole = async (codeCommune: string) => {
+  const fetchNextNumeroProtocole = async (codeCommune: string, codeRegion: string, codeDepartement: string, codeArrondissement: string) => {
     if (!codeCommune) return '';
     try {
-      const res = await axios.get<NextProtocolResponse>(`${API_BASE_URL}/gie/next-protocol/${codeCommune}`);
-      if (res.data && res.data.success && res.data.data && res.data.data.nextNumeroProtocole) {
-        return res.data.data.nextNumeroProtocole;
+      console.log('🔢 Récupération du prochain numéro de protocole...' , `${API_BASE_URL}/gie/next-protocol?codeCommune=${codeCommune}&codeRegion=${codeRegion}&codeDepartement=${codeDepartement}&codeArrondissement=${codeArrondissement}`);
+      const res = await axios.get<NextProtocolResponse>(`${API_BASE_URL}/gie/next-protocol?codeCommune=${codeCommune}&codeRegion=${codeRegion}&codeDepartement=${codeDepartement}&codeArrondissement=${codeArrondissement}`);
+      console.log('🔢 Prochain numéro de protocole:', res.data);
+      if (res.data && res.data.success && res.data.data && res.data.data.prochainProtocole) {
+        return res.data.data.prochainProtocole;
       }
       return '';
     } catch (err) {
@@ -127,34 +129,6 @@ const GIEDocumentWorkflow: React.FC<DocumentWorkflowProps> = ({ initialData = {}
     if (!codeRegion || !codeDepartement || !codeArrondissement || !codeCommune || !numeroProtocole) return '';
     return `FEVEO-${codeRegion}-${codeDepartement}-${codeArrondissement}-${codeCommune}-${numeroProtocole}`;
   };
-  // Met à jour automatiquement le numéro de protocole et l'identifiant GIE à chaque changement de codeCommune
-  useEffect(() => {
-    const updateNumeroAndIdentifiant = async () => {
-      if (
-        gieData.codeRegion &&
-        gieData.codeDepartement &&
-        gieData.codeArrondissement &&
-        gieData.codeCommune
-      ) {
-        const numeroProtocole = await fetchNextNumeroProtocole(gieData.codeCommune);
-        const identifiant = generateGIEName(
-          gieData.codeRegion,
-          gieData.codeDepartement,
-          gieData.codeArrondissement,
-          gieData.codeCommune,
-          numeroProtocole
-        );
-        setGieData(prev => ({
-          ...prev,
-          numeroGIE: numeroProtocole,
-          identifiantGIE: identifiant,
-          nomGIE: identifiant
-        }));
-      }
-    };
-    updateNumeroAndIdentifiant();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [gieData.codeRegion, gieData.codeDepartement, gieData.codeArrondissement, gieData.codeCommune]);
 
 
   // Met à jour automatiquement le numéro de protocole et l'identifiant GIE à chaque changement de codeCommune
@@ -166,7 +140,7 @@ const GIEDocumentWorkflow: React.FC<DocumentWorkflowProps> = ({ initialData = {}
         gieData.codeArrondissement &&
         gieData.codeCommune
       ) {
-        const numeroProtocole = await fetchNextNumeroProtocole(gieData.codeCommune);
+        const numeroProtocole = await fetchNextNumeroProtocole(gieData.codeCommune, gieData.codeRegion, gieData.codeDepartement, gieData.codeArrondissement);
         const identifiant = generateGIEName(
           gieData.codeRegion,
           gieData.codeDepartement,
@@ -186,35 +160,7 @@ const GIEDocumentWorkflow: React.FC<DocumentWorkflowProps> = ({ initialData = {}
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gieData.codeRegion, gieData.codeDepartement, gieData.codeArrondissement, gieData.codeCommune]);
   // (supprimé : déclaration en double de currentStep)
-  
-  // Met à jour automatiquement le numéro de protocole et l'identifiant GIE à chaque changement de codeCommune
-  useEffect(() => {
-    const updateNumeroAndIdentifiant = async () => {
-      if (
-        gieData.codeRegion &&
-        gieData.codeDepartement &&
-        gieData.codeArrondissement &&
-        gieData.codeCommune
-      ) {
-        const numeroProtocole = await fetchNextNumeroProtocole(gieData.codeCommune);
-        const identifiant = generateGIEName(
-          gieData.codeRegion,
-          gieData.codeDepartement,
-          gieData.codeArrondissement,
-          gieData.codeCommune,
-          numeroProtocole
-        );
-        setGieData(prev => ({
-          ...prev,
-          numeroGIE: numeroProtocole,
-          identifiantGIE: identifiant,
-          nomGIE: identifiant
-        }));
-      }
-    };
-    updateNumeroAndIdentifiant();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [gieData.codeRegion, gieData.codeDepartement, gieData.codeArrondissement, gieData.codeCommune]);
+
 
   const [generatedDocuments, setGeneratedDocuments] = useState<{
     statuts: boolean;
@@ -235,7 +181,7 @@ const GIEDocumentWorkflow: React.FC<DocumentWorkflowProps> = ({ initialData = {}
   const regions = getRegions();
 
   const secteurs = [
-    'Agriculture', 'Élevage', 'Transformation', 'Commerce & Distribution', 
+    'Agriculture', 'Élevage', 'Transformation', 'Commerce & Distribution',
   ];
 
   const activitesPossibles = [
@@ -314,36 +260,36 @@ const GIEDocumentWorkflow: React.FC<DocumentWorkflowProps> = ({ initialData = {}
       const arr = arrondissements.find(a => a.code === gieData.arrondissement);
       return arr ? arr.nom : gieData.arrondissement;
     };
-      const [currentStep, setCurrentStep] = useState(1);
-  
-      // Met à jour automatiquement le numéro de protocole et l'identifiant GIE à chaque changement de codeCommune
-      useEffect(() => {
-        const updateNumeroAndIdentifiant = async () => {
-          if (
-            gieData.codeRegion &&
-            gieData.codeDepartement &&
-            gieData.codeArrondissement &&
-            gieData.codeCommune
-          ) {
-            const numeroProtocole = await fetchNextNumeroProtocole(gieData.codeCommune);
-            const identifiant = generateGIEName(
-              gieData.codeRegion,
-              gieData.codeDepartement,
-              gieData.codeArrondissement,
-              gieData.codeCommune,
-              numeroProtocole
-            );
-            setGieData(prev => ({
-              ...prev,
-              numeroGIE: numeroProtocole,
-              identifiantGIE: identifiant,
-              nomGIE: identifiant
-            }));
-          }
-        };
-        updateNumeroAndIdentifiant();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-      }, [gieData.codeRegion, gieData.codeDepartement, gieData.codeArrondissement, gieData.codeCommune]);
+    const [currentStep, setCurrentStep] = useState(1);
+
+    // Met à jour automatiquement le numéro de protocole et l'identifiant GIE à chaque changement de codeCommune
+    useEffect(() => {
+      const updateNumeroAndIdentifiant = async () => {
+        if (
+          gieData.codeRegion &&
+          gieData.codeDepartement &&
+          gieData.codeArrondissement &&
+          gieData.codeCommune
+        ) {
+          const numeroProtocole = await fetchNextNumeroProtocole(gieData.codeCommune, gieData.codeRegion, gieData.codeDepartement, gieData.codeArrondissement);
+          const identifiant = generateGIEName(
+            gieData.codeRegion,
+            gieData.codeDepartement,
+            gieData.codeArrondissement,
+            gieData.codeCommune,
+            numeroProtocole
+          );
+          setGieData(prev => ({
+            ...prev,
+            numeroGIE: numeroProtocole,
+            identifiantGIE: identifiant,
+            nomGIE: identifiant
+          }));
+        }
+      };
+      updateNumeroAndIdentifiant();
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [gieData.codeRegion, gieData.codeDepartement, gieData.codeArrondissement, gieData.codeCommune]);
 
     const getNomCommune = () => {
       if (!gieData.region || !gieData.departement || !gieData.arrondissement || !gieData.commune) return gieData.commune;
@@ -357,11 +303,11 @@ const GIEDocumentWorkflow: React.FC<DocumentWorkflowProps> = ({ initialData = {}
       let tableau = '';
       const allMembers = [
         { nom: gieData.presidenteNom, prenom: gieData.presidentePrenom, fonction: 'Présidente', cin: gieData.presidenteCIN, telephone: gieData.presidenteTelephone, genre: 'Femme' },
-        ...gieData.membres.map(m => ({ 
-          nom: m.nom, 
-          prenom: m.prenom, 
+        ...gieData.membres.map(m => ({
+          nom: m.nom,
+          prenom: m.prenom,
           fonction: m.fonction === 'Secrétaire' ? 'Secrétaire Générale' : m.fonction === 'Trésorière' ? 'Trésorière' : 'Membre',
-          cin: m.cin, 
+          cin: m.cin,
           telephone: m.telephone,
           genre: m.genre === 'femme' ? 'Femme' : m.genre === 'jeune' ? 'Jeune' : 'Homme'
         }))
@@ -729,12 +675,12 @@ ${gieData.presidentePrenom} ${gieData.presidenteNom}
 
   const updateGIEData = (field: string, value: any) => {
     console.log(`🔄 Mise à jour: ${field} = ${value}`);
-    
+
     const updatedData = { ...gieData, [field]: value };
-    
+
     setGieData(updatedData);
     console.log('📊 État mis à jour:', updatedData);
-    
+
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: '' }));
     }
@@ -759,7 +705,7 @@ ${gieData.presidentePrenom} ${gieData.presidenteNom}
   const updateMember = (index: number, field: string, value: string | number | undefined) => {
     setGieData(prev => ({
       ...prev,
-      membres: prev.membres.map((member, i) => 
+      membres: prev.membres.map((member, i) =>
         i === index ? { ...member, [field]: value } : member
       )
     }));
@@ -774,7 +720,7 @@ ${gieData.presidentePrenom} ${gieData.presidenteNom}
 
   const validateStep1 = () => {
     const newErrors: Record<string, string> = {};
-    
+
     // Le nom du GIE est généré automatiquement, pas besoin de validation
     if (!gieData.presidenteNom.trim()) newErrors.presidenteNom = 'Nom de la présidente requis';
     if (!gieData.presidentePrenom.trim()) newErrors.presidentePrenom = 'Prénom requis';
@@ -783,17 +729,15 @@ ${gieData.presidentePrenom} ${gieData.presidenteNom}
     if (!gieData.departement) newErrors.departement = 'Département requis';
     if (!gieData.arrondissement) newErrors.arrondissement = 'Arrondissement requis';
     if (!gieData.commune) newErrors.commune = 'Commune requise';
-    
+
     // Validation de la composition des membres (minimum 3 avec rôles obligatoires)
     const totalMembers = gieData.membres.length + 1; // +1 pour la présidente
-  
     if (totalMembers < 2) {
       newErrors.membres = `Le GIE doit avoir au minimum 3 membres (actuellement ${totalMembers})`;
     } else {
       // Vérifier les rôles obligatoires
       const secretaire = gieData.membres.find(m => m.fonction === 'Secrétaire');
       const tresoriere = gieData.membres.find(m => m.fonction === 'Trésorière');
-      
       if (!secretaire) {
         newErrors.membres = 'Le GIE doit avoir une Secrétaire parmi ses membres';
       } else if (!tresoriere) {
@@ -803,28 +747,25 @@ ${gieData.presidentePrenom} ${gieData.presidenteNom}
         const femmes = gieData.membres.filter(m => m.genre === 'femme').length + 1; // +1 présidente
         const jeunes = gieData.membres.filter(m => m.genre === 'jeune').length;
         const hommes = gieData.membres.filter(m => m.genre === 'homme').length;
-        
         // Option 1: 100% femmes OU Option 2: composition mixte proportionnelle
         const isOption1Valid = femmes === totalMembers;
         const minFemmes = Math.ceil(totalMembers * 0.625); // 62.5%
         const minJeunes = Math.ceil(totalMembers * 0.3); // 30%
         const maxHommes = Math.floor(totalMembers * 0.075); // 7.5%
-        const isOption2Valid = femmes >= minFemmes && jeunes >= minJeunes && hommes <= maxHommes;
-        
+        // Limite stricte à 12 jeunes pour l'option mixte
+        const isOption2Valid = jeunes <= 12 && hommes <= maxHommes;
         if (!isOption1Valid && !isOption2Valid) {
-          if (femmes < minFemmes) {
-            newErrors.membres = `Minimum ${minFemmes} femmes requis (actuellement ${femmes} incluant présidente)`;
-          } else if (jeunes < minJeunes) {
-            newErrors.membres = `Minimum ${minJeunes} jeunes requis (actuellement ${jeunes})`;
+          if (jeunes > 12) {
+            newErrors.membres = `Maximum 12 jeunes autorisés (actuellement ${jeunes})`;
           } else if (hommes > maxHommes) {
             newErrors.membres = `Maximum ${maxHommes} hommes adultes autorisés (actuellement ${hommes})`;
           } else {
-            newErrors.membres = 'Composition non conforme aux règles FEVEO 2050: soit 100% femmes, soit 62.5% femmes + 30% jeunes + max 7.5% hommes';
+            newErrors.membres = 'Composition non conforme aux règles FEVEO 2050: soit 100% femmes, soit 62.5% femmes + 30% jeunes (max 12) + max 7.5% hommes';
           }
         }
       }
     }
-    
+
     setErrors(newErrors);
     console.log('🔍 Erreurs de validation:', newErrors);
     return Object.keys(newErrors).length === 0;
@@ -860,7 +801,7 @@ ${gieData.presidentePrenom} ${gieData.presidenteNom}
     const pageHeight = pdf.internal.pageSize.getHeight();
     const margin = 20;
     const contentWidth = pageWidth - 2 * margin;
-    
+
     // Convertir les codes en noms
     const getNomRegion = () => {
       const region = regions.find(r => r.code === gieData.region);
@@ -896,7 +837,7 @@ ${gieData.presidentePrenom} ${gieData.presidenteNom}
     const title = 'STATUTS DU GIE FEVEO';
     const titleWidth = pdf.getTextWidth(title);
     pdf.text(title, (pageWidth - titleWidth) / 2, yPosition);
-    
+
     // Ligne décorative
     yPosition += 5;
     pdf.setLineWidth(0.5);
@@ -930,16 +871,16 @@ ${gieData.presidentePrenom} ${gieData.presidenteNom}
 
     // Tableau des membres
     const allMembers = [
-      { 
-        nom: gieData.presidenteNom, 
-        prenom: gieData.presidentePrenom, 
-        fonction: 'Présidente', 
+      {
+        nom: gieData.presidenteNom,
+        prenom: gieData.presidentePrenom,
+        fonction: 'Présidente',
         cin: gieData.presidenteCIN,
-        genre: 'Femme' 
+        genre: 'Femme'
       },
-      ...gieData.membres.map(m => ({ 
-        nom: m.nom, 
-        prenom: m.prenom, 
+      ...gieData.membres.map(m => ({
+        nom: m.nom,
+        prenom: m.prenom,
         fonction: m.fonction === 'Secrétaire' ? 'Secrétaire Générale' : m.fonction === 'Trésorière' ? 'Trésorière' : 'Membre',
         cin: m.cin,
         genre: m.genre === 'femme' ? 'Femme' : m.genre === 'jeune' ? 'Jeune' : 'Homme'
@@ -951,13 +892,13 @@ ${gieData.presidentePrenom} ${gieData.presidenteNom}
     pdf.setFont('helvetica', 'bold');
     const colWidths = [15, 35, 35, 35, 25, 40];
     const headers = ['N°', 'Prénom', 'Nom', 'Fonction', 'Genre', 'CIN'];
-    
+
     let xPos = margin;
     headers.forEach((header, i) => {
       pdf.text(header, xPos, yPosition);
       xPos += colWidths[i];
     });
-    
+
     yPosition += 2;
     pdf.line(margin, yPosition, pageWidth - margin, yPosition);
     yPosition += 8;
@@ -969,7 +910,7 @@ ${gieData.presidentePrenom} ${gieData.presidenteNom}
         pdf.addPage();
         yPosition = margin;
       }
-      
+
       xPos = margin;
       const rowData = [
         (index + 1).toString().padStart(2, '0'),
@@ -979,13 +920,13 @@ ${gieData.presidentePrenom} ${gieData.presidenteNom}
         membre.genre || '',
         membre.cin || ''
       ];
-      
+
       rowData.forEach((data, i) => {
         const text = pdf.splitTextToSize(data, colWidths[i] - 2);
         pdf.text(text, xPos, yPosition);
         xPos += colWidths[i];
       });
-      
+
       yPosition += 8;
     });
 
@@ -1085,7 +1026,7 @@ Il pourra être transféré en tout autre endroit de la même ville ou de la mê
     yPosition += 10;
     pdf.setFont('helvetica', 'italic');
     pdf.text(`Fait à ${getNomCommune()}, le ${new Date().toLocaleDateString('fr-FR')}`, margin, yPosition);
-    
+
     yPosition += 20;
     pdf.setFont('helvetica', 'normal');
     pdf.text('Statuts GIE FEVEO', pageWidth - margin - 40, yPosition);
@@ -1093,7 +1034,7 @@ Il pourra être transféré en tout autre endroit de la même ville ou de la mê
     // Télécharger le PDF
     const fileName = `Statuts_${gieData.nomGIE || 'GIE_FEVEO'}_${new Date().toISOString().split('T')[0]}.pdf`;
     pdf.save(fileName);
-    
+
     // Notification de succès
     alert(`✅ Document PDF généré avec succès !\n\n📁 Fichier : ${fileName}\n📄 ${allMembers.length} membres inclus\n📋 12 articles des statuts OHADA\n🏢 Localisation : ${getNomCommune()}, ${getNomRegion()}`);
   };
@@ -1104,18 +1045,18 @@ Il pourra être transféré en tout autre endroit de la même ville ou de la mê
     const pageHeight = pdf.internal.pageSize.getHeight();
     const margin = 20;
     const contentWidth = pageWidth - 2 * margin;
-    
+
     let yPosition = margin;
 
     // En-tête exactement comme dans le document original
     pdf.setFontSize(12);
     pdf.setFont('helvetica', 'bold');
     pdf.text('GIE FEVEO', margin, yPosition);
-    
+
     // Points de séparation
     const dots = '.'.repeat(20);
     pdf.text(dots, margin + 35, yPosition);
-    
+
     pdf.text('PROCES VERBAL DE CONSTITUTION ET DE NOMINATION', margin + 85, yPosition);
     yPosition += 15;
 
@@ -1138,7 +1079,7 @@ Il pourra être transféré en tout autre endroit de la même ville ou de la mê
     const text2 = `Etaient présents à cette AG, tous les membres adhérents audit GIE.`;
     pdf.text(text2, margin, yPosition);
     yPosition += 8;
-    
+
     const text3 = `Après avoir vérifié que chaque membre du GIE est présent, par conséquent, le quorum étant atteint, l'assemblée peut valablement délibérer.`;
     const lines3 = pdf.splitTextToSize(text3, contentWidth);
     pdf.text(lines3, margin, yPosition);
@@ -1257,21 +1198,21 @@ Il pourra être transféré en tout autre endroit de la même ville ou de la mê
     }
 
     const signatureY = yPosition;
-    
+
     // Trois colonnes de signatures
     pdf.setFont('helvetica', 'italic');
     pdf.text('"Bon pour acceptation"', margin, signatureY);
     pdf.text('"Bon pour acceptation"', margin + 60, signatureY);
     pdf.text('"Bon pour acceptation"', margin + 120, signatureY);
-    
+
     yPosition += 8;
     pdf.setFont('helvetica', 'bold');
     pdf.text('La Présidente', margin + 5, yPosition);
-    
+
     if (secretaire) {
       pdf.text('La secrétaire générale', margin + 55, yPosition);
     }
-    
+
     if (tresoriere) {
       pdf.text('La Trésorière', margin + 125, yPosition);
     }
@@ -1286,7 +1227,7 @@ Il pourra être transféré en tout autre endroit de la même ville ou de la mê
     // Télécharger le PDF
     const fileName = `PV_Constitution_${gieData.nomGIE || 'GIE_FEVEO'}_${new Date().toISOString().split('T')[0]}.pdf`;
     pdf.save(fileName);
-    
+
     // Notification de succès
     alert(`✅ Procès-Verbal PDF généré avec succès !\n\n📁 Fichier : ${fileName}\n� Format identique au modèle FEVEO\n🏢 GIE : ${gieData.nomGIE}`);
   };
@@ -1297,7 +1238,7 @@ Il pourra être transféré en tout autre endroit de la même ville ou de la mê
     const pageHeight = pdf.internal.pageSize.getHeight();
     const margin = 20;
     const contentWidth = pageWidth - 2 * margin;
-    
+
     let yPosition = margin;
 
     // En-tête centré et stylé
@@ -1306,13 +1247,13 @@ Il pourra être transféré en tout autre endroit de la même ville ou de la mê
     const title = 'RÈGLEMENT INTÉRIEUR DU GIE FEVEO';
     const titleWidth = pdf.getTextWidth(title);
     pdf.text(title, (pageWidth - titleWidth) / 2, yPosition);
-    
+
     yPosition += 8;
     pdf.setFontSize(14);
     const subtitle = `"${gieData.nomGIE}"`;
     const subtitleWidth = pdf.getTextWidth(subtitle);
     pdf.text(subtitle, (pageWidth - subtitleWidth) / 2, yPosition);
-    
+
     // Ligne décorative
     yPosition += 5;
     pdf.setLineWidth(0.5);
@@ -1573,14 +1514,14 @@ Les comptes sont vérifiés trimestriellement par un membre désigné par l'asse
     pdf.setFont('helvetica', 'normal');
     pdf.setFontSize(11);
     pdf.text(`Fait à ${gieData.commune}, le ${new Date().toLocaleDateString('fr-FR')}`, margin, yPosition);
-    
+
     yPosition += 15;
     pdf.setFont('helvetica', 'bold');
     pdf.text('La Présidente,', margin, yPosition);
     yPosition += 6;
     pdf.setFont('helvetica', 'normal');
     pdf.text(`${gieData.presidentePrenom} ${gieData.presidenteNom}`, margin, yPosition);
-    
+
     yPosition += 15;
     pdf.setFont('helvetica', 'italic');
     pdf.text('Approuvé par l\'Assemblée Générale Constitutive', margin, yPosition);
@@ -1588,7 +1529,7 @@ Les comptes sont vérifiés trimestriellement par un membre désigné par l'asse
     // Télécharger le PDF
     const fileName = `Reglement_Interieur_${gieData.nomGIE || 'GIE_FEVEO'}_${new Date().toISOString().split('T')[0]}.pdf`;
     pdf.save(fileName);
-    
+
     // Notification de succès
     alert(`✅ Règlement Intérieur PDF généré avec succès !\n\n📁 Fichier : ${fileName}\n📋 8 chapitres complets\n📄 18 articles détaillés\n🏢 GIE : ${gieData.nomGIE}`);
   };
@@ -1599,7 +1540,7 @@ Les comptes sont vérifiés trimestriellement par un membre désigné par l'asse
     const pageHeight = pdf.internal.pageSize.getHeight();
     const margin = 20;
     const contentWidth = pageWidth - 2 * margin;
-    
+
     let yPosition = margin;
 
     // En-tête principal officiel FEVEO 2050
@@ -1609,12 +1550,12 @@ Les comptes sont vérifiés trimestriellement par un membre désigné par l'asse
     const titleWidth1 = pdf.getTextWidth(title1);
     pdf.text(title1, (pageWidth - titleWidth1) / 2, yPosition);
     yPosition += 8;
-    
+
     const title2 = 'à la Plateforme d’investissement économie organique « Femmes Vision économie organique 2050 » FEVEO 2050 SAS';
     const titleWidth2 = pdf.getTextWidth(title2);
     pdf.text(title2, (pageWidth - titleWidth2) / 2, yPosition);
     yPosition += 8;
-    
+
     const title3 = '« Femmes Vision économie organique 2050 » FEVEO 2050 SAS';
     const titleWidth3 = pdf.getTextWidth(title3);
     pdf.text(title3, (pageWidth - titleWidth3) / 2, yPosition);
@@ -1628,8 +1569,8 @@ Les comptes sont vérifiés trimestriellement par un membre désigné par l'asse
 
     // Corps principal du document
     pdf.setFontSize(11);
-    const corpsText1 = `Nous soussigné, GIE ${gieData.identifiantGIE || '______________'} non encore immatriculé au registre de commerce et du crédit immobilier ; représenté par sa Présidente ${gieData.presidentePrenom || '______________'} ${gieData.presidenteNom || '______________'} , identifiée par la Carte d'Identification National n° ${gieData.presidenteCIN || '______________________'} ; contact téléphone et PAYMASTER n° : ${gieData.presidenteTelephone || '_____________________'} enregistré sur WhatsApp ${gieData.presidentePrenom || '______________'} ${gieData.presidenteNom || '______________'} ; demandons l'adhésion à la Plateforme d'investissement économique organique dénommée « PLATEFORME D'INVESTISSEMENT ECONOMIE ORGANIQUE FEMMES VISION 2050» de FEVEO 2050 SAS afin d'en faire partie constituante des bras opérationnels de ladite structure dans les activités :`;
-    
+    const corpsText1 = `Nous soussigné, GIE ${gieData.identifiantGIE || '______________'} non encore immatriculé au registre de commerce et du crédit immobilier ; représenté par sa Présidente ${gieData.presidenteCIN || '________________'}`;
+
     const corpsLines1 = pdf.splitTextToSize(corpsText1, contentWidth);
     pdf.text(corpsLines1, margin, yPosition);
     yPosition += corpsLines1.length * 6 + 5;
@@ -1680,12 +1621,12 @@ Les comptes sont vérifiés trimestriellement par un membre désigné par l'asse
 
     // Engagement final du GIE
     const engagementFinalText = `Le GIE FEVEO ${gieData.identifiantGIE || '..............'} s'engage à verser les parts sociales d'investissement souscrites de tous les membres constituant du GIE associé et les frais de gestion dans la Plateforme d'Investissement Economique Organique « Femmes Vision 2050 », aux dates indiquées pour attester notre crédibilité dans le projet et pour servir et valoir ce que de droit.`;
-    
+
     if (yPosition > pageHeight - 50) {
       pdf.addPage();
       yPosition = margin;
     }
-    
+
     const engagementFinalLines = pdf.splitTextToSize(engagementFinalText, contentWidth);
     pdf.text(engagementFinalLines, margin, yPosition);
     yPosition += engagementFinalLines.length * 6 + 20;
@@ -1791,12 +1732,12 @@ Les comptes sont vérifiés trimestriellement par un membre désigné par l'asse
 
     pdf.setFont('helvetica', 'normal');
     const noteText = `Le montant total initial, minimum, à verser par membre du GIE associé est de 2 000 f.cfa, représentant un apport initial des parts sociales d'investissement et des frais de gestion de 10 jours (1 500 f) et de (500 f) de droits d'adhésion.`;
-    
+
     if (yPosition > pageHeight - 40) {
       pdf.addPage();
       yPosition = margin;
     }
-    
+
     const noteLines = pdf.splitTextToSize(noteText, contentWidth);
     pdf.text(noteLines, margin, yPosition);
     yPosition += noteLines.length * 6 + 8;
@@ -1853,7 +1794,7 @@ Les comptes sont vérifiés trimestriellement par un membre désigné par l'asse
     // Télécharger le PDF
     const fileName = `Demande_Adhesion_Affiliation_FEVEO_${gieData.identifiantGIE}_${new Date().toISOString().split('T')[0]}.pdf`;
     pdf.save(fileName);
-    
+
     // Notification de succès
     alert(`✅ Demande d'Adhésion et d'Affiliation PDF générée avec succès !\n\n📁 Fichier : ${fileName}\n📋 Format officiel FEVEO 2050 SAS\n🏢 GIE : ${gieData.nomGIE}\n💰 Accord-cadre détaillé inclus\n📊 Parts sociales : 262 parts de 1 000 FCFA + 11 900 FCFA frais`);
   };
@@ -1861,7 +1802,7 @@ Les comptes sont vérifiés trimestriellement par un membre désigné par l'asse
   const proceedToNextStep = () => {
     if (currentStep < 4) {
       setCurrentStep(prev => prev + 1);
-      
+
       // Auto-génération des documents suivants
       if (currentStep === 1) {
         setGeneratedDocuments(prev => ({ ...prev, reglementInterieur: true }));
@@ -1877,13 +1818,13 @@ Les comptes sont vérifiés trimestriellement par un membre désigné par l'asse
     setIsSubmitting(true);
 
     console.log('🚀 Envoi des données pour l\'enregistrement du GIE:', gieData);
-    
+
     try {
       // Validation finale avant soumission
       if (!gieData.nomGIE || !gieData.presidenteNom || !gieData.presidenteTelephone) {
         throw new Error('Informations manquantes pour l\'enregistrement du GIE');
       }
-      if (gieData.membres.length + 1 <2) {
+      if (gieData.membres.length + 1 < 2) {
         throw new Error('Le GIE doit avoir au minimun 3 membres (incluant la présidente) une secretaire et une trésorière');
       }
 
@@ -1902,6 +1843,10 @@ Les comptes sont vérifiés trimestriellement par un membre désigné par l'asse
         departement: gieData.departement,
         arrondissement: gieData.arrondissement,
         commune: gieData.commune,
+        codeRegion: gieData.codeRegion,
+        codeDepartement: gieData.codeDepartement,
+        codeArrondissement: gieData.codeArrondissement,
+        codeCommune: gieData.codeCommune,
         secteurPrincipal: gieData.secteurPrincipal,
         objectifs: gieData.objectifs || `GIE ${gieData.nomGIE} spécialisé dans ${gieData.secteurPrincipal}`,
         activites: gieData.activites.length > 0 ? gieData.activites : ['Production', 'Commerce', 'Formation'],
@@ -1918,33 +1863,66 @@ Les comptes sont vérifiés trimestriellement par un membre désigné par l'asse
 
       // Enregistrer le GIE via l'API
       const response = await gieService.enregistrerGIE(enregistrementData);
-      
+
+      console.log('✅ Réponse de l\'API d\'enregistrement GIE:', response);
+
       if (response.success) {
         const gieEnregistre = response.data;
-        
-        // Message de succès détaillé
-        const message = `🎉 GIE enregistré avec succès dans FEVEO 2050 !
 
-📋 Informations d'enregistrement :
-• Nom: ${gieEnregistre.nomGIE}
-• Identifiant FEVEO: ${gieData.identifiantGIE}
-• Statut: En attente de validation de paiement
-• Membres: ${gieData.membres.length + 1} personnes
-• Secteur: ${gieData.secteurPrincipal}
 
-📱 Vous recevrez un SMS sur ${gieData.presidenteTelephone} avec :
-• Instructions de paiement (50 000 FCFA)
-• Code de confirmation
-• Accès au tableau de bord GIE
+        // Créer une transaction d'adhésion via l'API transactions
+        try {
+          // Récupérer l'identifiant du GIE en fonction de la structure de la réponse
+          let gieId = enregistrementData.identifiantGIE;
 
-💳 Redirection vers Wave pour le paiement...`;
-        
-        alert(message);
-        
-        // Rediriger vers Wave pour le paiement de 50 000 FCFA (adhésion premium)
-        const paymentUrl = 'https://pay.wave.com/m/M_sn_t3V8_2xeRR6Z/c/sn/?amount=50000';
-        window.open(paymentUrl, '_blank');
-        
+          // Vérifier la structure de la réponse et extraire l'ID du GIE
+          if (gieEnregistre && typeof gieEnregistre === 'object') {
+            if ('gie' in gieEnregistre && gieEnregistre.gie && typeof gieEnregistre.gie === 'object' && 'identifiantGIE' in gieEnregistre.gie) {
+              gieId = (gieEnregistre.gie as { identifiantGIE: string }).identifiantGIE;
+            } else if ('identifiantGIE' in gieEnregistre) {
+              gieId = (gieEnregistre as { identifiantGIE: string }).identifiantGIE;
+            }
+          }
+
+          console.log('🔄 Création de la transaction d\'adhésion pour le GIE:', gieId);
+
+          console.log('🔄 Envoi de la requête de transaction d\'adhésion...');
+
+          console.log('🔄 Données de la transaction:', {
+            amount: 20200,
+            method: 'WAVE',
+            gieCode: gieId,
+            operationType: 'ADHESION'
+          });
+
+          const transactionResponse = await fetch(`${API_BASE_URL}/transactions`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              amount: 20200, // Montant d'adhésion standard
+              method: 'WAVE', // Méthode de paiement par défaut
+              gieCode: gieId,
+              operationType: 'ADHESION' // Type spécifique pour les adhésions
+            }),
+          });
+
+          const transactionData = await transactionResponse.json();
+          console.log('✅ Réponse transaction créée:', transactionData);
+
+          const fallbackUrl = transactionData.data.urlWave;
+          window.open(fallbackUrl, '_blank');
+
+
+        } catch (error) {
+          // console.error('❌ Erreur lors de la création de la transaction:', error);
+          // Fallback au lien statique en cas d'erreur
+          // const fallbackUrl = 'https://pay.wave.com/m/M_sn_t3V8_2xeRR6Z/c/sn/?amount=20000';
+          //  window.open(fallbackUrl, '_blank');
+          alert('Erreur de communication avec le serveur. Utilisation du lien de paiement de secours.');
+        }
+
         // Mettre à jour les données avec les informations du serveur
         const updatedGieData = {
           ...gieData,
@@ -1961,7 +1939,7 @@ Les comptes sont vérifiés trimestriellement par un membre désigné par l'asse
       }
     } catch (error: any) {
       console.error('❌ Erreur enregistrement GIE:', error);
-      
+
       const errorMessage = error.message || 'Erreur inconnue lors de l\'enregistrement';
       alert(`❌ Erreur lors de l'enregistrement du GIE:\n\n${errorMessage}\n\nVeuillez vérifier vos informations et réessayer.`);
     } finally {
@@ -1986,17 +1964,15 @@ Les comptes sont vérifiés trimestriellement par un membre désigné par l'asse
         <div className="flex items-center justify-between max-w-4xl mx-auto">
           {steps.map((step, index) => (
             <div key={step.number} className="flex items-center">
-              <div className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg border-2 ${
-                currentStep > step.number ? 'bg-success-500 border-success-500 text-white' :
-                currentStep === step.number ? 'bg-accent-500 border-accent-500 text-white' :
-                'bg-neutral-100 border-neutral-300 text-neutral-500'
-              }`}>
+              <div className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg border-2 ${currentStep > step.number ? 'bg-success-500 border-success-500 text-white' :
+                  currentStep === step.number ? 'bg-accent-500 border-accent-500 text-white' :
+                    'bg-neutral-100 border-neutral-300 text-neutral-500'
+                }`}>
                 {currentStep > step.number ? <CheckCircle className="w-6 h-6" /> : step.number}
               </div>
               {index < steps.length - 1 && (
-                <div className={`w-20 h-1 mx-4 ${
-                  currentStep > step.number ? 'bg-success-500' : 'bg-neutral-200'
-                }`}></div>
+                <div className={`w-20 h-1 mx-4 ${currentStep > step.number ? 'bg-success-500' : 'bg-neutral-200'
+                  }`}></div>
               )}
             </div>
           ))}
@@ -2013,7 +1989,7 @@ Les comptes sont vérifiés trimestriellement par un membre désigné par l'asse
 
       {/* Contenu selon l'étape */}
       <div className="bg-white rounded-2xl shadow-xl border border-neutral-200 p-8">
-        
+
         {/* Étape 1: Statuts du GIE */}
         {currentStep === 1 && (
           <div className="space-y-8">
@@ -2036,7 +2012,7 @@ Les comptes sont vérifiés trimestriellement par un membre désigné par l'asse
                   disabled
                   className="w-full px-4 py-3 border border-neutral-300 rounded-lg bg-neutral-100 text-neutral-500 font-mono"
                 />
-            
+
               </div>
 
               <div>
@@ -2109,7 +2085,7 @@ Les comptes sont vérifiés trimestriellement par un membre désigné par l'asse
 
               <div>
                 <label className="block text-sm font-medium text-neutral-700 mb-2">
-                  Email 
+                  Email
                 </label>
                 <input
                   type="email"
@@ -2128,15 +2104,15 @@ Les comptes sont vérifiés trimestriellement par un membre désigné par l'asse
                   onChange={(e) => {
                     const selectedRegion = e.target.value;
                     console.log('🌍 Région sélectionnée:', selectedRegion);
-                    
+
                     if (selectedRegion) {
                       const regionData = SENEGAL_GEOGRAPHIC_DATA[selectedRegion];
                       const regionCode = regionData?.code || '';
                       console.log('🔑 Code région:', regionCode);
-                      
+
                       // Mettre à jour tous les champs géographiques en une seule fois
-                      const updatedData = { 
-                        ...gieData, 
+                      const updatedData = {
+                        ...gieData,
                         region: selectedRegion,
                         codeRegion: regionCode,
                         // Reset des niveaux inférieurs
@@ -2147,7 +2123,7 @@ Les comptes sont vérifiés trimestriellement par un membre désigné par l'asse
                         commune: '',
                         codeCommune: ''
                       };
-                      
+
                       setGieData(updatedData);
                       console.log('📊 Données mises à jour:', updatedData);
                     } else {
@@ -2163,7 +2139,7 @@ Les comptes sont vérifiés trimestriellement par un membre désigné par l'asse
                     </option>
                   ))}
                 </select>
-              
+
               </div>
 
               <div>
@@ -2176,15 +2152,15 @@ Les comptes sont vérifiés trimestriellement par un membre désigné par l'asse
                   onChange={(e) => {
                     const selectedDepartement = e.target.value;
                     console.log('🏢 Département sélectionné:', selectedDepartement);
-                    
+
                     if (selectedDepartement) {
                       const deptData = SENEGAL_GEOGRAPHIC_DATA[gieData.region]?.departements[selectedDepartement];
                       const deptCode = deptData?.code || '';
                       console.log('🔑 Code département:', deptCode);
-                      
+
                       // Mettre à jour le département et reset les niveaux inférieurs
-                      const updatedData = { 
-                        ...gieData, 
+                      const updatedData = {
+                        ...gieData,
                         departement: selectedDepartement,
                         codeDepartement: deptCode,
                         // Reset des niveaux inférieurs
@@ -2193,7 +2169,7 @@ Les comptes sont vérifiés trimestriellement par un membre désigné par l'asse
                         commune: '',
                         codeCommune: ''
                       };
-                      
+
                       setGieData(updatedData);
                       console.log('📊 Données département mises à jour:', updatedData);
                     } else {
@@ -2221,21 +2197,21 @@ Les comptes sont vérifiés trimestriellement par un membre désigné par l'asse
                   onChange={(e) => {
                     const selectedArrondissement = e.target.value;
                     console.log('🏘️ Arrondissement sélectionné:', selectedArrondissement);
-                    
+
                     if (selectedArrondissement) {
                       // Utiliser directement le code de l'arrondissement sélectionné
                       console.log('🔑 Code arrondissement:', selectedArrondissement);
-                      
+
                       // Mettre à jour l'arrondissement et reset les niveaux inférieurs
-                      const updatedData = { 
-                        ...gieData, 
+                      const updatedData = {
+                        ...gieData,
                         arrondissement: selectedArrondissement,
                         codeArrondissement: selectedArrondissement,
                         // Reset des niveaux inférieurs
                         commune: '',
                         codeCommune: ''
                       };
-                      
+
                       setGieData(updatedData);
                       console.log('📊 Données arrondissement mises à jour:', updatedData);
                     } else {
@@ -2267,14 +2243,15 @@ Les comptes sont vérifiés trimestriellement par un membre désigné par l'asse
                       // Utiliser directement le code de la commune sélectionnée
                       console.log('🔑 Code commune:', selectedCommune);
                       // Mettre à jour la commune et son code (stocker le code dans commune pour la sélection)
-                      const updatedData = { 
-                        ...gieData, 
+                      const updatedData = {
+                        ...gieData,
                         commune: selectedCommune,
                         codeCommune: selectedCommune
                       };
                       // Appeler l'API pour obtenir le prochain numéro de protocole
                       if (updatedData.codeRegion && updatedData.codeDepartement && updatedData.codeArrondissement && updatedData.codeCommune) {
-                        const nextNumero = await fetchNextNumeroProtocole(updatedData.codeCommune);
+                        const nextNumero = await fetchNextNumeroProtocole(updatedData.codeCommune, updatedData.codeRegion, updatedData.codeDepartement, updatedData.codeArrondissement);
+                        console.log('🔢 Prochain numéro de protocole:', nextNumero);
                         const newName = generateGIEName(
                           updatedData.codeRegion,
                           updatedData.codeDepartement,
@@ -2306,7 +2283,7 @@ Les comptes sont vérifiés trimestriellement par un membre désigné par l'asse
               </div>
             </div>
 
-           
+
 
             {/* Adresse complète */}
             <div>
@@ -2401,7 +2378,7 @@ Les comptes sont vérifiés trimestriellement par un membre désigné par l'asse
                           </div>
                         </div>
                       </div>
-                      
+
                       {/* Option 2 */}
                       <div className="border border-gray-200 rounded-lg p-4">
                         <h4 className="font-semibold text-neutral-800 mb-3">Option 2 : Composition mixte </h4>
@@ -2426,13 +2403,13 @@ Les comptes sont vérifiés trimestriellement par un membre désigné par l'asse
                     </div>
                   </div>
                 </div>
-                
+
                 {/* Compteur actuel */}
                 <div className="mt-4 p-4 bg-white rounded-lg border">
                   <p className="text-sm font-medium text-neutral-700 mb-3">Composition actuelle :</p>
                   <div className="flex flex-wrap gap-4 text-sm">
                     <span className="text-pink-600 font-medium">
-                      👩 Femmes : {gieData.membres.filter(m => m.genre === 'femme').length + 1} 
+                      👩 Femmes : {gieData.membres.filter(m => m.genre === 'femme').length + 1}
                       (incluant présidente)
                     </span>
                     <span className="text-blue-600 font-medium">
@@ -2445,14 +2422,14 @@ Les comptes sont vérifiés trimestriellement par un membre désigné par l'asse
                       Total : {gieData.membres.length + 1} membres
                     </span>
                   </div>
-                  {gieData.membres.length + 1 >= 3 && 
-                   gieData.membres.find(m => m.fonction === 'Secrétaire') &&
-                   gieData.membres.find(m => m.fonction === 'Trésorière') && (
-                    <div className="mt-2 p-2 bg-success-50 text-success-700 rounded text-sm flex items-center gap-2">
-                      <CheckCircle className="w-4 h-4" />
-                      Structure minimale complète ! Le GIE peut être constitué.
-                    </div>
-                  )}
+                  {gieData.membres.length + 1 >= 3 &&
+                    gieData.membres.find(m => m.fonction === 'Secrétaire') &&
+                    gieData.membres.find(m => m.fonction === 'Trésorière') && (
+                      <div className="mt-2 p-2 bg-success-50 text-success-700 rounded text-sm flex items-center gap-2">
+                        <CheckCircle className="w-4 h-4" />
+                        Structure minimale complète ! Le GIE peut être constitué.
+                      </div>
+                    )}
                 </div>
 
                 {/* Informations sur l'investissement */}
@@ -2548,7 +2525,7 @@ Les comptes sont vérifiés trimestriellement par un membre désigné par l'asse
                 <h3 className="text-lg font-semibold text-neutral-900 mb-4">
                   Génération de l'identifiant GIE
                 </h3>
-                
+
                 {/* Affichage de la localisation complète */}
                 <div className="mb-4 p-3 bg-white rounded border">
                   <p className="text-sm text-neutral-600 mb-2">Localisation administrative :</p>
@@ -2565,62 +2542,62 @@ Les comptes sont vérifiés trimestriellement par un membre désigné par l'asse
                   <p className="font-mono text-lg font-bold text-accent-600 mb-4 p-2 bg-white rounded border">
                     {gieData.identifiantGIE}
                   </p>
-                  
+
                   {/* Aperçu des statuts */}
                   <div className="mb-6 p-4 bg-white rounded-lg border border-neutral-200">
                     <h4 className="font-semibold text-neutral-900 mb-3 flex items-center gap-2">
-                        <FileText className="w-5 h-5 text-accent-500" />
-                        Aperçu du document PDF
-                      </h4>
-                      <div className="bg-neutral-50 p-4 rounded border text-sm font-mono max-h-40 overflow-y-auto">
-                        <div className="text-center font-bold text-lg mb-2">STATUTS DU GIE FEVEO</div>
-                        <div className="border-b border-neutral-300 mb-3"></div>
-                        <div className="mb-2">Aujourd'hui, {new Date().toLocaleDateString('fr-FR')}</div>
-                        <div className="mb-2">Dans la région de : {regions.find(r => r.code === gieData.region)?.nom || gieData.region}</div>
-                        <div className="mb-2">département de : {getDepartements(gieData.region).find(d => d.code === gieData.departement)?.nom || gieData.departement}</div>
-                        <div className="mb-3">commune de : {getCommunes(gieData.region, gieData.departement, gieData.arrondissement).find(c => c.code === gieData.commune)?.nom || gieData.commune}</div>
-                        <div className="font-bold mb-2">Les soussignés,</div>
-                        <div className="text-xs">
-                          <div className="grid grid-cols-6 gap-1 mb-1 font-bold">
-                            <span>N°</span><span>Prénom</span><span>Nom</span><span>Fonction</span><span>Genre</span><span>CIN</span>
-                          </div>
-                          <div className="grid grid-cols-6 gap-1 mb-1">
-                            <span>01</span><span>{gieData.presidentePrenom}</span><span>{gieData.presidenteNom}</span><span>Présidente</span><span>Femme</span><span>{gieData.presidenteCIN}</span>
-                          </div>
-                          {gieData.membres.slice(0, 3).map((membre, index) => (
-                            <div key={index} className="grid grid-cols-6 gap-1 mb-1">
-                              <span>{(index + 2).toString().padStart(2, '0')}</span>
-                              <span>{membre.prenom}</span>
-                              <span>{membre.nom}</span>
-                              <span>{membre.fonction}</span>
-                              <span>{membre.genre === 'femme' ? 'Femme' : membre.genre === 'jeune' ? 'Jeune' : 'Homme'}</span>
-                              <span>{membre.cin}</span>
-                            </div>
-                          ))}
-                          {gieData.membres.length > 3 && (
-                            <div className="text-neutral-500">... et {gieData.membres.length - 3} autres membres</div>
-                          )}
+                      <FileText className="w-5 h-5 text-accent-500" />
+                      Aperçu du document PDF
+                    </h4>
+                    <div className="bg-neutral-50 p-4 rounded border text-sm font-mono max-h-40 overflow-y-auto">
+                      <div className="text-center font-bold text-lg mb-2">STATUTS DU GIE FEVEO</div>
+                      <div className="border-b border-neutral-300 mb-3"></div>
+                      <div className="mb-2">Aujourd'hui, {new Date().toLocaleDateString('fr-FR')}</div>
+                      <div className="mb-2">Dans la région de : {regions.find(r => r.code === gieData.region)?.nom || gieData.region}</div>
+                      <div className="mb-2">département de : {getDepartements(gieData.region).find(d => d.code === gieData.departement)?.nom || gieData.departement}</div>
+                      <div className="mb-3">commune de : {getCommunes(gieData.region, gieData.departement, gieData.arrondissement).find(c => c.code === gieData.commune)?.nom || gieData.commune}</div>
+                      <div className="font-bold mb-2">Les soussignés,</div>
+                      <div className="text-xs">
+                        <div className="grid grid-cols-6 gap-1 mb-1 font-bold">
+                          <span>N°</span><span>Prénom</span><span>Nom</span><span>Fonction</span><span>Genre</span><span>CIN</span>
                         </div>
-                        <div className="mt-3 text-xs text-neutral-600">
-                          📄 Le PDF complet contient tous les 12 articles des statuts OHADA
+                        <div className="grid grid-cols-6 gap-1 mb-1">
+                          <span>01</span><span>{gieData.presidentePrenom}</span><span>{gieData.presidenteNom}</span><span>Présidente</span><span>Femme</span><span>{gieData.presidenteCIN}</span>
                         </div>
+                        {gieData.membres.slice(0, 3).map((membre, index) => (
+                          <div key={index} className="grid grid-cols-6 gap-1 mb-1">
+                            <span>{(index + 2).toString().padStart(2, '0')}</span>
+                            <span>{membre.prenom}</span>
+                            <span>{membre.nom}</span>
+                            <span>{membre.fonction}</span>
+                            <span>{membre.genre === 'femme' ? 'Femme' : membre.genre === 'jeune' ? 'Jeune' : 'Homme'}</span>
+                            <span>{membre.cin}</span>
+                          </div>
+                        ))}
+                        {gieData.membres.length > 3 && (
+                          <div className="text-neutral-500">... et {gieData.membres.length - 3} autres membres</div>
+                        )}
+                      </div>
+                      <div className="mt-3 text-xs text-neutral-600">
+                        📄 Le PDF complet contient tous les 12 articles des statuts OHADA
                       </div>
                     </div>
-
-                    <div className="flex gap-4">
-                      <button
-                        onClick={() => downloadDocument('statuts', `Statuts_${gieData.nomGIE.replace(/\s+/g, '_')}.pdf`)}
-                        className="btn-primary flex items-center gap-2 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-semibold px-6 py-3 rounded-lg shadow-lg"
-                      >
-                        <Download className="w-5 h-5" />
-                        📄 Télécharger les Statuts PDF
-                      </button>
-                      {generatedDocuments.statuts && (
-                        <CheckCircle className="w-6 h-6 text-success-500" />
-                      )}
-                    </div>
                   </div>
-                
+
+                  <div className="flex gap-4">
+                    <button
+                      onClick={() => downloadDocument('statuts', `Statuts_${gieData.nomGIE.replace(/\s+/g, '_')}.pdf`)}
+                      className="btn-primary flex items-center gap-2 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-semibold px-6 py-3 rounded-lg shadow-lg"
+                    >
+                      <Download className="w-5 h-5" />
+                      📄 Télécharger les Statuts PDF
+                    </button>
+                    {generatedDocuments.statuts && (
+                      <CheckCircle className="w-6 h-6 text-success-500" />
+                    )}
+                  </div>
+                </div>
+
               </div>
             )}
 
@@ -2637,9 +2614,8 @@ Les comptes sont vérifiés trimestriellement par un membre désigné par l'asse
                   }
                 }}
                 disabled={!gieData.identifiantGIE}
-                className={`btn-accent flex items-center gap-2 ${
-                  !gieData.identifiantGIE ? 'opacity-50 cursor-not-allowed' : ''
-                }`}
+                className={`btn-accent flex items-center gap-2 ${!gieData.identifiantGIE ? 'opacity-50 cursor-not-allowed' : ''
+                  }`}
               >
                 Continuer
                 <ArrowRight className="w-4 h-4" />
@@ -2714,7 +2690,7 @@ Les comptes sont vérifiés trimestriellement par un membre désigné par l'asse
             </div>
 
             <div className="flex justify-between pt-6">
-              <button 
+              <button
                 onClick={() => setCurrentStep(1)}
                 className="btn-secondary flex items-center gap-2"
               >
@@ -2799,7 +2775,7 @@ Les comptes sont vérifiés trimestriellement par un membre désigné par l'asse
             </div>
 
             <div className="flex justify-between pt-6">
-              <button 
+              <button
                 onClick={() => setCurrentStep(2)}
                 className="btn-secondary flex items-center gap-2"
               >
@@ -2910,7 +2886,7 @@ Les comptes sont vérifiés trimestriellement par un membre désigné par l'asse
                     <li>• Accès sécurisé et libre du GIE dans son "Wallet GIE" pour une administration de ses différentes activités</li>
                   </ul>
                 </div>
-                
+
               </div>
             </div>
 
@@ -2970,7 +2946,7 @@ Les comptes sont vérifiés trimestriellement par un membre désigné par l'asse
                 <Download className="w-4 h-4" />
                 Télécharger la Demande d'Adhésion PDF
               </button>
-              
+
               <div className="bg-accent-50 p-4 rounded-lg border border-accent-200">
                 <div className="flex items-start gap-3">
                   <AlertCircle className="w-5 h-5 text-accent-500 flex-shrink-0 mt-0.5" />
@@ -2986,7 +2962,7 @@ Les comptes sont vérifiés trimestriellement par un membre désigné par l'asse
             </div>
 
             <div className="flex justify-between pt-6">
-              <button 
+              <button
                 onClick={() => setCurrentStep(3)}
                 className="btn-secondary flex items-center gap-2"
                 disabled={isSubmitting}
@@ -2997,9 +2973,8 @@ Les comptes sont vérifiés trimestriellement par un membre désigné par l'asse
               <button
                 onClick={handleFinalSubmission}
                 disabled={isSubmitting}
-                className={`btn-success text-lg px-8 py-3 flex items-center gap-2 ${
-                  isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
-                }`}
+                className={`btn-success text-lg px-8 py-3 flex items-center gap-2 ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
+                  }`}
               >
                 {isSubmitting ? (
                   <>
