@@ -83,8 +83,8 @@ const WalletLogin: React.FC = () => {
         
         // Vérifier si un paiement est requis (cas standard)
         if (data.requiresPayment) {
-          setPaymentRequired(true);
-          setPaymentData(data.data);
+          setPaymentRequired(false);
+         // setPaymentData(data.data);
           setStep('whatsapp-code'); // Utiliser l'étape 2 pour afficher le paiement
           setError(''); // Nettoyer les erreurs
           return;
