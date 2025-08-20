@@ -37,7 +37,7 @@ const WalletLogin: React.FC = () => {
 
       if (data.success) {
         // Vérifier si le statut d'enregistrement n'est pas validé
-        if (data.data.gieInfo && data.data.gieInfo.statutEnregistrement !== 'validee') {
+        if (data.data.gieInfo && data.data.gieInfo.statutEnregistrement !== 'valide') {
           console.log('GIE non validé, création d\'une transaction d\'adhésion');
           
           try {
