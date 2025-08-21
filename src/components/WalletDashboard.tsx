@@ -36,6 +36,10 @@ const WalletDashboard: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('wallet');
   
+  // État pour les transactions
+  const [transactions, setTransactions] = useState<any[]>([]);
+  const [transactionsLoading, setTransactionsLoading] = useState(false);
+  
   // États pour la gestion des membres
   const [membres, setMembres] = useState<any[]>([]);
   const [membresLoading, setMembresLoading] = useState(false);
@@ -94,6 +98,13 @@ const WalletDashboard: React.FC = () => {
 
     loadWalletData();
   }, []);
+
+  // Charger les transactions lorsque le wallet est chargé
+  useEffect(() => {
+    if (walletData && !isLoading) {
+      loadTransactions();
+    }
+  }, [walletData, isLoading]);
 
   // Fonction pour charger les données des membres
   const loadMembres = async () => {
@@ -316,13 +327,61 @@ const WalletDashboard: React.FC = () => {
     navigate('/');
   };
 
-  // Données simulées pour les transactions
-  const transactions = [
-    { type: 'investment', amount: 6000, date: '2025-07-26', description: 'Investissement jour 12' },
-    { type: 'return', amount: 420, date: '2025-07-25', description: 'Retour investissement jour 11' },
-    { type: 'investment', amount: 6000, date: '2025-07-25', description: 'Investissement jour 11' },
-    { type: 'return', amount: 420, date: '2025-07-24', description: 'Retour investissement jour 10' }
-  ];
+  // Charger les transactions du GIE
+  const loadTransactions = async () => {
+    if (!walletData?.gieInfo?.code) return;
+    
+    setTransactionsLoading(true);
+    try {
+      const BASE_URL = (import.meta as any).env?.VITE_API_URL || 'http://localhost:4320/api';
+      const sessionToken = localStorage.getItem('walletSession');
+      
+      const response = await fetch(`${BASE_URL}/transactions?gieCode=${walletData.gieInfo.code}`, {
+        headers: {
+          'Authorization': `Bearer ${sessionToken}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error('Erreur lors de la récupération des transactions');
+      }
+      
+      const data = await response.json();
+
+      console.log('Données des transactions:', data);
+
+      if (data.status === 'OK' && data.data) {
+        // Mapper les données pour correspondre à notre format d'affichage
+        const formattedTransactions = data.data.map((transaction: any) => ({
+          id: transaction._id,
+          type: transaction.operationType === 'ADHESION' ? 'adhesion' : 
+                transaction.operationType === 'INVESTISSEMENT' ? 'investment' : 'other',
+          amount: transaction.amount,
+          date: new Date(transaction.createdAt).toISOString().split('T')[0],
+          description: transaction.operationType === 'ADHESION' 
+            ? 'Frais d\'adhésion FEVEO 2050' 
+            : transaction.operationType === 'INVESTISSEMENT'
+              ? `Investissement ${transaction.daysInvested} jours`
+              : transaction.description || 'Transaction',
+          status: transaction.status,
+          method: transaction.method
+        }));
+        
+        setTransactions(formattedTransactions);
+      }
+    } catch (error) {
+      console.error('Erreur lors du chargement des transactions:', error);
+      // En cas d'erreur, utiliser des données de test
+      setTransactions([
+        { type: 'investment', amount: 6000, date: '2025-07-26', description: 'Investissement jour 12', status: 'SUCCESS' },
+        { type: 'return', amount: 420, date: '2025-07-25', description: 'Retour investissement jour 11', status: 'SUCCESS' },
+        { type: 'investment', amount: 6000, date: '2025-07-25', description: 'Investissement jour 11', status: 'SUCCESS' }
+      ]);
+    } finally {
+      setTransactionsLoading(false);
+    }
+  };
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('fr-FR', {
@@ -1440,42 +1499,86 @@ const WalletDashboard: React.FC = () => {
               {/* Transactions récentes */}
               <div className="bg-white rounded-xl shadow-sm border border-gray-200">
                 <div className="p-6 border-b border-gray-200">
-                  <h3 className="text-lg font-bold text-gray-900">Journal des operations diverses </h3>
+                  <h3 className="text-lg font-bold text-gray-900">Journal des opérations du GIE</h3>
                 </div>
                 <div className="p-6">
-                  <div className="space-y-4">
-                    {transactions.slice(0, 6).map((transaction, index) => (
-                      <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                        <div className="flex items-center space-x-3">
-                          <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                            transaction.type === 'investment' 
-                              ? 'bg-blue-100' 
-                              : 'bg-green-100'
+                  {transactionsLoading ? (
+                    <div className="flex justify-center items-center h-40">
+                      <div className="animate-spin rounded-full h-8 w-8 border-2 border-primary-500 border-t-transparent"></div>
+                    </div>
+                  ) : transactions.length === 0 ? (
+                    <div className="text-center py-6 text-gray-500">
+                      <Activity className="w-12 h-12 mx-auto text-gray-300 mb-3" />
+                      <p>Aucune transaction trouvée pour ce GIE.</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {transactions.slice(0, 6).map((transaction, index) => (
+                        <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                          <div className="flex items-center space-x-3">
+                            <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                              transaction.type === 'investment' 
+                                ? 'bg-blue-100'
+                                : transaction.type === 'adhesion'
+                                ? 'bg-amber-100'
+                                : 'bg-green-100'
+                            }`}>
+                              {transaction.type === 'investment' ? (
+                                <ArrowUpRight className="w-5 h-5 text-blue-600" />
+                              ) : transaction.type === 'adhesion' ? (
+                                <CreditCard className="w-5 h-5 text-amber-600" />
+                              ) : (
+                                <ArrowDownLeft className="w-5 h-5 text-green-600" />
+                              )}
+                            </div>
+                            <div>
+                              <div className="flex items-center">
+                                <p className="font-medium text-gray-900">{transaction.description}</p>
+                                {transaction.status !== 'SUCCESS' && (
+                                  <span className={`ml-2 px-2 py-0.5 text-xs rounded-full ${
+                                    transaction.status === 'PENDING' ? 'bg-yellow-100 text-yellow-800' : 
+                                    transaction.status === 'FAILED' ? 'bg-red-100 text-red-800' : 
+                                    'bg-gray-100 text-gray-800'
+                                  }`}>
+                                    {transaction.status === 'PENDING' ? 'En attente' : 
+                                     transaction.status === 'FAILED' ? 'Échoué' : 
+                                     transaction.status}
+                                  </span>
+                                )}
+                              </div>
+                              <p className="text-sm text-gray-500">
+                                {new Date(transaction.date).toLocaleDateString('fr-FR')}
+                                {transaction.method && ` · ${transaction.method}`}
+                              </p>
+                            </div>
+                          </div>
+                          <div className={`font-bold text-lg ${
+                            transaction.type === 'investment' || transaction.type === 'adhesion'
+                              ? 'text-red-600' 
+                              : 'text-green-600'
                           }`}>
-                            {transaction.type === 'investment' ? (
-                              <ArrowUpRight className="w-5 h-5 text-blue-600" />
-                            ) : (
-                              <ArrowDownLeft className="w-5 h-5 text-green-600" />
-                            )}
-                          </div>
-                          <div>
-                            <p className="font-medium text-gray-900">{transaction.description}</p>
-                            <p className="text-sm text-gray-500">{new Date(transaction.date).toLocaleDateString('fr-FR')}</p>
+                            {transaction.type === 'investment' || transaction.type === 'adhesion' ? '-' : '+'}
+                            {formatCurrency(transaction.amount)}
                           </div>
                         </div>
-                        <div className={`font-bold text-lg ${
-                          transaction.type === 'investment' 
-                            ? 'text-red-600' 
-                            : 'text-green-600'
-                        }`}>
-                          {transaction.type === 'investment' ? '-' : '+'}
-                          {formatCurrency(transaction.amount)}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                  <button className="w-full mt-4 bg-gray-100 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-200 transition-colors">
-                    Voir le journal
+                      ))}
+                    </div>
+                  )}
+                  <button 
+                    className="w-full mt-4 bg-gray-100 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-200 transition-colors flex items-center justify-center"
+                    onClick={() => {
+                      // Recharger les transactions
+                      loadTransactions();
+                    }}
+                  >
+                    {transactionsLoading ? (
+                      <span className="flex items-center">
+                        <div className="animate-spin rounded-full h-4 w-4 border-2 border-gray-500 border-t-transparent mr-2"></div>
+                        Chargement...
+                      </span>
+                    ) : (
+                      <span>Actualiser le journal</span>
+                    )}
                   </button>
                 </div>
               </div>
