@@ -14,6 +14,8 @@ import {
 } from 'lucide-react';
 import gieValidationService from './services/gieValidationService';
 import { wavePaymentService, PaymentRequest } from './services/wavePaymentService';
+    
+const BASE_URL = (import.meta as any).env?.VITE_API_URL || 'http://localhost:3051/api';
 
 const Investir = () => {
   // États simplifiés pour le formulaire d'investissement
@@ -158,36 +160,69 @@ const Investir = () => {
     setPaymentError(null);
 
     try {
-      // Préparer la requête de paiement
-      const paymentRequest: PaymentRequest = {
-        montant: selectedPeriod.amount,
-        gieCode: gieData.codeGIE,
-        typePaiement: 'investissement'  
-      };
+      // Extraire le nombre de jours à partir de l'ID de la période
+      const daysInvested = selectedPeriod.id === 'day1' ? 1 : 
+                           selectedPeriod.id === 'day10' ? 10 : 
+                           selectedPeriod.id === 'day15' ? 15 : 30;
 
-      // Tenter de générer un lien de paiement via l'API
-      const paymentResult = await wavePaymentService.generatePaymentLink(paymentRequest);
+      // Créer une transaction d'investissement via l'API de transactions
+      
+      const transactionResponse = await fetch(`${BASE_URL}/transactions`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          amount: (6000 * daysInvested) + (6000 * daysInvested * 0.01),
+          method: 'WAVE',
+          gieCode: gieData.codeGIE,
+          operationType: 'INVESTISSEMENT',
+          daysInvested: daysInvested
+        })
+      });
 
-      if (paymentResult.success && paymentResult.paymentUrl) {
-        // Succès avec l'API intégrée
-        const message = `🎉 Paiement initié avec succès !\n\nDétails :\n• Code GIE: ${gieData.codeGIE}\n• Montant: ${selectedPeriod.amount.toLocaleString()} FCFA\n• Type: ${selectedPeriod.label}\n• Transaction ID: ${paymentResult.transactionId}\n\nRedirection vers Wave...`;
+      const transactionResult = await transactionResponse.json();
+
+      console.log('🔗 Transaction créée:', transactionResult);
+      
+     if (transactionResult.status === 'OK' && transactionResult.data) {
+        // Récupérer les informations de la transaction créée
+        const transaction = transactionResult.data;
+        const paymentUrl = transaction.urlWave;
+        const transactionId = transaction.reference;
         
-        alert(message);
-        window.open(paymentResult.paymentUrl, '_blank');
+        if (paymentUrl) {
+          // Succès avec l'API de transactions
+          const message = `🎉 Transaction d'investissement créée avec succès !\n\nDétails :\n• Code GIE: ${gieData.codeGIE}\n• Montant: ${selectedPeriod.amount.toLocaleString()} FCFA\n• Période: ${selectedPeriod.period}\n• Transaction ID: ${transactionId}\n\nRedirection vers Wave...`;
+          
+          alert(message);
+          window.open(paymentUrl, '_blank');
+        } else {
+          // Fallback si le lien de paiement n'est pas disponible
+          console.warn('Lien de paiement non disponible dans la réponse de transaction');
+          
+          // Préparer la requête de paiement via le service Wave fallback
+          const paymentRequest: PaymentRequest = {
+            montant: selectedPeriod.amount,
+            gieCode: gieData.codeGIE,
+            typePaiement: 'investissement'  
+          };
+
+          const paymentResult = await wavePaymentService.generatePaymentLink(paymentRequest);
+
+          if (paymentResult.success && paymentResult.paymentUrl) {
+            const message = `🎉 Paiement initié avec succès !\n\nDétails :\n• Code GIE: ${gieData.codeGIE}\n• Montant: ${selectedPeriod.amount.toLocaleString()} FCFA\n• Type: ${selectedPeriod.label}\n• Transaction ID: ${transactionId || paymentResult.transactionId}\n\nRedirection vers Wave...`;
+            
+            alert(message);
+            window.open(paymentResult.paymentUrl, '_blank');
+          } else {
+            throw new Error("Impossible de générer le lien de paiement");
+          }
+        }
       } else {
-        // Fallback avec lien simple
-        console.warn('API intégrée indisponible, utilisation du fallback:', paymentResult.error);
-        
-        const simplePaymentUrl = await wavePaymentService.generateSimplePaymentLink(
-          selectedPeriod.amount,
-          validatedGIE?.telephone
-        );
-        
-        const message = `🎉 Redirection vers le paiement !\n\nDétails :\n• Code GIE: ${gieData.codeGIE}\n• Montant: ${selectedPeriod.amount.toLocaleString()} FCFA\n• Type: ${selectedPeriod.label}${validatedGIE?.telephone ? `\n• Téléphone GIE: ${validatedGIE.telephone}` : ''}\n\nRedirection vers Wave...`;
-        console.log('🔗 URL de paiement fallback:', simplePaymentUrl);
-        alert(message);
-        window.open(simplePaymentUrl, '_blank');
-      }
+        // Fallback avec lien simple en cas d'échec de création de transaction
+        console.warn('Échec de création de transaction, utilisation du fallback:', transactionResult.message);
+      } 
 
       // Reset du formulaire après redirection
       setTimeout(() => {

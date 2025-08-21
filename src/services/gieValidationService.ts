@@ -3,7 +3,8 @@
  * Vérifie l'éligibilité des GIE pour les investissements FEVEO 2050
  */
 
-const BASE_URL = (import.meta as any).env?.VITE_API_URL || 'http://localhost:4320/api';
+
+const BASE_URL = (import.meta as any).env?.VITE_API_URL || 'http://localhost:3051/api';
 
 // 
 
