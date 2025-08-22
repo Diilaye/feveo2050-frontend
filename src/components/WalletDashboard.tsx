@@ -112,12 +112,21 @@ const WalletDashboard: React.FC = () => {
   const [showAddMemberModal, setShowAddMemberModal] = useState(false);
   const [showEditMemberModal, setShowEditMemberModal] = useState(false);
   const [selectedMember, setSelectedMember] = useState<any>(null);
+  
+  // États pour la gestion des documents
+  const [documentsLoading, setDocumentsLoading] = useState(false);
+  const [documents, setDocuments] = useState<any>({
+    statuts: false,
+    reglementInterieur: false,
+    procesVerbal: false,
+    demandeAdhesion: false
+  });
   const [memberForm, setMemberForm] = useState({
     nom: '',
     prenom: '',
     telephone: '',
     fonction: 'Membre',
-    genre: '',
+    genre: 'femme',
     cin: '',
     dateNaissance: '',
     profession: '',
@@ -139,7 +148,8 @@ const WalletDashboard: React.FC = () => {
             gieInfo: {
               code: 'FEVEO-01-01-01-01-001',
               nom: 'GIE Agriculture Bio Dakar',
-              presidente: 'Aïssatou Diallo'
+              presidente: 'Aïssatou Diallo',
+              daysInvestedSuccess: [1, 2, 3, 5, 8, 10, 12, 15, 18, 20] // Jours d'investissement réussis
             },
             balance: {
               current: 156000,
@@ -178,7 +188,7 @@ const WalletDashboard: React.FC = () => {
     
     setMembresLoading(true);
     try {
-      const response = await fetch(`http://localhost:5000/api/wallet/members/${walletData.gieInfo.code}`, {
+      const response = await fetch(`${BASE_URL}/wallet/members/${walletData.gieInfo.code}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -188,14 +198,51 @@ const WalletDashboard: React.FC = () => {
 
       if (response.ok) {
         const data = await response.json();
-        setMembres(data.membres || []);
+        console.log('Données des membres reçues:', data);
+        if (data && data.data && data.data.membres) {
+          // On récupère les membres du GIE
+          setMembres(data.data.membres);
+          console.log('Membres chargés:', data.data.membres);
+        } else {
+          console.error('Format de données inattendu:', data);
+          setMembres([]);
+        }
       } else {
         console.error('Erreur lors de la récupération des membres');
         setMembres([]);
       }
     } catch (error) {
       console.error('Erreur lors de la récupération des membres:', error);
-      setMembres([]);
+      // Si erreur, on utilise des données fictives pour le développement
+      setMembres([
+        {
+          nom: 'GNING',
+          prenom: 'FATOU',
+          fonction: 'Présidente',
+          cin: '22670197500225',
+          telephone: '765301149',
+          genre: 'femme',
+          _id: { $oid: 'president123' }
+        },
+        {
+          nom: 'THIAO',
+          prenom: 'THIORO',
+          fonction: 'Secrétaire',
+          cin: '2597198400032',
+          telephone: '773941632',
+          genre: 'femme',
+          _id: { $oid: 'secretaire456' }
+        },
+        {
+          nom: 'DIOUF',
+          prenom: 'FATOU',
+          fonction: 'Trésorière',
+          cin: '2670199100067',
+          telephone: '766468286',
+          genre: 'femme',
+          _id: { $oid: 'tresoriere789' }
+        }
+      ]);
     } finally {
       setMembresLoading(false);
     }
@@ -206,7 +253,7 @@ const WalletDashboard: React.FC = () => {
     if (!walletData?.gieInfo?.code) return;
     
     try {
-      const response = await fetch(`http://localhost:5000/api/wallet/members/${walletData.gieInfo.code}/stats`, {
+      const response = await fetch(`${BASE_URL}/wallet/members/${walletData.gieInfo.code}/stats`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -216,7 +263,11 @@ const WalletDashboard: React.FC = () => {
 
       if (response.ok) {
         const data = await response.json();
-        setMembresStats(data);
+        if (data && data.data) {
+          setMembresStats(data.data);
+        } else {
+          console.error('Format de données inattendu pour les statistiques:', data);
+        }
       } else {
         console.error('Erreur lors de la récupération des statistiques');
       }
@@ -231,18 +282,28 @@ const WalletDashboard: React.FC = () => {
     if (!walletData?.gieInfo?.code) return;
 
     try {
-      const response = await fetch(`http://localhost:5000/api/wallet/members/${walletData.gieInfo.code}/add`, {
+      // Préparation des données du membre selon le format attendu par l'API
+      const memberData = {
+        nom: memberForm.nom,
+        prenom: memberForm.prenom,
+        fonction: memberForm.fonction,
+        cin: memberForm.cin,
+        telephone: memberForm.telephone,
+        genre: memberForm.genre
+      };
+
+      const response = await fetch(`${BASE_URL}/wallet/members/${walletData.gieInfo.code}/add`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(memberForm),
+        body: JSON.stringify(memberData),
         signal: AbortSignal.timeout(10000),
       });
 
       const data = await response.json();
       if (response.ok) {
-        alert('Membre ajouté avec succès !');
+        toast.success('Membre ajouté avec succès !');
         setShowAddMemberModal(false);
         resetMemberForm();
         await loadMembres();
@@ -262,25 +323,37 @@ const WalletDashboard: React.FC = () => {
     if (!walletData?.gieInfo?.code || !selectedMember) return;
 
     try {
-      const response = await fetch(`http://localhost:5000/api/wallet/members/${walletData.gieInfo.code}/${selectedMember._id}`, {
+      // Préparation des données du membre selon le format attendu par l'API
+      const memberData = {
+        nom: memberForm.nom,
+        prenom: memberForm.prenom,
+        fonction: memberForm.fonction,
+        cin: memberForm.cin,
+        telephone: memberForm.telephone,
+        genre: memberForm.genre
+      };
+      
+      const memberId = selectedMember._id?.$oid || selectedMember._id;
+      
+      const response = await fetch(`${BASE_URL}/wallet/members/${walletData.gieInfo.code}/${memberId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(memberForm),
+        body: JSON.stringify(memberData),
         signal: AbortSignal.timeout(10000),
       });
 
       const data = await response.json();
       if (response.ok) {
-        alert('Membre modifié avec succès !');
+        toast.success('Membre modifié avec succès !');
         setShowEditMemberModal(false);
         resetMemberForm();
         setSelectedMember(null);
         await loadMembres();
         await loadMembresStats();
       } else {
-        alert(`Erreur: ${data.message}`);
+        toast.error(`Erreur: ${data.message || 'Échec de la modification du membre'}`);
       }
     } catch (error) {
       console.error('Erreur lors de la modification du membre:', error);
@@ -297,7 +370,10 @@ const WalletDashboard: React.FC = () => {
     }
 
     try {
-      const response = await fetch(`http://localhost:5000/api/wallet/members/${walletData.gieInfo.code}/${membre._id}`, {
+      // Récupération de l'ID du membre au bon format
+      const memberId = membre._id?.$oid || membre._id;
+      
+      const response = await fetch(`${BASE_URL}/wallet/members/${walletData.gieInfo.code}/${memberId}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -307,7 +383,8 @@ const WalletDashboard: React.FC = () => {
 
       const data = await response.json();
       if (response.ok) {
-        alert('Membre supprimé avec succès !');
+        toast.success('Membre supprimé avec succès !');
+        setShowEditMemberModal(false); // Fermer le modal d'édition si ouvert
         await loadMembres();
         await loadMembresStats();
       } else {
@@ -335,7 +412,7 @@ const WalletDashboard: React.FC = () => {
       prenom: '',
       telephone: '',
       fonction: 'Membre',
-      genre: '',
+      genre: 'femme',
       cin: '',
       dateNaissance: '',
       profession: '',
@@ -346,13 +423,14 @@ const WalletDashboard: React.FC = () => {
 
   // Fonction pour ouvrir le modal d'édition
   const openEditModal = (membre: any) => {
+    console.log('Édition du membre:', membre);
     setSelectedMember(membre);
     setMemberForm({
       nom: membre.nom || '',
       prenom: membre.prenom || '',
       telephone: membre.telephone || '',
-      fonction: membre.fonction || membre.role || 'Membre',
-      genre: membre.genre || '',
+      fonction: membre.fonction || 'Membre',
+      genre: membre.genre || 'femme',
       cin: membre.cin || '',
       dateNaissance: membre.dateNaissance ? membre.dateNaissance.split('T')[0] : '',
       profession: membre.profession || '',
@@ -362,11 +440,120 @@ const WalletDashboard: React.FC = () => {
     setShowEditMemberModal(true);
   };
 
-  // Charger les membres quand on change d'onglet vers membres
+  // Fonction pour charger les informations sur les documents du GIE
+  const loadDocuments = async () => {
+    if (!walletData?.gieInfo?.code) return;
+    
+    setDocumentsLoading(true);
+    try {
+      const response = await fetch(`${BASE_URL}/wallet/documents/${walletData.gieInfo.code}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        signal: AbortSignal.timeout(10000),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data && data.data && data.data.documentsGeneres) {
+          setDocuments(data.data.documentsGeneres);
+        } else {
+          console.error('Format de données inattendu pour les documents:', data);
+        }
+      } else {
+        console.error('Erreur lors de la récupération des documents');
+        // Utiliser des valeurs par défaut si l'API n'est pas encore implémentée
+        setDocuments({
+          statuts: Math.random() > 0.5,
+          reglementInterieur: Math.random() > 0.5,
+          procesVerbal: Math.random() > 0.5,
+          demandeAdhesion: Math.random() > 0.5
+        });
+      }
+    } catch (error) {
+      console.error('Erreur lors de la récupération des documents:', error);
+      // Utiliser des valeurs par défaut en cas d'erreur
+      setDocuments({
+        statuts: true,
+        reglementInterieur: true,
+        procesVerbal: true,
+        demandeAdhesion: true
+      });
+    } finally {
+      setDocumentsLoading(false);
+    }
+  };
+
+  // Fonction pour télécharger un document
+  const handleDocumentDownload = async (documentType: string) => {
+    if (!walletData?.gieInfo?.code) return;
+    
+    try {
+      const response = await fetch(`${BASE_URL}/wallet/documents/${walletData.gieInfo.code}/${documentType}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        // Convertir la réponse en blob
+        const blob = await response.blob();
+        
+        // Créer une URL pour le blob
+        const url = window.URL.createObjectURL(blob);
+        
+        // Créer un élément <a> temporaire pour déclencher le téléchargement
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = url;
+        
+        // Déterminer le nom du fichier selon le type de document
+        let fileName = '';
+        switch (documentType) {
+          case 'statuts':
+            fileName = `Statuts_GIE_${walletData.gieInfo.code}.pdf`;
+            break;
+          case 'reglementInterieur':
+            fileName = `Reglement_Interieur_GIE_${walletData.gieInfo.code}.pdf`;
+            break;
+          case 'procesVerbal':
+            fileName = `Proces_Verbal_GIE_${walletData.gieInfo.code}.pdf`;
+            break;
+          case 'demandeAdhesion':
+            fileName = `Demande_Adhesion_GIE_${walletData.gieInfo.code}.pdf`;
+            break;
+          default:
+            fileName = `Document_GIE_${walletData.gieInfo.code}.pdf`;
+        }
+        
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        
+        // Nettoyer
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+        
+        toast.success(`Téléchargement du document "${fileName}" réussi !`);
+      } else {
+        console.error(`Erreur lors du téléchargement du document ${documentType}`);
+        toast.error('Erreur lors du téléchargement du document');
+      }
+    } catch (error) {
+      console.error(`Erreur lors du téléchargement du document ${documentType}:`, error);
+      toast.error('Erreur lors du téléchargement du document');
+    }
+  };
+
+  // Charger les données quand on change d'onglet
   useEffect(() => {
     if (activeTab === 'membres' && walletData?.gieInfo?.code) {
       loadMembres();
       loadMembresStats();
+    } else if (activeTab === 'documents' && walletData?.gieInfo?.code) {
+      loadDocuments();
     }
   }, [activeTab, walletData?.gieInfo?.code]);
 
@@ -805,14 +992,27 @@ const WalletDashboard: React.FC = () => {
     const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
     const currentDay = Math.max(1, Math.min(diffDays + 1, totalDays)); // Entre 1 et totalDays
     
+    // Récupérer les jours investis avec succès du GIE (si disponible)
+    const daysInvestedSuccess = walletData?.gieInfo?.daysInvestedSuccess || [];
+
+    console.log('Jours investis avec succès:', walletData?.gieInfo
+      
+    );
+    
     for (let i = 0; i < totalDays; i++) {
       const date = new Date(startDate);
       date.setDate(startDate.getDate() + i);
+      const dayNumber = i + 1;
+      
+      // Vérifier si ce jour est dans la liste des jours investis avec succès
+      const isSuccessfulInvestment = daysInvestedSuccess.includes(dayNumber);
+      
       dates.push({
         date: date,
-        dayNumber: i + 1,
-        isInvested: i + 1 <= currentDay, // Jour déjà investi
-        isToday: i + 1 === currentDay     // Jour courant dans le cycle
+        dayNumber: dayNumber,
+        isInvested: dayNumber <= currentDay, // Jour déjà investi
+        isToday: dayNumber === currentDay,   // Jour courant dans le cycle
+        isSuccessfulInvestment: isSuccessfulInvestment // Jour investi avec succès
       });
     }
     
@@ -843,15 +1043,23 @@ const WalletDashboard: React.FC = () => {
         grouped[monthKey] = {
           startDay: startDay,
           daysInMonth: lastDay.getDate(),
-          investmentDays: []
+          investmentDays: [],
+          successfulDays: [] // Jours investis avec succès
         };
       }
       
+      // Ajouter le jour à investmentDays
       grouped[monthKey].investmentDays.push(date.getDate());
+      
+      // Si c'est un jour investi avec succès, l'ajouter à successfulDays
+      if (dateObj.isSuccessfulInvestment) {
+        grouped[monthKey].successfulDays.push(date.getDate());
+      }
     });
     
     return grouped;
-  };  const monthlyData = groupByMonth(investmentDates);
+  };  
+  const monthlyData = groupByMonth(investmentDates);
 
   // Données pour la page investissements
   const investmentPlans = [
@@ -1508,76 +1716,58 @@ const WalletDashboard: React.FC = () => {
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
                     {membres.map((membre) => (
-                      <tr key={membre.id} className="hover:bg-gray-50 transition-colors">
+                      <tr key={membre._id ? membre._id.$oid : membre.cin} className="hover:bg-gray-50 transition-colors">
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="flex items-center">
-                            <div className="flex-shrink-0 h-12 w-12">
-                              <div className="h-12 w-12 rounded-full bg-gradient-to-r from-blue-400 to-purple-500 flex items-center justify-center">
-                                <span className="text-white font-bold text-lg">
-                                  {membre.prenom.charAt(0)}{membre.nom.charAt(0)}
-                                </span>
-                              </div>
-                            </div>
-                            <div className="ml-4">
-                              <div className="text-sm font-medium text-gray-900">
-                                {membre.prenom} {membre.nom}
-                              </div>
-                              <div className="text-sm text-gray-500">
-                                Adhésion: {new Date(membre.dateAdhesion).toLocaleDateString('fr-FR')}
-                              </div>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`inline-flex px-3 py-1 text-xs font-medium rounded-full ${
-                            membre.role === 'Présidente' 
-                              ? 'bg-purple-100 text-purple-800'
-                              : membre.role === 'Vice-Président'
-                              ? 'bg-blue-100 text-blue-800'
-                              : membre.role === 'Trésorière'
-                              ? 'bg-green-100 text-green-800'
-                              : membre.role === 'Secrétaire'
-                              ? 'bg-orange-100 text-orange-800'
-                              : 'bg-gray-100 text-gray-800'
-                          }`}>
-                            {membre.role}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          <div>
-                            <div className="flex items-center mb-1">
-                              <span className="text-gray-600">{membre.telephone}</span>
-                            </div>
-                            <div className="text-gray-500">{membre.email}</div>
+                          <div className="text-sm font-medium text-gray-900">
+                            {membre.prenom}
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-sm font-medium text-gray-900">
-                            {formatCurrency(membre.cotisation)}
-                          </div>
-                          <div className="text-xs text-gray-500">
-                            Par mois
+                            {membre.nom}
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                            membre.statut === 'Actif'
+                          <span className={`inline-flex px-3 py-1 text-xs font-medium rounded-full ${
+                            membre.fonction === 'Présidente' 
+                              ? 'bg-purple-100 text-purple-800'
+                              : membre.fonction === 'Vice-Président'
+                              ? 'bg-blue-100 text-blue-800'
+                              : membre.fonction === 'Trésorière'
                               ? 'bg-green-100 text-green-800'
-                              : 'bg-red-100 text-red-800'
+                              : membre.fonction === 'Secrétaire'
+                              ? 'bg-orange-100 text-orange-800'
+                              : 'bg-gray-100 text-gray-800'
                           }`}>
-                            {membre.statut}
+                            {membre.fonction}
                           </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {membre.genre === 'femme' ? 'Femme' : 
+                           membre.genre === 'jeune' ? 'Jeune' : 
+                           membre.genre === 'homme' ? 'Homme' : 'Non spécifié'}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {membre.cin}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {membre.telephone}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                           <div className="flex items-center space-x-2">
-                            <button className="text-blue-600 hover:text-blue-900 transition-colors">
-                              <Eye className="w-4 h-4" />
+                            <button 
+                              onClick={() => openEditModal(membre)} 
+                              className="text-blue-600 hover:text-blue-900 transition-colors"
+                              title="Modifier"
+                            >
+                              <Edit className="w-4 h-4" />
                             </button>
-                            <button className="text-green-600 hover:text-green-900 transition-colors">
-                              <Settings className="w-4 h-4" />
-                            </button>
-                            <button className="text-orange-600 hover:text-orange-900 transition-colors">
-                              <Send className="w-4 h-4" />
+                            <button 
+                              onClick={() => handleDeleteMember(membre)} 
+                              className="text-red-600 hover:text-red-900 transition-colors"
+                              title="Supprimer"
+                            >
+                              <Trash2 className="w-4 h-4" />
                             </button>
                           </div>
                         </td>
@@ -1646,17 +1836,152 @@ const WalletDashboard: React.FC = () => {
                               <p className="text-sm text-gray-600">{membre.role}</p>
                             </div>
                           </div>
-                          <div className="text-right">
-                            <p className="text-sm font-medium text-gray-900">
-                              {new Date(membre.dateAdhesion).toLocaleDateString('fr-FR')}
-                            </p>
-                            <p className="text-xs text-gray-500">
-                              {Math.floor((new Date().getTime() - new Date(membre.dateAdhesion).getTime()) / (1000 * 60 * 60 * 24))} jours
-                            </p>
-                          </div>
+                         
                         </div>
                       ))
                     }
+                  </div>
+                </div>
+              </div>
+            </div>
+          </>
+        );
+        
+      case 'documents':
+        return (
+          <>
+            {/* En-tête de la page documents */}
+            <div className="mb-8">
+              <div className="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-xl p-6 text-white">
+                <h3 className="text-2xl font-bold mb-2">Documents Officiels du GIE</h3>
+                <p className="text-purple-100">Consultez et téléchargez les documents importants de votre GIE</p>
+              </div>
+            </div>
+
+            {/* Liste des documents */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+              {/* Statuts du GIE */}
+              <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center mb-4">
+                  <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center mr-3">
+                    <FileText className="w-5 h-5 text-indigo-600" />
+                  </div>
+                  <h4 className="text-lg font-bold text-gray-900">Statuts du GIE</h4>
+                </div>
+                <p className="text-sm text-gray-600 mb-4">Document officiel définissant la structure, l'organisation et le fonctionnement du GIE.</p>
+                <div className="flex justify-between items-center">
+                  <span className={`px-3 py-1 text-xs font-medium rounded-full ${documents.statuts ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                    {documents.statuts ? 'Disponible' : 'En attente'}
+                  </span>
+                  <button 
+                    onClick={() => handleDocumentDownload('statuts')}
+                    disabled={documentsLoading || !documents.statuts}
+                    className={`px-3 py-2 rounded-lg text-sm font-medium ${
+                      documentsLoading || !documents.statuts 
+                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
+                        : 'bg-indigo-600 text-white hover:bg-indigo-700'
+                    }`}
+                  >
+                    Télécharger
+                  </button>
+                </div>
+              </div>
+
+              {/* Règlement Intérieur */}
+              <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center mb-4">
+                  <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+                    <Shield className="w-5 h-5 text-blue-600" />
+                  </div>
+                  <h4 className="text-lg font-bold text-gray-900">Règlement Intérieur</h4>
+                </div>
+                <p className="text-sm text-gray-600 mb-4">Règles internes, droits et obligations des membres du GIE.</p>
+                <div className="flex justify-between items-center">
+                  <span className={`px-3 py-1 text-xs font-medium rounded-full ${documents.reglementInterieur ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                    {documents.reglementInterieur ? 'Disponible' : 'En attente'}
+                  </span>
+                  <button 
+                    onClick={() => handleDocumentDownload('reglementInterieur')}
+                    disabled={documentsLoading || !documents.reglementInterieur}
+                    className={`px-3 py-2 rounded-lg text-sm font-medium ${
+                      documentsLoading || !documents.reglementInterieur 
+                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
+                        : 'bg-blue-600 text-white hover:bg-blue-700'
+                    }`}
+                  >
+                    Télécharger
+                  </button>
+                </div>
+              </div>
+
+              {/* Procès Verbal */}
+              <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center mb-4">
+                  <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center mr-3">
+                    <FileText className="w-5 h-5 text-green-600" />
+                  </div>
+                  <h4 className="text-lg font-bold text-gray-900">Procès Verbal</h4>
+                </div>
+                <p className="text-sm text-gray-600 mb-4">Document attestant des décisions prises lors de l'assemblée constitutive.</p>
+                <div className="flex justify-between items-center">
+                  <span className={`px-3 py-1 text-xs font-medium rounded-full ${documents.procesVerbal ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                    {documents.procesVerbal ? 'Disponible' : 'En attente'}
+                  </span>
+                  <button 
+                    onClick={() => handleDocumentDownload('procesVerbal')}
+                    disabled={documentsLoading || !documents.procesVerbal}
+                    className={`px-3 py-2 rounded-lg text-sm font-medium ${
+                      documentsLoading || !documents.procesVerbal 
+                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
+                        : 'bg-green-600 text-white hover:bg-green-700'
+                    }`}
+                  >
+                    Télécharger
+                  </button>
+                </div>
+              </div>
+
+              {/* Demande d'Adhésion */}
+              <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center mb-4">
+                  <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center mr-3">
+                    <UserPlus className="w-5 h-5 text-orange-600" />
+                  </div>
+                  <h4 className="text-lg font-bold text-gray-900">Demande d'Adhésion</h4>
+                </div>
+                <p className="text-sm text-gray-600 mb-4">Formulaire officiel pour l'adhésion au programme FEVEO 2050.</p>
+                <div className="flex justify-between items-center">
+                  <span className={`px-3 py-1 text-xs font-medium rounded-full ${documents.demandeAdhesion ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                    {documents.demandeAdhesion ? 'Disponible' : 'En attente'}
+                  </span>
+                  <button 
+                    onClick={() => handleDocumentDownload('demandeAdhesion')}
+                    disabled={documentsLoading || !documents.demandeAdhesion}
+                    className={`px-3 py-2 rounded-lg text-sm font-medium ${
+                      documentsLoading || !documents.demandeAdhesion 
+                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
+                        : 'bg-orange-600 text-white hover:bg-orange-700'
+                    }`}
+                  >
+                    Télécharger
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Section information */}
+            <div className="bg-blue-50 border border-blue-200 rounded-xl p-6 mb-8">
+              <div className="flex items-start">
+                <div className="flex-shrink-0 mt-1">
+                  <svg className="h-5 w-5 text-blue-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <div className="ml-3">
+                  <h3 className="text-sm font-medium text-blue-800">Information sur les documents</h3>
+                  <div className="mt-2 text-sm text-blue-700">
+                    <p>Ces documents sont générés automatiquement lors de l'inscription de votre GIE au programme FEVEO 2050.</p>
+                    <p className="mt-1">Pour toute question ou besoin d'assistance concernant ces documents, veuillez contacter le support FEVEO.</p>
                   </div>
                 </div>
               </div>
@@ -2239,6 +2564,7 @@ const WalletDashboard: React.FC = () => {
                             const day = index + 1;
                             const dateStr = `${year}-${month.padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
                             const isInvestmentDay = currentMonthData.investmentDays.includes(day);
+                            const isSuccessfulDay = currentMonthData.successfulDays?.includes(day) || false;
                             const isToday = dateStr === new Date().toISOString().split('T')[0];
                             
                             // Déterminer si le jour est dans le cycle d'investissement (à partir du 1er avril 2025)
@@ -2259,20 +2585,26 @@ const WalletDashboard: React.FC = () => {
                                 className={`h-10 w-10 flex items-center justify-center text-sm font-medium rounded-lg transition-all ${
                                   !isInCycle
                                     ? 'bg-gray-100 text-gray-400' // Avant le début du cycle
-                                    : isInvestmentDay
-                                      ? isToday
-                                        ? 'bg-black text-white ring-2 ring-black shadow-lg'
-                                        : 'bg-red-500 text-white hover:bg-red-600 shadow-md'
-                                      : cycleDay <= walletData.cycleInfo.totalDays
-                                        ? 'bg-blue-100 text-blue-600 hover:bg-blue-200'
-                                        : 'bg-gray-200 text-gray-600'
+                                    : isToday
+                                      ? 'bg-black text-white ring-2 ring-black shadow-lg' // Jour actuel toujours en noir
+                                      : isInvestmentDay
+                                        ? isSuccessfulDay
+                                          ? 'bg-green-500 text-white hover:bg-green-600 shadow-md' // Jours investis avec succès en vert
+                                          : 'bg-red-500 text-white hover:bg-red-600 shadow-md' // Jours investis mais sans succès en rouge
+                                        : cycleDay <= walletData.cycleInfo.totalDays
+                                          ? 'bg-blue-100 text-blue-600 hover:bg-blue-200' // Jours futurs dans le cycle
+                                          : 'bg-gray-200 text-gray-600' // Après la fin du cycle
                                 } cursor-pointer`}
                                 title={isInCycle 
-                                  ? isInvestmentDay 
-                                    ? `Jour ${cycleDay}: Investi ${formatCurrency(6000)}`
-                                    : cycleDay <= walletData.cycleInfo.totalDays
-                                      ? `Jour ${cycleDay}: À venir`
-                                      : `Hors cycle d'investissement`
+                                  ? isToday
+                                    ? `Aujourd'hui - Jour ${cycleDay}`
+                                    : isInvestmentDay
+                                      ? isSuccessfulDay
+                                        ? `Jour ${cycleDay} - Investissement réussi`
+                                        : `Jour ${cycleDay} - Investissement en attente`
+                                      : cycleDay <= walletData.cycleInfo.totalDays
+                                        ? `Jour ${cycleDay}: À venir`
+                                        : `Hors cycle d'investissement`
                                   : `Avant le début du cycle d'investissement`
                                 }
                               >
@@ -2304,10 +2636,14 @@ const WalletDashboard: React.FC = () => {
                         <div className="flex flex-wrap justify-center gap-x-4 gap-y-2 mt-4 text-xs">
                           <div className="flex items-center space-x-2">
                             <div className="w-3 h-3 bg-green-500 rounded shadow-sm"></div>
-                            <span className="text-gray-600">Jours investis</span>
+                            <span className="text-gray-600">Investissement réussi</span>
                           </div>
                           <div className="flex items-center space-x-2">
-                            <div className="w-3 h-3 bg-orange-500 rounded ring-1 ring-orange-300"></div>
+                            <div className="w-3 h-3 bg-red-500 rounded shadow-sm"></div>
+                            <span className="text-gray-600">Investissement en attente</span>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <div className="w-3 h-3 bg-black rounded ring-1 ring-black"></div>
                             <span className="text-gray-600">Aujourd'hui</span>
                           </div>
                           <div className="flex items-center space-x-2">
@@ -2620,8 +2956,9 @@ const WalletDashboard: React.FC = () => {
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   >
                     <option value="">Sélectionnez</option>
-                    <option value="Homme">Homme</option>
-                    <option value="Femme">Femme</option>
+                    <option value="femme">Femme</option>
+                    <option value="jeune">Jeune</option>
+                    <option value="homme">Homme</option>
                   </select>
                 </div>
                 
@@ -2648,7 +2985,6 @@ const WalletDashboard: React.FC = () => {
                   >
                     <option value="Membre">Membre</option>
                     <option value="Présidente">Présidente</option>
-                    <option value="Vice-Président">Vice-Président</option>
                     <option value="Trésorière">Trésorière</option>
                     <option value="Secrétaire">Secrétaire</option>
                   </select>
@@ -2775,8 +3111,9 @@ const WalletDashboard: React.FC = () => {
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   >
                     <option value="">Sélectionnez</option>
-                    <option value="Homme">Homme</option>
-                    <option value="Femme">Femme</option>
+                    <option value="femme">Femme</option>
+                    <option value="jeune">Jeune</option>
+                    <option value="homme">Homme</option>
                   </select>
                 </div>
                 
