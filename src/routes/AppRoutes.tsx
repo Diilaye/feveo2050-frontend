@@ -1,8 +1,8 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Home from '../pages/Home';
-import AdminLogin from '../components/AdminLogin';
-import AdminDashboard from '../components/AdminDashboard';
+//import AdminLoginPage from '../pages/admin/AdminLoginPage';
+//import AdminDashboard from '../pages/admin/AdminDashboard';
 import WalletLogin from '../components/WalletLogin';
 import WalletDashboard from '../components/WalletDashboard';
 import GIEDashboard from '../components/GIEDashboard';
@@ -13,6 +13,9 @@ import EnregistrementPage from '../pages/EnregistrementPage';
 import GaleriePage from '../pages/GaleriePage';
 import PaymentSuccessPage from '../pages/PaymentSuccessPage';
 import PaymentErrorPage from '../pages/PaymentErrorPage';
+import AdminLogin from '../components/AdminLogin';
+import AdminDashboard from '../components/AdminDashboard';
+import GIEDetails from '../components/GIEDetails';
 
 const AppRoutes: React.FC = () => {
   return (
@@ -23,6 +26,7 @@ const AppRoutes: React.FC = () => {
       {/* Routes d'administration */}
       <Route path="/admin/login" element={<AdminLogin />} />
       <Route path="/admin/dashboard" element={<AdminDashboard />} />
+      <Route path="/admin/gies/:id" element={<GIEDetails />} />
       
       {/* Routes du wallet */}
       <Route path="/wallet/login" element={<WalletLogin />} />

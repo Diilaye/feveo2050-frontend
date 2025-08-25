@@ -1,0 +1,125 @@
+/* Style pour le tableau de bord administrateur */
+
+.admin-dashboard {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.admin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background-color: #1a365d;
+  color: white;
+}
+
+.admin-logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.admin-user-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.logout-button {
+  background-color: #e53e3e;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.logout-button:hover {
+  background-color: #c53030;
+}
+
+.admin-content {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.admin-sidebar {
+  width: 250px;
+  background-color: #f8f9fa;
+  border-right: 1px solid #e2e8f0;
+  padding: 1rem 0;
+}
+
+.admin-sidebar ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.admin-sidebar li {
+  margin-bottom: 0.25rem;
+}
+
+.admin-sidebar a {
+  display: block;
+  padding: 0.75rem 1.5rem;
+  color: #2d3748;
+  text-decoration: none;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.admin-sidebar a:hover {
+  background-color: #e6f2ff;
+  color: #3182ce;
+}
+
+.admin-main {
+  flex: 1;
+  padding: 2rem;
+  overflow-y: auto;
+}
+
+.admin-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.5rem;
+  margin: 2rem 0;
+}
+
+.stat-card {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  padding: 1.5rem;
+}
+
+.stat-card h3 {
+  margin-top: 0;
+  color: #4a5568;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.stat-value {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #2c5282;
+  margin: 0.5rem 0 0;
+}
+
+.admin-recent-activity {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  padding: 1.5rem;
+  margin-top: 2rem;
+}
+
+.admin-recent-activity h2 {
+  margin-top: 0;
+  font-size: 1.25rem;
+  color: #2d3748;
+}
