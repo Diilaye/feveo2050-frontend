@@ -31,14 +31,44 @@ interface GIE {
   region: string;
   departement: string;
   commune: string;
+  arrondissement?: string;
+  codeRegion?: string;
+  codeDepartement?: string;
+  codeArrondissement?: string;
+  codeCommune?: string;
+  numeroProtocole?: string;
   statutAdhesion: string;
   statutEnregistrement: string;
   dateCreation: string;
+  dateConstitution?: string;
+  daysInvestedSuccess?: number;
+  investissementActif?: boolean;
+  investissementDateDebut?: string;
+  investissementDateFin?: string;
+  investissementDureeJours?: number;
+  // Informations de la présidente
+  presidenteNom?: string;
+  presidentePrenom?: string;
+  presidenteCIN?: string;
+  presidenteAdresse?: string;
+  presidenteTelephone?: string;
+  presidenteEmail?: string;
+  // Pour la compatibilité avec l'ancien format
   presidente?: {
     telephone?: string;
     nom?: string;
     prenom?: string;
     adresse?: string;
+  };
+  // Informations secteur et activités
+  secteurPrincipal?: string;
+  activites?: string[];
+  objectifs?: string;
+  documentsGeneres?: {
+    statuts: boolean;
+    reglementInterieur: boolean;
+    procesVerbal: boolean;
+    demandeAdhesion: boolean;
   };
   secretaire?: {
     telephone?: string;
@@ -56,6 +86,11 @@ interface GIE {
     prenom: string;
     telephone: string;
     fonction: string;
+    cin?: string;
+    adresse?: string;
+    email?: string;
+    genre?: string;
+    age?: number;
   }>;
   documents?: Array<{
     _id: string;
@@ -64,7 +99,6 @@ interface GIE {
     url: string;
     dateUpload: string;
   }>;
-  activites?: string[];
   historique?: Array<{
     action: string;
     date: string;
@@ -154,22 +188,28 @@ const GIEDetails: React.FC = () => {
     
     if (type === 'adhesion') {
       if (status === 'validee') {
-        bgColor = 'bg-green-100 text-green-600';
+        bgColor = 'bg-green-100 text-green-800';
         text = 'Validée';
       } else if (status === 'en_attente') {
-        bgColor = 'bg-amber-100 text-amber-600';
+        bgColor = 'bg-yellow-100 text-yellow-800';
         text = 'En attente';
       } else {
-        bgColor = 'bg-red-100 text-red-600';
+        bgColor = 'bg-red-100 text-red-800';
         text = 'Non validée';
       }
     } else {
       if (status === 'valide') {
-        bgColor = 'bg-green-100 text-green-600';
+        bgColor = 'bg-green-100 text-green-800';
         text = 'Valide';
-      } else {
-        bgColor = 'bg-amber-100 text-amber-600';
+      } else if (status === 'en_attente_paiement') {
+        bgColor = 'bg-yellow-100 text-yellow-800';
         text = 'En attente';
+      } else if (status === 'rejete') {
+        bgColor = 'bg-red-100 text-red-800';
+        text = 'Rejeté';
+      } else {
+        bgColor = 'bg-purple-100 text-purple-800';
+        text = 'En traitement';
       }
     }
     
@@ -188,7 +228,7 @@ const GIEDetails: React.FC = () => {
         return (
           <div className="bg-white p-6 shadow-sm rounded-b-xl border-t-0 border border-gray-100">
             {/* Statut et informations clés */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
               <div className="bg-primary-50 p-5 rounded-xl border border-gray-200 shadow-sm flex flex-col justify-between">
                 <div className="flex items-center justify-between mb-3">
                   <h3 className="text-sm font-semibold text-gray-700">Statut d'adhésion</h3>
@@ -212,6 +252,28 @@ const GIEDetails: React.FC = () => {
                     : 'Certains documents d\'enregistrement sont en attente de validation.'}
                 </p>
               </div>
+
+              <div className="bg-primary-50 p-5 rounded-xl border border-gray-200 shadow-sm flex flex-col justify-between">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-sm font-semibold text-gray-700">Investissement</h3>
+                  <span className={`px-3 py-1 text-xs font-medium rounded-full ${
+                    gie.investissementActif 
+                      ? 'bg-green-100 text-green-800' 
+                      : 'bg-yellow-100 text-yellow-800'
+                  }`}>
+                    {gie.investissementActif ? 'Actif' : 'Inactif'}
+                  </span>
+                </div>
+                <div className="flex items-center">
+                  <DollarSign className="w-5 h-5 text-green-600 mr-2" />
+                  <span className="text-lg font-bold text-gray-800">{gie.daysInvestedSuccess || 0} jours</span>
+                </div>
+                <p className="text-sm text-gray-500 mt-2">
+                  {gie.investissementActif
+                    ? `Actif jusqu'au ${new Date(gie.investissementDateFin || '').toLocaleDateString('fr-FR')}`
+                    : 'Aucun investissement actif en cours'}
+                </p>
+              </div>
               
               <div className="bg-primary-50 p-5 rounded-xl border border-gray-200 shadow-sm flex flex-col justify-between">
                 <div className="flex items-center mb-3">
@@ -227,37 +289,133 @@ const GIEDetails: React.FC = () => {
                     <span className="text-xs text-gray-500">Identifiant:</span>
                     <span className="text-sm font-medium">{gie.identifiantGIE}</span>
                   </div>
+                  {/* Informations de la présidente (nouveau format ou ancien format) */}
+                  {(gie.presidenteNom) && (
+                    <>
+                      <div className="pt-2 mt-2 border-t border-gray-100">
+                        <div className="flex items-center my-2">
+                          <Shield className="w-4 h-4 mr-2 text-purple-600" />
+                          <span className="text-sm font-medium text-purple-800">Présidente</span>
+                        </div>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-xs text-gray-500">Nom complet:</span>
+                        <span className="text-sm font-medium">
+                          {gie.presidentePrenom || ''} {gie.presidenteNom ||  ''}
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-xs text-gray-500">Téléphone:</span>
+                        <span className="text-sm font-medium">
+                          {gie.presidenteTelephone || 'Non renseigné'}
+                        </span>
+                      </div>
+                      {(gie.presidenteAdresse) && (
+                        <div className="flex justify-between items-center">
+                          <span className="text-xs text-gray-500">Adresse:</span>
+                          <span className="text-sm font-medium">
+                            {gie.presidenteAdresse }
+                          </span>
+                        </div>
+                      )}
+                      {gie.presidenteEmail && (
+                        <div className="flex justify-between items-center">
+                          <span className="text-xs text-gray-500">Email:</span>
+                          <span className="text-sm font-medium">
+                            {gie.presidenteEmail}
+                          </span>
+                        </div>
+                      )}
+                      {gie.presidenteCIN && (
+                        <div className="flex justify-between items-center">
+                          <span className="text-xs text-gray-500">CIN:</span>
+                          <span className="text-sm font-medium">
+                            {gie.presidenteCIN}
+                          </span>
+                        </div>
+                      )}
+                    </>
+                  )}
                 </div>
               </div>
             </div>
             
             {/* Carte d'informations détaillées */}
+                        {/* Carte d'informations détaillées */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Localisation */}
               <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-                <div className="bg-primary-50 px-5 py-3 border-b border-gray-200">
-                  <div className="flex items-center">
+                <div className="px-5 py-4 bg-primary-50 border-b border-gray-200">
+                  <h3 className="font-medium text-gray-900 flex items-center">
                     <MapPin className="w-5 h-5 text-primary-600 mr-2" />
-                    <h3 className="font-semibold text-gray-800">Localisation</h3>
-                  </div>
+                    Localisation
+                  </h3>
                 </div>
                 <div className="p-5">
-                  <div className="grid grid-cols-3 gap-4">
+                  <div className="grid grid-cols-2 gap-4">
                     <div>
                       <p className="text-xs text-gray-500 mb-1">Région</p>
-                      <p className="text-sm font-medium">{gie.region}</p>
+                      <p className="text-sm font-medium">{gie.region} {gie.codeRegion && <span className="text-xs text-gray-500">({gie.codeRegion})</span>}</p>
                     </div>
                     <div>
                       <p className="text-xs text-gray-500 mb-1">Département</p>
-                      <p className="text-sm font-medium">{gie.departement}</p>
+                      <p className="text-sm font-medium">{gie.departement} {gie.codeDepartement && <span className="text-xs text-gray-500">({gie.codeDepartement})</span>}</p>
                     </div>
+                    {gie.arrondissement && (
+                      <div>
+                        <p className="text-xs text-gray-500 mb-1">Arrondissement</p>
+                        <p className="text-sm font-medium">{gie.arrondissement} {gie.codeArrondissement && <span className="text-xs text-gray-500">({gie.codeArrondissement})</span>}</p>
+                      </div>
+                    )}
                     <div>
                       <p className="text-xs text-gray-500 mb-1">Commune</p>
-                      <p className="text-sm font-medium">{gie.commune}</p>
+                      <p className="text-sm font-medium">{gie.commune} {gie.codeCommune && <span className="text-xs text-gray-500">({gie.codeCommune})</span>}</p>
                     </div>
+                    {gie.numeroProtocole && (
+                      <div>
+                        <p className="text-xs text-gray-500 mb-1">Numéro de protocole</p>
+                        <p className="text-sm font-medium">{gie.numeroProtocole}</p>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
+              
+              {/* Secteur d'activité */}
+              {(gie.secteurPrincipal || gie.activites) && (
+                <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                  <div className="px-5 py-4 bg-primary-50 border-b border-gray-200">
+                    <h3 className="font-medium text-gray-900 flex items-center">
+                      <Building className="w-5 h-5 text-primary-600 mr-2" />
+                      Activités
+                    </h3>
+                  </div>
+                  <div className="p-5">
+                    {gie.secteurPrincipal && (
+                      <div className="mb-4">
+                        <p className="text-xs text-gray-500 mb-1">Secteur principal</p>
+                        <p className="text-sm font-medium bg-primary-50 inline-block px-2 py-1 rounded-md">{gie.secteurPrincipal}</p>
+                      </div>
+                    )}
+                    {gie.activites && gie.activites.length > 0 && (
+                      <div className="mb-4">
+                        <p className="text-xs text-gray-500 mb-2">Types d'activités</p>
+                        <div className="flex flex-wrap gap-2">
+                          {gie.activites.map((activite, index) => (
+                            <span key={index} className="text-xs bg-green-50 text-green-800 px-2 py-1 rounded-md">{activite}</span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    {gie.objectifs && (
+                      <div>
+                        <p className="text-xs text-gray-500 mb-1">Objectifs</p>
+                        <p className="text-sm">{gie.objectifs}</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
               
               {/* Direction du GIE */}
               {gie.presidente && (
@@ -342,7 +500,7 @@ const GIEDetails: React.FC = () => {
                 <span className="text-xs font-medium text-gray-700">Présidente</span>
               </div>
               <div className="flex items-center">
-                <div className="w-3 h-3 rounded-full bg-blue-500 mr-2"></div>
+                <div className="w-3 h-3 rounded-full bg-primary-600 mr-2"></div>
                 <span className="text-xs font-medium text-gray-700">Secrétaire</span>
               </div>
               <div className="flex items-center">
@@ -376,10 +534,10 @@ const GIEDetails: React.FC = () => {
                     borderColor = "border-purple-200";
                     iconComponent = <Shield className="w-5 h-5 text-purple-600" />;
                   } else if (membre.fonction === 'Secrétaire') {
-                    bgColor = "bg-blue-50";
-                    textColor = "text-blue-700";
-                    borderColor = "border-blue-200";
-                    iconComponent = <FileText className="w-5 h-5 text-blue-600" />;
+                    bgColor = "bg-primary-50";
+                    textColor = "text-primary-700";
+                    borderColor = "border-primary-200";
+                    iconComponent = <FileText className="w-5 h-5 text-primary-600" />;
                   } else if (membre.fonction === 'Trésorière') {
                     bgColor = "bg-green-50";
                     textColor = "text-green-700"; 
@@ -396,26 +554,66 @@ const GIEDetails: React.FC = () => {
                     : 'Membre';
                     
                   return (
-                    <div key={membre._id} className={`rounded-xl border ${borderColor} overflow-hidden shadow-sm`}>
+                    <div key={membre._id} className={`rounded-xl border ${borderColor} overflow-hidden shadow-sm ${membre.fonction === 'Présidente' ? 'md:col-span-2 md:row-span-2 order-first' : ''}`}>
                       <div className={`${bgColor} px-4 py-3 border-b ${borderColor} flex justify-between items-center`}>
                         <div className="flex items-center">
                           {iconComponent}
                           <span className={`ml-2 text-sm font-semibold ${textColor}`}>{membre.fonction}</span>
                         </div>
+                        {membre.fonction === 'Présidente' && (
+                          <span className="bg-purple-100 text-purple-800 text-xs px-2.5 py-0.5 rounded-full">Représentante légale</span>
+                        )}
                       </div>
                       <div className="p-4">
                         <div className="flex items-center mb-3">
-                          <div className="h-10 w-10 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center font-semibold text-sm mr-3">
+                          <div className={`h-10 w-10 rounded-full ${membre.fonction === 'Présidente' ? 'bg-purple-100 text-purple-800' : 'bg-primary-100 text-primary-700'} flex items-center justify-center font-semibold text-sm mr-3`}>
                             {membre.prenom.charAt(0)}{membre.nom.charAt(0)}
                           </div>
                           <div>
                             <h4 className="font-medium text-gray-800">{membre.prenom} {membre.nom}</h4>
+                            {membre.fonction === 'Présidente' && (
+                              <p className="text-xs text-purple-600">Représentante légale du GIE</p>
+                            )}
                           </div>
                         </div>
+                        
                         <div className="flex items-center mt-2 text-gray-600 text-sm">
                           <Phone className="w-4 h-4 mr-2 text-gray-500" />
                           <span>{membre.telephone}</span>
                         </div>
+                        
+                        {membre.fonction === 'Présidente' && (gie.presidenteAdresse || gie.presidente?.adresse) && (
+                          <div className="flex items-center mt-2 text-gray-600 text-sm">
+                            <MapPin className="w-4 h-4 mr-2 text-gray-500" />
+                            <span>{gie.presidenteAdresse || gie.presidente?.adresse}</span>
+                          </div>
+                        )}
+                        
+                        {membre.fonction === 'Présidente' && (membre.email || gie.presidenteEmail) && (
+                          <div className="flex items-center mt-2 text-gray-600 text-sm">
+                            <Mail className="w-4 h-4 mr-2 text-gray-500" />
+                            <span>{membre.email || gie.presidenteEmail}</span>
+                          </div>
+                        )}
+                        
+                        {membre.fonction === 'Présidente' && gie.presidenteCIN && (
+                          <div className="flex items-center mt-2 text-gray-600 text-sm">
+                            <Shield className="w-4 h-4 mr-2 text-gray-500" />
+                            <span>CIN: {gie.presidenteCIN}</span>
+                          </div>
+                        )}
+
+                        {membre.fonction === 'Présidente' && (
+                          <div className="mt-3 pt-3 border-t border-gray-100">
+                            <div className="text-xs font-medium text-gray-500 mb-2">Responsabilités:</div>
+                            <ul className="list-disc list-inside text-xs text-gray-600 space-y-1">
+                              <li>Représentation légale</li>
+                              <li>Coordination des activités</li>
+                              <li>Gestion administrative</li>
+                              <li>Prise de décisions importantes</li>
+                            </ul>
+                          </div>
+                        )}
                       </div>
                     </div>
                   );
@@ -440,11 +638,60 @@ const GIEDetails: React.FC = () => {
               </div>
             </div>
             
+            {/* Documents générés */}
+            {gie.documentsGeneres && (
+              <div className="mb-6">
+                <h4 className="text-sm font-semibold mb-3 pb-2 border-b border-gray-100">Documents générés</h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className={`p-3 rounded-lg flex items-center ${gie.documentsGeneres.statuts ? 'bg-green-50 border border-green-100' : 'bg-gray-50 border border-gray-100'}`}>
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center mr-3 ${gie.documentsGeneres.statuts ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
+                      <FileText className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium">Statuts</p>
+                      <p className="text-xs text-gray-500">{gie.documentsGeneres.statuts ? 'Généré' : 'Non généré'}</p>
+                    </div>
+                  </div>
+                  
+                  <div className={`p-3 rounded-lg flex items-center ${gie.documentsGeneres.reglementInterieur ? 'bg-green-50 border border-green-100' : 'bg-gray-50 border border-gray-100'}`}>
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center mr-3 ${gie.documentsGeneres.reglementInterieur ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
+                      <FileText className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium">Règlement intérieur</p>
+                      <p className="text-xs text-gray-500">{gie.documentsGeneres.reglementInterieur ? 'Généré' : 'Non généré'}</p>
+                    </div>
+                  </div>
+                  
+                  <div className={`p-3 rounded-lg flex items-center ${gie.documentsGeneres.procesVerbal ? 'bg-green-50 border border-green-100' : 'bg-gray-50 border border-gray-100'}`}>
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center mr-3 ${gie.documentsGeneres.procesVerbal ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
+                      <FileText className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium">Procès-verbal</p>
+                      <p className="text-xs text-gray-500">{gie.documentsGeneres.procesVerbal ? 'Généré' : 'Non généré'}</p>
+                    </div>
+                  </div>
+                  
+                  <div className={`p-3 rounded-lg flex items-center ${gie.documentsGeneres.demandeAdhesion ? 'bg-green-50 border border-green-100' : 'bg-gray-50 border border-gray-100'}`}>
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center mr-3 ${gie.documentsGeneres.demandeAdhesion ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
+                      <FileText className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium">Demande d'adhésion</p>
+                      <p className="text-xs text-gray-500">{gie.documentsGeneres.demandeAdhesion ? 'Généré' : 'Non généré'}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+            
+            {/* Documents uploadés */}
             {!gie.documents || gie.documents.length === 0 ? (
-              <div className="bg-gray-50 rounded-xl p-12 text-center border border-gray-200">
+              <div className="bg-gray-50 rounded-xl p-8 text-center border border-gray-200">
                 <FileText className="w-10 h-10 text-gray-400 mx-auto mb-3" />
-                <p className="text-gray-500 mb-1">Aucun document disponible</p>
-                <p className="text-sm text-gray-400">Le GIE n'a pas encore de documents dans sa base de données.</p>
+                <p className="text-gray-500 mb-1">Aucun document téléchargé</p>
+                <p className="text-sm text-gray-400">Le GIE n'a pas encore téléchargé de documents supplémentaires.</p>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -456,7 +703,7 @@ const GIEDetails: React.FC = () => {
                     if (type.includes('image') || type.includes('photo') || type.includes('jpeg') || type.includes('png')) 
                       return <FileText className="w-10 h-10 text-green-500" />;
                     if (type.includes('doc') || type.includes('word')) 
-                      return <FileText className="w-10 h-10 text-blue-500" />;
+                      return <FileText className="w-10 h-10 text-primary-600" />;
                     return <FileText className="w-10 h-10 text-gray-500" />;
                   };
                   
@@ -465,7 +712,7 @@ const GIEDetails: React.FC = () => {
                       <div className="p-5 flex flex-col items-center justify-center text-center border-b border-gray-100">
                         {getFileIcon()}
                         <h4 className="font-medium text-gray-800 mt-3 mb-1">{document.nom}</h4>
-                        <span className="inline-flex text-xs font-medium rounded-full px-3 py-1 bg-blue-100 text-blue-700">
+                        <span className="inline-flex text-xs font-medium rounded-full px-3 py-1 bg-primary-100 text-primary-700">
                           {document.type}
                         </span>
                       </div>
@@ -531,10 +778,10 @@ const GIEDetails: React.FC = () => {
                     
                     if (action.includes('modif') || action.includes('update') || action.includes('edit')) {
                       return {
-                        bgColor: 'bg-blue-50',
-                        borderColor: 'border-blue-200',
-                        iconBgColor: 'bg-blue-100',
-                        iconColor: 'text-blue-600',
+                        bgColor: 'bg-primary-50',
+                        borderColor: 'border-primary-200',
+                        iconBgColor: 'bg-primary-100',
+                        iconColor: 'text-primary-600',
                         icon: <Edit className="w-4 h-4" />
                       };
                     }
